@@ -1,0 +1,16 @@
+// Button 组件样式
+.ant-btn {
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &.join-btn {
+    background-color: #056ffa;
+    border-color: #056ffa;
+    color: white;
+
+    &:hover {
+      background-color: #378cfb;
+      border-color: #378cfb;
+    }
+  }
+}
