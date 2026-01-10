@@ -2,9 +2,9 @@ import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import ConfigProvider from '../shared/ConfigProvider';
+import { loopCall } from '@/util';
+import ConfigProvider from '@shared/ConfigProvider';
 import { LocalizerType } from '@/types/Util';
-import { loopCall } from '@/utils/loopCall';
 
 type Meetings = Record<string, any>;
 
@@ -90,7 +90,7 @@ export const CalendarIndependentEntry = (props: { meetings?: Meetings }) => {
     defaultOptions: {
       queries: {
         retry: false,
-        refetchOnReconnect: false,
+        refetchOnReconnect: true,
         refetchOnWindowFocus: false,
       },
     },
@@ -99,12 +99,7 @@ export const CalendarIndependentEntry = (props: { meetings?: Meetings }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider isLightlyDisableMode>
-        <CalendarList
-          meetings={meetings}
-          ourNumber={ourNumber}
-          i18n={i18n}
-          currentTab="meetingSchedule"
-        />
+        <CalendarList meetings={meetings} ourNumber={ourNumber} i18n={i18n} />
       </ConfigProvider>
     </QueryClientProvider>
   );

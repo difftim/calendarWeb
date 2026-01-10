@@ -1,0 +1,273 @@
+// style of shared components
+// Shared Components: basic, non-business-specific, presentation
+
+$prefix: dsw;
+$prefix-simple: dsw-simple;
+
+// Select
+// Usage: A drop-down menu pops up for the user to select an operation, used to replace the native selector, or when a more elegant multi-selector is needed
+// description: Select input box and click to pop up the drop-down menu, from antd
+.#{$prefix}-shared-select {
+  width: 100%;
+
+  // override
+  &-popup {
+    .ant-select-item {
+      color: var(--dsw-color-text-primary);
+    }
+    .rc-virtual-list {
+      > .rc-virtual-list-holder::-webkit-scrollbar {
+        width: 0;
+        display: none;
+      }
+    }
+  }
+  // override
+  .ant-select-clear {
+    border-radius: 50%;
+  }
+  // override
+  input.ant-select-selection-search-input {
+    caret-color: transparent;
+  }
+
+  &-chevrondown {
+    transform: rotate(90deg);
+    color: var(--dsw-color-text-third);
+  }
+}
+
+// Textarea
+// Usage: Textarea component, used to replace the native Textarea for consistency
+// description: Input.TextArea from antd
+.#{$prefix}-shared-textarea {
+  -webkit-app-region: no-drag;
+  &.ant-input-textarea-allow-clear {
+    textarea {
+      padding-right: 30px;
+    }
+
+    .ant-input-suffix {
+      .customized-clear-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--dsw-color-text-third);
+      }
+    }
+  }
+}
+
+// Input
+// Usage: Input component, used to replace the native Textarea for consistency
+// description: Input from antd
+.#{$prefix}-shared-input,
+.#{$prefix}-shared-searchinput {
+  -webkit-app-region: no-drag;
+}
+
+.#{$prefix}-shared-timepicker {
+  height: 40px;
+  &-chevrondown {
+    color: var(--dsw-color-text-third);
+  }
+}
+
+.#{$prefix}-shared-radio {
+  .ant-radio-inner {
+    width: 14px;
+    height: 14px;
+    border-color: var(--dsw-color-text-disabled);
+    background-color: transparent;
+  }
+  .ant-radio-inner::after {
+    background: #056ffa;
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: #1890ff;
+    background-color: transparent;
+  }
+}
+
+.#{$prefix}-shared-transfer-modal {
+  padding: 5px 20px;
+  border-radius: 8px;
+  -webkit-app-region: no-drag !important;
+  color: var(--dsw-color-text-primary);
+
+  .close {
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+  }
+
+  .left,
+  .right {
+    display: flex;
+    flex-direction: column;
+    width: 286px;
+    height: 440px;
+    border: 1px solid var(--dsw-color-modal-pane-border);
+    border-radius: 8px;
+    overflow: hidden;
+
+    .module-left-pane__virtual-list {
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        border: 1px solid var(--dsw-color-modal-scrollbar-thumb-border);
+        background: var(--dsw-color-modal-scrollbar-thumb-bg);
+      }
+      &::-webkit-scrollbar-track {
+        background: var(--dsw-color-modal-scrollbar-track-bg) !important;
+        border-radius: 8px;
+      }
+      &::-webkit-scrollbar-corner {
+        background-color: var(--dsw-color-modal-scrollbar-conor-bg);
+      }
+    }
+  }
+
+  .list {
+    flex-grow: 1;
+    overflow-y: scroll;
+    .no-result {
+      width: 100%;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .module-contact-list-item:hover {
+      background-color: var(--dsw-color-background-group-item-hover) !important;
+    }
+    &::-webkit-scrollbar {
+      width: 0;
+      display: none;
+    }
+  }
+}
+
+.ant-modal-content:has(.#{$prefix}-shared-transfer-modal) {
+  padding: 0 !important;
+}
+
+.#{$prefix-simple}-avatar-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 50%;
+  user-select: none;
+  overflow: hidden;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  background: linear-gradient(293.26deg, #1773eb 39.79%, #4da0ff 100%);
+
+  .avatar__label {
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    line-height: 36px;
+  }
+}
+
+.#{$prefix-simple}-conversation-list-item-container {
+  height: 56px;
+  user-select: none;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-right: 12px;
+  padding-left: 18px;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+
+  .avatar-box {
+    position: relative;
+  }
+
+  &:hover {
+    background: var(--dsw-color-bg-2);
+  }
+
+  .conversation-checkbox {
+    .ant-checkbox-disabled {
+      .ant-checkbox-inner {
+        border: none;
+      }
+    }
+  }
+
+  .module-avatar-group-members-count {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    right: 0;
+    background: #ebf7ff;
+    border: 2px solid #ffffff;
+    border-radius: 100px;
+    color: #056ffa;
+    font-style: normal;
+    font-weight: 510;
+    font-size: 9px;
+    padding: 2px 3px;
+    line-height: 6px;
+  }
+
+  .conversation-list-item__content {
+    font-size: 14px;
+    margin-left: 12px;
+    min-width: 0;
+    flex-grow: 1;
+
+    .conversation-list-item__header {
+      .conversation-list-item__header__container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    }
+
+    .conversation-list-item__name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-list-item__last-message {
+      flex-grow: 1;
+      flex-shrink: 1;
+      font-size: 12px;
+      line-height: 18px;
+      color: #aeaeae;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.ant-notification-notice-wrapper:has(.#{$prefix}-notify-base) {
+  border-radius: 16px;
+  .#{$prefix}-notify-base {
+    border-radius: 8px;
+    background-color: var(--dsw-color-bg-modal);
+    box-shadow: var(--dsw-elevation-02);
+    .notify-base-close-icon {
+      color: var(--dsw-color-icon);
+    }
+    .ant-notification-notice-with-icon {
+      .ant-notification-notice-message {
+        color: var(--dsw-color-text-primary);
+      }
+      .ant-notification-notice-description {
+        color: var(--dsw-color-text-primary);
+      }
+    }
+    &:hover {
+      box-shadow: var(--dsw-elevation-01);
+    }
+  }
+}

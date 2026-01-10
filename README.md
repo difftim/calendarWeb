@@ -37,6 +37,7 @@ yarn install
 ```
 
 **首次安装或依赖更新后**，建议清理旧的 node_modules：
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install

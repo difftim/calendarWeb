@@ -1,0 +1,526 @@
+.meeting-schedule-dialog {
+  .ant-drawer-header {
+    height: 58px;
+    .schedule-meeting-header {
+      background-color: var(--dsw-metting-background-color);
+      text-align: center;
+      text-align: center;
+      > h3 {
+        font-weight: normal;
+        margin-bottom: 0;
+      }
+
+      > svg {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .ant-drawer-body {
+    padding: 0;
+  }
+}
+
+.view-schedule-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 32px;
+  top: -6px;
+  gap: 8px;
+  margin: 0 40px;
+
+  [role='img'] {
+    width: 12px;
+    height: 12px;
+  }
+
+  .date {
+    width: 100px;
+  }
+
+  &-left {
+    // @include color-svg('../images/back.svg', $color-gray-60);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+
+  &-left-disable {
+    // @include color-svg('../images/back.svg', #c6c8cc);
+    height: 20px;
+    width: 20px;
+    pointer-events: none;
+    margin-top: 2px;
+  }
+
+  &-right {
+    // @include color-svg('../images/back.svg', $color-gray-60);
+    transform: rotate(180deg);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+  }
+
+  &-right-disable {
+    // @include color-svg('../images/back.svg', #c6c8cc);
+    transform: rotate(180deg);
+    height: 20px;
+    width: 20px;
+    pointer-events: none;
+  }
+
+  > button {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+.live-stream-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  .live-icon {
+    background: linear-gradient(90deg, #f84135, #fe7566);
+    border-radius: 2px;
+  }
+}
+
+.meeting-schedule-dialog {
+  box-shadow: var(--dsw-elevation-02);
+  //box-shadow: 2px 2px 4px var(--dsw-box-shadow-color);
+  background-color: var(--dsw-metting-background-color);
+  color: var(--dsw-color-text-primary);
+  padding-bottom: 88px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+  }
+
+  .meeting-main {
+    -webkit-app-region: no-drag;
+    padding: 16px;
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+    }
+
+    .text-button {
+      color: var(--dsw-color-bg-primary);
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    &.hasTooltip {
+      padding-top: 88px;
+      .google-tooltip {
+        position: fixed;
+        top: 58px;
+        right: 0;
+        font-size: 10px;
+        width: 360px;
+        height: 22px;
+        z-index: 100;
+        color: var(--dsw-color-icon);
+        background-color: var(--dsw-color-bg-3);
+        line-height: 22px;
+        svg {
+          width: 12px;
+          height: 12px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .hideScrollbar {
+      &::-webkit-scrollbar {
+        display: none;
+        width: 0;
+      }
+    }
+
+    .meeting-schedule-picker {
+      height: 40px;
+      cursor: pointer;
+      input {
+        cursor: pointer !important;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        input {
+          cursor: not-allowed !important;
+        }
+      }
+    }
+
+    &.inDetail {
+      padding: 58px 0px 0px;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ant-checkbox + span {
+      padding-inline-start: 8px;
+      padding-inline-end: 4px;
+      display: flex;
+      align-items: center;
+      line-height: 20px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px;
+      padding: 8px 0;
+      .ant-select {
+        width: 100%;
+      }
+
+      .hover {
+        &:hover {
+          background-color: var(--dsw-color-bg-2);
+        }
+      }
+
+      &-title {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 40px;
+        color: var(--dsw-color-text-primary);
+
+        &.center {
+          justify-content: center;
+        }
+        &.mt-2 {
+          margin-top: 2px;
+        }
+        .timezone {
+          font-size: 10px;
+          line-height: 16px;
+        }
+      }
+
+      .quick-mins {
+        color: var(--dsw-color-text-third);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        line-height: 20px;
+        margin-top: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        span {
+          &:hover {
+            color: var(--dsw-color-bg-primary);
+          }
+        }
+        &.disabled {
+          cursor: not-allowed;
+          span {
+            &:hover {
+              color: var(--dsw-color-text-third);
+            }
+          }
+        }
+      }
+
+      .from-group {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 20px;
+        color: var(--dsw-color-text-secondary);
+        max-width: 230px;
+        @include ellipsis();
+      }
+
+      .edit-action {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 8px;
+        padding-left: 11px;
+        color: var(--dsw-color-text-third);
+        border: 1px solid var(--dsw-color-line);
+        border-radius: 4px;
+        > svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        &:hover {
+          border-color: #378cfb;
+          color: #378cfb;
+        }
+      }
+
+      .user-list {
+        width: 100%;
+        // padding: 16px 0;
+        border-radius: 8px;
+        border: 1px solid var(--dsw-color-line);
+        margin: 8px 0;
+        overflow: hidden;
+
+        .item-hover-close {
+          width: 16px;
+          height: 16px;
+          display: none;
+          margin-left: auto;
+          margin-right: 10px;
+        }
+
+        &-noborder {
+          border: none;
+        }
+      }
+
+      .schedule-meeting-file-item {
+        display: flex;
+        justify-content: flex-start;
+        border-radius: 4px;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        cursor: pointer;
+        background-color: var(--dsw-color-bg-2);
+
+        > .close {
+          width: 12px;
+          height: 12px;
+          margin-left: auto;
+          display: none;
+        }
+        &:hover {
+          background-color: var(--dsw-color-bg-3);
+          > .close {
+            display: block;
+          }
+        }
+        > span {
+          line-height: 20px;
+        }
+      }
+    }
+
+    .helper-icon {
+      width: 14px;
+      height: 14px;
+      margin-left: 4px;
+      color: var(--dsw-color-icon);
+    }
+
+    .icon-down {
+      margin-right: 9px;
+      color: var(--dsw-color-text-third);
+    }
+
+    .ant-modal-mask,
+    .ant-modal-wrap:has(.custom-repeat-modal) {
+      width: 360px;
+      top: 58px;
+      left: auto;
+      right: 0;
+    }
+
+    .custom-repeat-modal {
+      .day-item {
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        border-radius: 4px;
+        border: 1px solid var(--dsw-color-line);
+        &.active {
+          background-color: var(--dsw-color-bg-sky);
+          border-color: var(--dsw-color-primary);
+        }
+      }
+
+      .ant-select-selector {
+        background-color: transparent !important;
+      }
+
+      .ant-modal-footer {
+        margin-top: 24px;
+      }
+
+      .ant-input-number-handler {
+        background-color: var(--dsw-color-bg-3) !important;
+      }
+    }
+  }
+  .add-icon-wrapper {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    color: var(--dsw-color-text-third);
+    border: 1px solid var(--dsw-color-line);
+    font-size: 14px;
+    line-height: 40px;
+    height: 40;
+    padding-left: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      color: #378cfb;
+      border-color: #378cfb;
+    }
+  }
+  .save-btn-wrapper {
+    background-color: var(--dsw-metting-background-color);
+    position: fixed;
+    width: 360px;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+
+    padding: 16px;
+    border-top: 1px solid var(--dsw-color-line-1);
+
+    &-google {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .google-canlendar-logo {
+      width: 40px;
+      height: 40px;
+      padding: 6px;
+      flex-shrink: 0;
+      border-radius: 6px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--dsw-color-bg-3);
+      }
+
+      > div {
+        background-image: url('../images/g-calendar.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        border-radius: 4px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    > .edit-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .edit-btn {
+        flex-grow: 1;
+      }
+    }
+    .going-wrapper {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      height: 43px;
+      .going-btn {
+        font-size: 14px;
+        line-height: 30px;
+        text-decoration: underline;
+        text-transform: capitalize;
+        cursor: pointer;
+        &.active {
+          color: #056ffa;
+        }
+      }
+    }
+
+    > button {
+      width: 100%;
+      border-radius: 8px;
+    }
+  }
+
+  .memeber-change-tip {
+    padding: 16px;
+    color: var(--dsw-color-text-primary);
+    background-color: var(--dsw-color-bg-2);
+    font-size: 14px;
+    line-height: 20px;
+
+    > .second {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .group-tip {
+    display: flex;
+    align-items: center;
+    margin: 16px;
+    margin-bottom: 0;
+    font-size: 14px;
+
+    > span {
+      display: block;
+    }
+
+    > .ellipsis {
+      @include ellipsis();
+      color: var(--dsw-color-text-secondary);
+      min-width: 0;
+    }
+  }
+}
+
+.preview-item {
+  color: var(--dsw-color-text-secondary);
+  line-height: 20px;
+  height: 40px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--dsw-color-bg-3);
+}
+
+.custom-time-input {
+  background-color: transparent;
+  border-color: var(--dsw-color-line);
+  margin: 0 8px;
+  &:focus-within,
+  &:hover {
+    background-color: transparent;
+  }
+
+  &.active:not(:focus-within):not(:active) {
+    border-color: var(--dsw-color-primary);
+  }
+
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+  .ant-input-number-input {
+    color: var(--dsw-color-text-primary);
+    padding: 8px;
+    &::placeholder {
+      color: var(--dsw-color-text-disabled);
+    }
+  }
+
+  &.small {
+    input {
+      text-align: center;
+      height: 26px;
+    }
+  }
+}

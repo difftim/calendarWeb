@@ -1,12 +1,24 @@
-/* Import antd styles */
 @import 'antd/dist/reset.css';
-
-/* Variables */
 @import './variables.scss';
+@import './colors.scss';
+@import './mixin.scss';
+@import './schedule.scss';
+@import './scheduler.scss';
+@import './shared.scss';
 
 /* Global Styles */
 * {
   box-sizing: border-box;
+}
+
+body {
+  @include dsw-colors(light);
+  @include dsw-elevations(light);
+
+  &.dark-theme {
+    @include dsw-colors(dark);
+    @include dsw-elevations(dark);
+  }
 }
 
 html,
@@ -21,209 +33,4 @@ body,
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
-/* Theme classes */
-.light-theme {
-  --dsw-color-background-1: #{$light-bg-1};
-  --dsw-color-background-2: #{$light-bg-2};
-  --dsw-color-background-4: #{$light-bg-4};
-  --dsw-color-text-primary: #{$light-text-primary};
-  --dsw-color-text-third: #{$light-text-third};
-  --dsw-color-text-disable: #{$light-text-disable};
-  --dsw-color-text-info: #{$light-text-info};
-  --dsw-color-line: #{$light-line};
-  --dsw-color-primary: #{$brand-color};
-
-  background-color: var(--dsw-color-background-1);
-  color: var(--dsw-color-text-primary);
-}
-
-.dark-theme {
-  --dsw-color-background-1: #{$dark-bg-1};
-  --dsw-color-background-2: #{$dark-bg-2};
-  --dsw-color-background-4: #{$dark-bg-4};
-  --dsw-color-text-primary: #{$dark-text-primary};
-  --dsw-color-text-third: #{$dark-text-third};
-  --dsw-color-text-disable: #{$dark-text-disable};
-  --dsw-color-text-info: #{$dark-text-info};
-  --dsw-color-line: #{$dark-line};
-  --dsw-color-primary: #{$brand-color};
-
-  background-color: var(--dsw-color-background-1);
-  color: var(--dsw-color-text-primary);
-}
-
-/* Utility classes */
-.ellipsis-1 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Calendar specific styles */
-.meeting-schedule-pane-wrapper {
-  display: flex;
-  width: 100%;
-  height: 100%;
-
-  &.fake {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  .left {
-    width: 300px;
-    height: 100%;
-    border-right: 1px solid var(--dsw-color-line);
-    padding: 16px;
-    overflow-y: auto;
-
-    .title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .main-block {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 24px;
-
-      .meeting-block {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-
-        &:hover {
-          background-color: var(--dsw-color-background-2);
-        }
-
-        &.book {
-          background-color: $brand-color;
-          color: white;
-
-          &:hover {
-            background-color: $hover-color;
-          }
-        }
-
-        &.instant {
-          border: 1px solid var(--dsw-color-line);
-        }
-      }
-    }
-  }
-
-  .main {
-    flex: 1;
-    height: 100%;
-    overflow-y: auto;
-
-    .sticky-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid var(--dsw-color-line);
-      background-color: var(--dsw-color-background-1);
-
-      &.is-sticky {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-
-      .today {
-        font-size: 16px;
-        font-weight: 600;
-      }
-
-      .date-str {
-        color: var(--dsw-color-text-third);
-      }
-
-      .btn-wrapper {
-        display: flex;
-        gap: 8px;
-
-        button {
-          padding: 6px 12px;
-          border: 1px solid var(--dsw-color-line);
-          background-color: transparent;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: all 0.2s;
-
-          &:hover {
-            background-color: var(--dsw-color-background-2);
-          }
-
-          &.rbc-active {
-            background-color: $brand-color;
-            color: white;
-            border-color: $brand-color;
-          }
-        }
-      }
-    }
-  }
-}
-
-/* Loading skeleton */
-.skeleton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-
-  img {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* SVG icon masks */
-.tabler-video-svg,
-.flash-line-f-svg,
-.fluent-live-svg,
-.tabler-link-svg,
-.tabler-event-svg {
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  background-color: var(--dsw-color-text-primary);
-}
-
-/* Calendar component overrides */
-.left-pane-calendar {
-  .ant-picker-calendar-header {
-    padding: 8px 0;
-  }
-}
-
-/* Pull to refresh */
-.pull-refresh {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
-
-.pull-arrow {
-  transition: transform 0.3s;
 }

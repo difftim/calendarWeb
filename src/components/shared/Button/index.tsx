@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Button as AntButton } from 'antd';
 import type { ButtonProps as AntButtonProps } from 'antd';
 import './Button.scss';

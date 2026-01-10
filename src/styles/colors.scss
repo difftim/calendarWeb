@@ -1,0 +1,242 @@
+@mixin unruled($theme: light) {
+  @if $theme ==light {
+    // not ruled naming
+    //
+    --dsw-box-shadow-color: #fff;
+    --dsw-loading-color: rgba(0, 0, 0, 0.1);
+    --dsw-color-bg-primary: #056ffa;
+    --dsw-color-line-1: #{$dsw-color-line-light};
+    //
+    // module level
+    //
+    --dsw-message-audio-recorder-time: #1e2329;
+    --dsw-message-audio-slider-track: #1e23291a;
+    --dsw-message-audio-slider-thumb: #474d57;
+    --dsw-message-audio-play-btn: #474d57;
+    --dsw-color-topic-list-dialog-header-container-bottom-line: #{$dsw-color-line-light};
+    //
+    --dsw-metting-background-color: #fff;
+    --dsw-groupsetting-page-bg: #fafafa;
+
+    --dsw-color-background-item-active: #f5f5f5;
+    --dsw-color-background-group-item-hover: #f5f5f5;
+    --dsw-color-text-calendar-date: #{$dsw-color-text-info-light};
+    --dsw-color-bg-scrollbar: #a4a6a9;
+
+    // dialog
+    --dsw-color-modal-pane-border: #eaecef;
+
+    --dsw-color-modal-scrollbar-thumb-border: #b0b1b2;
+    --dsw-color-modal-scrollbar-thumb: #88898c;
+    --dsw-color-modal-scrollbar-thumb-bg: #a4a6a9;
+    --dsw-color-modal-scrollbar-track-bg: #eaecef;
+    --dsw-color-modal-scrollbar-conor-bg: #fff;
+
+    --dsw-color-modal-input: #1e2329;
+    --dsw-color-modal-input-bg: #fafafa;
+
+    --dsw-color-modal-btn-primary: white;
+    --dsw-color-modal-btn-primary-bg: #056ffa;
+    --dsw-color-modal-btn-primary-hover-bg: #1978f5;
+
+    --dsw-color-modal-btn-default: '';
+    --dsw-color-modal-btn-default-bg: white;
+    --dsw-color-modal-btn-default-hover-bg: #fbfbfb;
+    --dsw-color-modal-btn-default-border: #eaecef;
+
+    --dsw-color-modal-btn-disabled: #b7bdc6;
+    --dsw-color-modal-btn-disabled-bg: #eaecef;
+    --dsw-color-modal-btn-disabled-hover: #b7bdc6;
+    --dsw-color-modal-btn-disabled-hover-bg: #eaecef;
+
+    --dsw-color-image-gallery-toolbar: #e8e8e8;
+    --dsw-color-image-gallery-toolbar-icon: #5c5c5c;
+    --dsw-color-image-gallery-toolbar-icon-active-bg: #c5c5c5;
+    --dsw-color-image-gallery-bg: #969696;
+    --dsw-message-text-color: #fff;
+    --dsw-color-image-gallery-toolbar-popover: #e8e8e8;
+    --dsw-color-popup-arrow: #474d57;
+
+    --dsw-color-send-message-top-bar-border: #d5d6d6;
+    --dsw-color-send-message-top-bar-icon-bg-hover: #f5f5f5;
+    --dsw-color-tooltip-2: rgba(0, 0, 0, 0.08);
+    --dsw-color-room-bg: #328afd;
+    --dsw-color-room-hover-opacity: rgba(24, 26, 32, 0.25);
+    --dsw-color-room-hover-btn-bg: rgba(246, 239, 253, 1);
+  }
+
+  @if $theme ==dark {
+    // not ruled naming
+    //
+    --dsw-box-shadow-color: rgba(0, 0, 0, 0.5);
+    --dsw-loading-color: rgba(255, 255, 255, 0.1);
+    --dsw-color-bg-primary: #82c1fc;
+    --dsw-color-line-1: #{$dsw-color-background-3-dark};
+
+    //
+    // module level
+    --dsw-message-audio-recorder-time: #eaecef;
+    --dsw-message-audio-slider-track: #ffffff1a;
+    --dsw-message-audio-slider-thumb: #fafafa;
+    --dsw-message-audio-play-btn: #fafafa;
+    --dsw-color-topic-list-dialog-header-container-bottom-line: #{$dsw-color-background-3-dark};
+    //
+    --dsw-metting-background-color: #181a20;
+    --dsw-groupsetting-page-bg: #181a20;
+
+    --dsw-color-background-item-active: #3c4149;
+    --dsw-color-background-group-item-hover: #474d57;
+    --dsw-color-text-calendar-date: #fff;
+    --dsw-color-bg-scrollbar: #{$dsw-color-background-3-dark};
+
+    // dialog
+    --dsw-color-modal-pane-border: #474d57;
+
+    --dsw-color-modal-scrollbar-thumb-border: #88898c;
+    --dsw-color-modal-scrollbar-thumb: #88898c;
+    --dsw-color-modal-scrollbar-thumb-bg: #88898c;
+    --dsw-color-modal-scrollbar-track-bg: rgb(30, 35, 41);
+    --dsw-color-modal-scrollbar-conor-bg: #000;
+
+    --dsw-color-modal-input: #eaecef;
+    --dsw-color-modal-input-bg: #1e2329;
+
+    --dsw-color-modal-btn-primary: #fff;
+    --dsw-color-modal-btn-primary-bg: #056ffa;
+    --dsw-color-modal-btn-primary-hover-bg: #1978f5;
+
+    --dsw-color-modal-btn-default: #eaecef;
+    --dsw-color-modal-btn-default-bg: #2b3139;
+    --dsw-color-modal-btn-default-hover-bg: #343c46;
+    --dsw-color-modal-btn-default-border: #474d57;
+
+    --dsw-color-modal-btn-disabled: #5e6673;
+    --dsw-color-modal-btn-disabled-bg: #474d57;
+    --dsw-color-modal-btn-disabled-hover: #5e6673;
+    --dsw-color-modal-btn-disabled-hover-bg: #474d57;
+
+    --dsw-color-image-gallery-toolbar: #373637;
+    --dsw-color-image-gallery-toolbar-icon: #b7b6b7;
+    --dsw-color-image-gallery-toolbar-icon-active: #b7b6b7;
+    --dsw-color-image-gallery-toolbar-icon-active-bg: #444243;
+    --dsw-color-image-gallery-bg: #969696;
+    --dsw-message-text-color: #dbddde;
+    --dsw-color-image-gallery-toolbar-popover: #4f4f4e;
+    --dsw-color-popup-arrow: #b7bdc6;
+
+    --dsw-color-send-message-top-bar-border: #2b3139;
+    --dsw-color-send-message-top-bar-icon-bg-hover: #2b3139;
+    --dsw-color-tooltip-2: rgba(0, 0, 0, 0.3);
+    --dsw-color-room-bg: #474d57;
+    --dsw-color-room-hover-opacity: rgba(24, 26, 32, 0.5);
+    --dsw-color-room-hover-btn-bg: rgba(59, 37, 93, 1);
+  }
+}
+
+@mixin dsw-colors($theme: light) {
+  @if $theme ==light {
+    // atomic ui colors in design system spec
+    // Glbal
+    // Brand Color & Function Color
+    --dsw-color-primary: #{$dsw-color-primary-light};
+    --dsw-color-success: #{$dsw-color-success-light};
+    --dsw-color-warning: #{$dsw-color-warning-light};
+    --dsw-color-error: #{$dsw-color-error-light};
+    --dsw-color-caution: #{$dsw-color-caution-light};
+    --dsw-color-line: #{$dsw-color-line-light};
+    --dsw-color-icon: #{$dsw-color-icon-light};
+    --dsw-color-divider: #{$dsw-color-divider-light};
+    // Text Color
+    --dsw-color-text-primary: #{$dsw-color-text-primary-light};
+    --dsw-color-text-secondary: #{$dsw-color-text-secondary-light};
+    --dsw-color-text-third: #{$dsw-color-text-third-light};
+    --dsw-color-text-disabled: #{$dsw-color-text-disable-light};
+    --dsw-color-text-white: #{$dsw-color-text-white-light};
+    --dsw-color-text-black: #{$dsw-color-text-black-light};
+    --dsw-color-text-warning: #{$dsw-color-text-warning-light};
+    --dsw-color-text-error: #{$dsw-color-text-error-light};
+    --dsw-color-text-success: #{$dsw-color-text-success-light};
+    --dsw-color-text-info: #{$dsw-color-text-info-light};
+    --dsw-color-text-meeting-busy: #{$dsw-color-text-meeting-busy-light};
+    // Background Color
+    --dsw-color-bg-1: #{$dsw-color-background-1-light};
+    --dsw-color-bg-2: #{$dsw-color-background-2-light};
+    --dsw-color-bg-3: #{$dsw-color-background-3-light};
+    --dsw-color-bg-4: #{$dsw-color-line-light};
+    --dsw-color-bg-disable: #{$dsw-color-background-disable-light};
+    --dsw-color-bg-tooltip: #{$dsw-color-background-tooltip-light};
+    --dsw-color-bg-modal: #{$dsw-color-background-modal-light};
+    --dsw-color-bg-popup: #{$dsw-color-background-popup-light};
+    --dsw-color-bg-sky: #{$dsw-color-background-sky-light};
+    --dsw-color-bg-space: #{$dsw-color-background-space-light};
+    --dsw-color-bg-elevate: #{$dsw-color-background-elevate-light};
+    --dsw-color-bg-meeting-busy: #{$dsw-color-background-meeting-busy-light};
+    --dsw-color-bg-meeting-busy-1: #fef9f1;
+    --dsw-color-bg-meeting-border: #{$dsw-color-line-light};
+
+    // 内部使用的hover混合颜色变量，请勿在业务代码中直接使用
+    // Internal hover mixin color variable, DO NOT use directly in business code
+    --dsw-internal-hover-mixin-do-not-use-in-business-code: #000000;
+    @include unruled(light);
+  }
+
+  @if $theme ==dark {
+    // atomic ui colors in design system spec
+    // Glbal
+    // Brand Color & Function Color
+    --dsw-color-primary: #{$dsw-color-primary-dark};
+    --dsw-color-success: #{$dsw-color-success-dark};
+    --dsw-color-warning: #{$dsw-color-warning-dark};
+    --dsw-color-error: #{$dsw-color-error-dark};
+    --dsw-color-caution: #{$dsw-color-caution-dark};
+    --dsw-color-line: #{$dsw-color-line-dark};
+    --dsw-color-icon: #{$dsw-color-icon-dark};
+    --dsw-color-divider: #{$dsw-color-divider-dark};
+    // Text Color
+    --dsw-color-text-primary: #{$dsw-color-text-primary-dark};
+    --dsw-color-text-secondary: #{$dsw-color-text-secondary-dark};
+    --dsw-color-text-third: #{$dsw-color-text-third-dark};
+    --dsw-color-text-disabled: #{$dsw-color-text-disable-dark};
+    --dsw-color-text-white: #{$dsw-color-text-white-dark};
+    --dsw-color-text-black: #{$dsw-color-text-black-dark};
+    --dsw-color-text-warning: #{$dsw-color-text-warning-dark};
+    --dsw-color-text-error: #{$dsw-color-text-error-dark};
+    --dsw-color-text-success: #{$dsw-color-text-success-dark};
+    --dsw-color-text-info: #{$dsw-color-text-info-dark};
+    --dsw-color-text-meeting-busy: #{$dsw-color-text-meeting-busy-dark};
+    // Background Color
+    --dsw-color-bg-1: #{$dsw-color-background-1-dark};
+    --dsw-color-bg-2: #{$dsw-color-background-2-dark};
+    --dsw-color-bg-3: #{$dsw-color-background-3-dark};
+    --dsw-color-bg-4: #{$dsw-color-line-dark};
+    --dsw-color-bg-disable: #{$dsw-color-background-disable-dark};
+    --dsw-color-bg-tooltip: #{$dsw-color-background-tooltip-dark};
+    --dsw-color-bg-modal: #{$dsw-color-background-modal-dark};
+    --dsw-color-bg-popup: #{$dsw-color-background-popup-dark};
+    --dsw-color-bg-sky: #{$dsw-color-background-sky-dark};
+    --dsw-color-bg-space: #{$dsw-color-background-space-dark};
+    --dsw-color-bg-elevate: #{$dsw-color-background-elevate-dark};
+    --dsw-color-bg-meeting-busy: #{$dsw-color-background-meeting-busy-dark};
+    --dsw-color-bg-meeting-busy-1: #3a1b0a;
+    --dsw-color-bg-meeting-border: #{$dsw-color-background-3-dark};
+
+    // 内部使用的hover混合颜色变量，请勿在业务代码中直接使用
+    // Internal hover mixin color variable, DO NOT use directly in business code
+    --dsw-internal-hover-mixin-do-not-use-in-business-code: #ffffff;
+    @include unruled(dark);
+  }
+}
+
+@mixin dsw-elevations($theme: light) {
+  @if $theme ==light {
+    --dsw-elevation-01: #{$dsw-elevation-01-light};
+    --dsw-elevation-02: #{$dsw-elevation-02-light};
+    --dsw-elevation-03: #{$dsw-elevation-03-light};
+  }
+
+  @if $theme ==dark {
+    --dsw-elevation-01: #{$dsw-elevation-01-dark};
+    --dsw-elevation-02: #{$dsw-elevation-02-dark};
+    --dsw-elevation-03: #{$dsw-elevation-03-dark};
+  }
+}

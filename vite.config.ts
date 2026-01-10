@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import esbuildPluginReactVirtualized from 'esbuild-plugin-react-virtualized';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,12 +9,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@shared': path.resolve(__dirname, './src/components/shared'),
     },
   },
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/styles/variables.scss";`,
+        additionalData: `@import "@/styles/variables.scss"; @import "@/styles/colors.scss";`,
       },
     },
   },
@@ -25,5 +27,10 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      //https://github.com/bvaughn/react-virtualized/issues/1722#issuecomment-1911672178
+      plugins: [esbuildPluginReactVirtualized],
+    },
+  },
 });
-

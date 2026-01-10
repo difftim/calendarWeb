@@ -1,23 +1,295 @@
-// SCSS Variables
-$brand-color: #056ffa;
-$hover-color: #378cfb;
+$inter:
+  -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Fira Sans', 'Droid Sans',
+  'Helvetica Neue', sans-serif, 'Segoe UI Symbol', 'PingFang SC', 'Noto Sans CJK SC' !important;
 
-// Light theme
-$light-bg-1: #ffffff;
-$light-bg-2: #f5f5f5;
-$light-bg-4: #e8e8e8;
-$light-text-primary: #000000;
-$light-text-third: #666666;
-$light-text-disable: #999999;
-$light-text-info: #056ffa;
-$light-line: #d9d9d9;
+// prefix dsw represents 'Design-System-Wea'
+// We dont use the actual name to avoid the multiple instance apps
 
-// Dark theme
-$dark-bg-1: #1f1f1f;
-$dark-bg-2: #2a2a2a;
-$dark-bg-4: #3a3a3a;
-$dark-text-primary: #ffffff;
-$dark-text-third: #999999;
-$dark-text-disable: #666666;
-$dark-text-info: #378cfb;
-$dark-line: #444444;
+/* 🎉🎉🎉 New color pane by UI designer. 🎉🎉🎉 */
+/* form main colors */
+$dsw-color-primary-light: #056ffa;
+$dsw-color-primary-dark: #056ffa;
+$dsw-color-success-light: #01bc6a;
+$dsw-color-success-dark: #01bc6a;
+$dsw-color-warning-light: #ffc814;
+$dsw-color-warning-dark: #ffc814;
+$dsw-color-caution-light: #ff8800;
+$dsw-color-caution-dark: #ff8800;
+$dsw-color-error-light: #f84135;
+$dsw-color-error-dark: #f84135;
+$dsw-color-line-light: #eaecef;
+$dsw-color-line-dark: #474d57;
+$dsw-color-divider-light: #eaecef;
+$dsw-color-divider-dark: #2b3139;
+$dsw-color-icon-light: #474d57;
+$dsw-color-icon-dark: #b7bdc6;
+$dsw-color-line-dark-main-window: #2b3139;
+
+/* for text colors */
+$dsw-color-text-primary-light: #1e2329;
+$dsw-color-text-primary-dark: #eaecef;
+$dsw-color-text-secondary-light: #474d57;
+$dsw-color-text-secondary-dark: #b7bdc6;
+$dsw-color-text-third-light: #848e9c;
+$dsw-color-text-third-dark: #848e9c;
+$dsw-color-text-disable-light: #b7bdc6;
+$dsw-color-text-disable-dark: #5e6673;
+$dsw-color-text-white-light: #ffffff;
+$dsw-color-text-white-dark: #ffffff;
+$dsw-color-text-black-light: #181a20;
+$dsw-color-text-black-dark: #181a20;
+$dsw-color-text-warning-light: #b06d00;
+$dsw-color-text-warning-dark: #ffc814;
+$dsw-color-text-error-light: #d9271e;
+$dsw-color-text-error-dark: #f84135;
+$dsw-color-text-success-light: #00764b;
+$dsw-color-text-success-dark: #01bc6a;
+$dsw-color-text-info-light: #056ffa;
+$dsw-color-text-info-dark: #82c1fc;
+$dsw-color-text-meeting-busy-light: #ae5004;
+$dsw-color-text-meeting-busy-dark: #ff8800;
+
+/* for background colors */
+$dsw-color-background-1-light: #ffffff;
+$dsw-color-background-1-dark: #181a20;
+$dsw-color-background-2-light: #fafafa;
+$dsw-color-background-2-dark: #1e2329;
+$dsw-color-background-3-light: #f5f5f5;
+$dsw-color-background-3-dark: #2b3139;
+$dsw-color-background-4-light: #eaecef;
+$dsw-color-background-4-dark: #474d57;
+$dsw-color-background-disable-light: #eaecef;
+$dsw-color-background-disable-dark: #474d57;
+$dsw-color-background-tooltip-light: rgba(0, 0, 0, 0.85);
+$dsw-color-background-tooltip-dark: #5e6673;
+$dsw-color-background-modal-light: #ffffff;
+$dsw-color-background-modal-dark: #2b3139;
+$dsw-color-background-popup-light: #ffffff;
+$dsw-color-background-popup-dark: #1e2329;
+$dsw-color-background-sky-light: #ebf7ff;
+$dsw-color-background-sky-dark: #003366;
+$dsw-color-background-space-light: #001c4e;
+$dsw-color-background-space-dark: #000000;
+$dsw-color-background-elevate-light: #f5f5f5;
+$dsw-color-background-elevate-dark: #0b0e11;
+
+$dsw-color-background-meeting-busy-light: rgba(255, 248, 238, 0.8);
+$dsw-color-background-meeting-busy-dark: rgba(65, 25, 2, 0.8);
+
+/* TODO: explore this use case and request spec to change and rename */
+
+$dsw-color-select-component-background-active-light: #f5f5f5;
+$dsw-color-select-component-background-active-dark: #3c4149;
+
+$dsw-color-select-component-background-active-light: #f5f5f5;
+$dsw-color-select-component-background-active-dark: #3c4149;
+
+$dsw-text-font-size-100: 12px;
+$dsw-text-font-size-200: 14px;
+$dsw-text-font-size-300: 16px;
+$dsw-text-font-size-400: 20px;
+$dsw-text-font-size-500: 24px;
+$dsw-text-font-size-600: 28px;
+$dsw-text-font-size-700: 32px;
+
+$dsw-text-font-weight-thin: 100;
+$dsw-text-font-weight-light: 300;
+$dsw-text-font-weight-normal: 400;
+$dsw-text-font-weight-medium: 500;
+$dsw-text-font-weight-semi-bold: 600;
+$dsw-text-font-weight-extra-bold: 800;
+
+$dsw-radius-large: 8px;
+$dsw-radius-middle: 4px;
+$dsw-radius-small: 2px;
+$dsw-radius-circle: 50%;
+$dsw-radius-pill: 999px;
+
+$dsw-zindex-tooltip: 1070;
+$dsw-zindex-msg-contextmenu: 1069;
+$dsw-zindex-dialog: 1201;
+$dsw-zindex-popover: 1300;
+$dsw-zindex-dropdown: 1400;
+
+$dsw-elevation-01-light:
+  0px 1px 2px 0px rgba(24, 26, 32, 0.04),
+  0px 3px 6px 0px rgba(71, 77, 87, 0.04),
+  0px 0px 1px 0px rgba(24, 26, 32, 0.1);
+$dsw-elevation-01-dark:
+  0px 1px 2px 0px rgba(0, 0, 0, 0.04),
+  0px 3px 6px 0px rgba(0, 0, 0, 0.04),
+  0px 0px 1px 0px rgba(94, 102, 115, 0.8) inset;
+$dsw-elevation-02-light:
+  0px 3px 6px 0px rgba(24, 26, 32, 0.08),
+  0px 7px 14px 0px rgba(71, 77, 87, 0.08),
+  0px 0px 1px 0px rgba(24, 26, 32, 0.1);
+$dsw-elevation-02-dark:
+  0px 3px 6px 0px rgba(0, 0, 0, 0.08),
+  0px 7px 14px 0px rgba(0, 0, 0, 0.08),
+  0px 0px 1px 0px rgba(94, 102, 115, 0.9) inset;
+$dsw-elevation-03-light:
+  0px 8px 16px 0px rgba(24, 26, 32, 0.16),
+  0px 16px 32px 0px rgba(71, 77, 87, 0.16),
+  0px 0px 1px 0px rgba(24, 26, 32, 0.1);
+$dsw-elevation-03-dark:
+  0px 8px 16px 0px rgba(0, 0, 0, 0.16),
+  0px 16px 32px 0px rgba(0, 0, 0, 0.16),
+  0px 0px 1px 0px rgba(94, 102, 115, 0.9) inset;
+
+// New colors: LEGACYLEGACYLEGACYLEGACYLEGACYLEGACY
+// Dont use this colors
+$color-signal-blue: #2090ea;
+$color-core-green: #4caf50;
+$color-core-red: #f44336;
+
+$color-signal-blue-025: rgba($color-signal-blue, 0.25);
+$color-signal-blue-050: rgba($color-signal-blue, 0.5);
+
+$color-white: #ffffff;
+$color-gray-02: #f8f9f9;
+$color-gray-05: #eeefef;
+$color-gray-15: #d5d6d6;
+$color-gray-25: #bbbdbe;
+$color-gray-45: #898a8c;
+$color-gray-60: #6b6d70;
+$color-gray-75: #3d3e44;
+$color-gray-85: #23252a;
+$color-gray-90: #17191d;
+$color-gray-95: #0f1012;
+$color-black: #000000;
+
+$color-crimson: #cc163d;
+$color-vermilion: #c73800;
+$color-burlap: #746c53;
+$color-forest: #3b7845;
+$color-wintergreen: #1c8260;
+$color-teal: #067589;
+$color-blue: #336ba3;
+$color-indigo: #5951c8;
+$color-violet: #862caf;
+$color-plum: #a23474;
+$color-taupe: #895d66;
+$color-steel: #6b6b78;
+
+$color-crimson-tint: #eda6ae;
+$color-vermilion-tint: #eba78e;
+$color-burlap-tint: #c4b997;
+$color-forest-tint: #8fcc9a;
+$color-wintergreen-tint: #9bcfbd;
+$color-teal-tint: #a5cad5;
+$color-blue-tint: #adc8e1;
+$color-indigo-tint: #c2c1e7;
+$color-violet-tint: #cdaddc;
+$color-plum-tint: #dcb2ca;
+$color-taupe-tint: #cfb5bb;
+$color-steel-tint: #bebec6;
+
+$color-crimson-shade: #8a0f29;
+$color-vermilion-shade: #872600;
+$color-burlap-shade: #58513c;
+$color-forest-shade: #2b5934;
+$color-wintergreen-shade: #36544a;
+$color-teal-shade: #055968;
+$color-blue-shade: #285480;
+$color-indigo-shade: #4840a0;
+$color-violet-shade: #6b248a;
+$color-plum-shade: #881b5b;
+$color-taupe-shade: #6a4e54;
+$color-steel-shade: #5a5a63;
+
+$color-white-015: rgba($color-white, 0.15);
+$color-white-02: rgba($color-white, 0.2);
+$color-white-04: rgba($color-white, 0.4);
+$color-white-05: rgba($color-white, 0.5);
+$color-white-06: rgba($color-white, 0.6);
+$color-white-07: rgba($color-white, 0.7);
+$color-white-075: rgba($color-white, 0.75);
+$color-white-08: rgba($color-white, 0.8);
+$color-white-085: rgba($color-white, 0.85);
+$color-light-02: #f9fafa;
+$color-light-10: #eeefef;
+$color-light-35: #a4a6a9;
+$color-light-45: #8b8e91;
+$color-light-60: #62656a;
+$color-light-90: #070c14;
+
+$color-dark-05: #efefef;
+$color-dark-30: #a8a9aa;
+$color-dark-55: #88898c;
+$color-dark-60: #797a7c;
+$color-dark-70: #414347;
+$color-dark-85: #1a1c20;
+$color-black-008: rgba($color-black, 0.08);
+$color-black-005: rgba($color-black, 0.05);
+$color-black-008-no-tranparency: #ededed;
+$color-black-016-no-tranparency: #d9d9d9;
+$color-black-012: rgba($color-black, 0.12);
+$color-black-015: rgba($color-black, 0.15);
+$color-black-02: rgba($color-black, 0.2);
+$color-black-04: rgba($color-black, 0.4);
+$color-black-06: rgba($color-black, 0.6);
+
+$color-signal-blue-mix: mix($color-signal-blue-025, $color-white-04);
+
+$color-conversation-red: $color-crimson;
+$color-conversation-deep_orange: $color-vermilion;
+$color-conversation-brown: $color-burlap;
+$color-conversation-pink: $color-plum;
+$color-conversation-purple: $color-violet;
+$color-conversation-indigo: $color-indigo;
+$color-conversation-blue: $color-blue;
+$color-conversation-teal: $color-teal;
+$color-conversation-green: $color-forest;
+$color-conversation-light_green: $color-wintergreen;
+$color-conversation-blue_grey: $color-taupe;
+$color-conversation-grey: $color-steel;
+
+$color-conversation-red-tint: $color-crimson-tint;
+$color-conversation-deep_orange-tint: $color-vermilion-tint;
+$color-conversation-brown-tint: $color-burlap-tint;
+$color-conversation-pink-tint: $color-plum-tint;
+$color-conversation-purple-tint: $color-violet-tint;
+$color-conversation-indigo-tint: $color-indigo-tint;
+$color-conversation-blue-tint: $color-blue-tint;
+$color-conversation-teal-tint: $color-teal-tint;
+$color-conversation-green-tint: $color-forest-tint;
+$color-conversation-light_green-tint: $color-wintergreen-tint;
+$color-conversation-blue_grey-tint: $color-taupe-tint;
+$color-conversation-grey-tint: $color-steel-tint;
+
+$color-conversation-red-shade: $color-crimson-shade;
+$color-conversation-deep_orange-shade: $color-vermilion-shade;
+$color-conversation-brown-shade: $color-burlap-shade;
+$color-conversation-pink-shade: $color-plum-shade;
+$color-conversation-purple-shade: $color-violet-shade;
+$color-conversation-indigo-shade: $color-indigo-shade;
+$color-conversation-blue-shade: $color-blue-shade;
+$color-conversation-teal-shade: $color-teal-shade;
+$color-conversation-green-shade: $color-forest-shade;
+$color-conversation-light_green-shade: $color-wintergreen-shade;
+$color-conversation-blue_grey-shade: $color-taupe-shade;
+$color-conversation-grey-shade: $color-steel-shade;
+
+// Old colors
+
+$blue_l: #a2d2f4;
+$blue: #2090ea;
+$grey_l: #f3f3f3;
+$grey_l1: #bdbdbd;
+$grey_l1_5: #e6e6e6;
+$grey_l2: #d9d9d9; // ~ Equivalent to darken($grey_l, 10%), unreliably compiles
+$grey_l3: darken($grey_l, 20%);
+$grey_l4: darken($grey_l, 40%);
+$grey: #616161;
+$grey_d: #454545;
+
+// A few layout variables used cross-file
+
+$header-height: 48px;
+$button-height: 24px;
+
+$border-radius: 5px;
+
+$font-size: 14px;
+$font-size-small: calc(13 / 14) + em;

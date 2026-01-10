@@ -1,0 +1,206 @@
+{
+    "lang": {
+        "message": "en"
+    },
+    "schedule.edit": {
+        "message": "Edit"
+    },
+    "schedule.copyEvent": {
+        "message": "Duplicate"
+    },
+    "schedule.copyEventSubtitle": {
+        "message": "(Copy and Create a new $type$)"
+    },
+    "schedule.transfer": {
+        "message": "Transfer Owner"
+    },
+    "schedule.cancel": {
+        "message": "Cancel"
+    },
+    "schedule.topic": {
+        "message": "Topic"
+    },
+    "schedule.addTopic": {
+        "message": "Add Topic"
+    },
+    "schedule.start": {
+        "message": "Start"
+    },
+    "schedule.end": {
+        "message": "End"
+    },
+    "schedule.duration": {
+        "message": "Duration"
+    },
+    "schedule.never": {
+        "message": "Never"
+    },
+    "schedule.repeat": {
+        "message": "Repeat"
+    },
+    "schedule.attendee": {
+        "message": "Attendee"
+    },
+    "schedule.cancelRecurringEvent": {
+        "message": "Cancel the recurring events for all attendees"
+    },
+    "schedule.cancelSingleEvent": {
+        "message": "Cancel this event for all attendees"
+    },
+    "schedule.cancelRecurringMeet": {
+        "message": "Cancel this recurring meeting for all attendees"
+    },
+    "schedule.cancelSingleMeet": {
+        "message": "Cancel this meeting for all attendees"
+    },
+    "schedule.dontAttentRecurringEvent": {
+        "message": "DON'T attend the recurring events"
+    },
+    "schedule.dontAttentEvent": {
+        "message": "DON'T attend this event"
+    },
+    "schedule.dontAttentRecurringMeet": {
+        "message": "DON'T attend the recurring meetings"
+    },
+    "schedule.dontAttentMeet": {
+        "message": "DON'T attend this meeting"
+    },
+    "schedule.RSVP": {
+        "message": "RSVP to the recurring meetings"
+    },
+    "schedule.updateDetail": {
+        "message": "Update meeting detail"
+    },
+    "schedule.updateEventDetail": {
+        "message": "Update event detail"
+    },
+    "schedule.continueWithExsitMeeting": {
+        "message": "There is already an event at the time. Are you sure to continue?"
+    },
+    "schedule.tansferConfirm": {
+        "message": "Transfer ownership to $name$?"
+    },
+    "schedule.cancelLive": {
+        "message": "Cancel the live stream?"
+    },
+    "schedule.dontAttendLive": {
+        "message": "DON'T attend the live stream?"
+    },
+    "schedule.groupNotice": {
+        "message": "The meeting is scheduled from a group. Attendees include group members and invited contact members. When someone joins the group, the meeting will automatically add the new one; when someone leaves the group, the meeting will automatically remove this person."
+    },
+    "schedule.meetModifyTip": {
+        "message": "Everyone can modify meeting"
+    },
+    "schedule.eventModifyTip": {
+        "message": "Everyone can modify event"
+    },
+    "schedule.liveModifyTip": {
+        "message": "Attendee can modify live"
+    },
+    "schedule.meetModifyTipDetail": {
+        "message": "Only the creator(host) and group moderators can modify by default"
+    },
+    "schedule.liveModifyTipDetail": {
+        "message": "Only the creator(host) can modify by default"
+    },
+    "schedule.eventModifyTipDetail": {
+        "message": "Only the creator(host) can modify by default"
+    },
+    "schedule.meetUncheckTip": {
+        "message": "When unchecked, only the creator(host) and group moderators can invite others"
+    },
+    "schedule.eventUncheckTip": {
+        "message": "When unchecked, only the creator(host) can invite others"
+    },
+    "schedule.liveUncheckTip": {
+        "message": "When unchecked, only the creator(host) can invite others"
+    },
+    "schedule.sendToChatRoom": {
+        "message": "Send invitation to the chat room"
+    },
+    "schedule.syncToGoogle": {
+        "message": "Auto-sync to Google Calendar"
+    },
+    "schedule.syncToGoogleContent": {
+        "message": "Ensure Google Calendar sync is enabled for your account."
+    },
+    "schedule.findATime": {
+        "message": "Find a time"
+    },
+    "schedule.copyMeetingInfo": {
+        "message": "Copy Link"
+    },
+    "schedule.externalOnly": {
+        "message": "(For External User Only)"
+    },
+    "schedule.fromGoogle": {
+        "message": "(From Google Meet)"
+    },
+    "schedule.fromOutlook": {
+        "message": "(From Teams Meeting)"
+    },
+    "schedule.externalOnlySimple": {
+        "message": "(External Only)"
+    },
+    "schedule.shareLiveTo": {
+        "message": "Share Livestream to"
+    },
+    "schedule.addToCalendar": {
+        "message": "Add to Calendar"
+    },
+    "schedule.groupMeetingTip": {
+        "message": "Attendees will auto change as group members"
+    },
+    "schedule.groupMeetingTipDetail": {
+        "message": "When someone joins the group, the meeting will add the new one and when someone leaves, the meeting will also remove this person."
+    },
+    "schedule.notificationTipTitle": {
+        "message": "You can receive 3 notifications from MeetingBot"
+    },
+    "schedule.notificationTipLive1": {
+        "message": "1.Reminder 10 mins before the live stream"
+    },
+    "schedule.notificationTipLive2": {
+        "message": "2. Meeting bar at the top of chat list 5 mins before the live stream"
+    },
+    "schedule.notificationTipLive3": {
+        "message": "3. Pop-up when the live stream starts"
+    },
+    "schedule.notificationTipMeet1": {
+        "message": "1.Reminder 10 mins before the meeting"
+    },
+    "schedule.notificationTipMeet2": {
+        "message": "2. Meeting bar at the top of chat list 5 mins before the meeting"
+    },
+    "schedule.notificationTipMeet3": {
+        "message": "3. Pop-up when the meeting starts"
+    },
+    "schedule.notificationTipEvent": {
+        "message": "You can receive a reminder when the event starts"
+    },
+    "schedule.guest": {
+        "message": "Guest"
+    },
+    "schedule.guestsTip": {
+        "message": "Guests can only watch the live stream by default, If someone is added to both attendees and guests, show them in the attendee list first"
+    },
+    "schedule.allStaffNum": {
+        "message": "All staff$total$"
+    },
+    "schedule.allStaffTip": {
+        "message": "The system will send this event to everyone in your organization, and they can watch the live stream."
+    },
+    "schedule.allStaffTipWithTotal": {
+        "message": "The system will send this event to $total$ people in your organization, they will have access to watch live by default."
+    },
+    "schedule.updateStaffTipWithTotal": {
+        "message": "The system will push an update about this event to $total$ people in your organization, they will have access to watch live by default."
+    },
+    "calendarProxyTips": {
+        "message": "The following people have access to manage your calendar, including viewing, editing, and deleting appointments."
+    },
+    "calendarProxyEmptyTips": {
+        "message": "You have not granted anyone to manage your calendar"
+    }
+}
