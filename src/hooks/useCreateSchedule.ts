@@ -31,12 +31,16 @@ export const useCreateSchedule = (timeZone: string) => {
       toastError('Unsupport platform');
       return;
     }
-    debugger;
     const name = getSimpleName(myInfo.name);
     const isLiveStream = eventType === 'livestream';
     const isEvent = eventType === 'event';
     const baseCreateInfo: Partial<DetailData> = {
       mode: 'create',
+      host: myInfo.id,
+      hostInfo: {
+        uid: myInfo.id,
+        name: myInfo.name,
+      },
       source: 'difft',
       calendarId: 'default',
       loading: false,

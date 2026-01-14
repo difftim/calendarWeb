@@ -1,3 +1,4 @@
+import { toastInfo } from '@/components/shared/Message';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import React from 'react';
@@ -6,7 +7,7 @@ const FindTimeButton = () => {
   const { mode, canModify } = useDetailDataValue();
   const setData = useSetDetailData();
   const isViewMode = mode === 'view';
-  const canNotEdit = isViewMode && !canModify;
+  const canNotEdit = mode !== 'create' && !canModify;
   const { i18n } = useI18n();
 
   if (canNotEdit || isViewMode) {
@@ -19,7 +20,9 @@ const FindTimeButton = () => {
       <div
         className="text-button"
         onClick={() => {
-          setData({ childModalType: 'findTime' });
+          console.log('findTime', typeof setData);
+          toastInfo('Comming soon');
+          // setData({ childModalType: 'findTime' });
         }}
       >
         {i18n('schedule.findATime')}

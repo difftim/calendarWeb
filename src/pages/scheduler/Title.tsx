@@ -1,16 +1,17 @@
+import { IconTablerInfoCircle } from '@/components/shared/IconsNew';
 import Input from '@/components/shared/Input';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
 
-const showGoogleSync = true;
-
 const Title = () => {
-  const { topic, mode } = useDetailDataValue();
+  const { topic, mode, canModify, source, syncToGoogle } = useDetailDataValue();
   const setData = useSetDetailData();
   const { i18n } = useI18n();
-  const canNotEdit = false;
+  const isCreateMode = mode === 'create';
+  const canNotEdit = !isCreateMode && !canModify;
+  const showGoogleSync = isCreateMode ? syncToGoogle : source === 'google';
 
   return (
     <>
@@ -23,7 +24,9 @@ const Title = () => {
           onClick={e => {
             e.stopPropagation();
             setTimeout(() => {
-              const container = document.querySelector('.schedule-meeting-dialog');
+              const container = document.querySelector(
+                '.meeting-schedule-dialog > .ant-drawer-body'
+              );
               container?.scrollTo({
                 top: 600,
                 behavior: 'smooth',
@@ -37,7 +40,7 @@ const Title = () => {
             placement="bottom"
             title={i18n('schedule.syncToGoogleContent')}
           >
-            {/* <IconTablerInfoCircle /> */}
+            <IconTablerInfoCircle />
           </Tooltip>
           <div>{i18n('schedule.syncToGoogle')}</div>
         </Flex>

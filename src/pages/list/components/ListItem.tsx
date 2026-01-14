@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 // import { StartType } from './hooks/useMeetingStatusCheck';
 import { Button } from '@shared/Button';
 import { Avatar } from '@shared/Avatar';
@@ -9,6 +9,10 @@ import { toastError, toastSuccess } from '@shared/Message';
 import { onMuteMeeting } from '@/shims/globalAdapter';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
 import { StartType, cleanUserNameForDisplay } from '@/util';
+import { useSetDetailData } from '@/hooks/useDetailData';
+import { useQueryDetail } from '@/hooks/useQueryDetail';
+import { unstable_batchedUpdates } from 'react-dom';
+import { showPannelAtom } from '@/atoms/detail';
 // TODO
 // import { joinMeeting } from './JoinMeeting';
 
@@ -65,6 +69,9 @@ const ListItem = ({
   // Hooks 必须在组件顶部，不能在条件 return 之后
   const hostId = item.hostInfo?.uid || item.host || '';
   const hostUserInfo = useAtomValue(userInfoByIdAtom(hostId));
+  const setDetailData = useSetDetailData();
+  const { getDetailData } = useQueryDetail();
+  const setShowPannel = useSetAtom(showPannelAtom);
 
   // 获取显示名称，使用 cleanUserNameForDisplay 处理
   const displayName = hostUserInfo.name ? cleanUserNameForDisplay(hostUserInfo) : hostId;
@@ -175,6 +182,10 @@ const ListItem = ({
           return;
         }
 
+        unstable_batchedUpdates(() => {
+          setDetailData(getDetailData(item.eid, item.cid, item.source));
+          setShowPannel(true);
+        });
         // TODO
       }}
       style={style}

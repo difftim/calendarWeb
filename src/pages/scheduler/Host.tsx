@@ -1,29 +1,41 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 
-import { userIdAtom } from '@/atoms';
+import { bossCalendarAtom, timeZoneAtom, userInfoAtom } from '@/atoms';
 import Select from '@/components/shared/Select';
-import { useDetailDataValue } from '@/hooks/useDetailData';
-import { cleanUserNameForDisplay, cleanUserIdForDisplay, isMatchUserId, uid2cid } from '@/util';
+import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
+import {
+  cleanUserNameForDisplay,
+  cleanUserIdForDisplay,
+  isMatchUserId,
+  uid2cid,
+  cid2uid,
+} from '@/util';
+import { getUserBaseInfoSync } from '@/atoms/userInfo';
+import { DetailData } from '@/atoms/detail';
 // import { uniqBy } from 'lodash';
 
 const Host = () => {
-  const { mode, host, hostInfo, members, creator, calendarId } = useDetailDataValue();
-  const myId = useAtomValue(userIdAtom);
+  const { mode, host, hostInfo, members, creator, calendarId, isLiveStream } = useDetailDataValue();
+  const setData = useSetDetailData();
+  const myInfo = useAtomValue(userInfoAtom);
+  const timeZone = useAtomValue(timeZoneAtom);
+  const bossCalendar = useAtomValue(bossCalendarAtom);
+  const calendarList = [
+    { ...myInfo, cid: uid2cid(myInfo.id), timeZone },
+    ...(isLiveStream ? [] : bossCalendar),
+  ];
   // view / update
   if (mode !== 'create' && host) {
+    const hostUserInfo = getUserBaseInfoSync(host);
     const getHostName = () => {
       if (hostInfo?.uid && !isMatchUserId(hostInfo.uid) && hostInfo.name) {
         return hostInfo.name;
       }
-
-      const hostItem = members?.find(item => item.uid === host);
-
-      if (hostItem?.name) {
-        return cleanUserNameForDisplay({ name: hostItem.name, id: hostItem.uid });
+      if (hostUserInfo.name) {
+        return cleanUserNameForDisplay(hostUserInfo);
       }
-
-      return cleanUserIdForDisplay(host);
+      return cleanUserIdForDisplay(host || '');
     };
     const renderCreator = (creator: { uid: string; name?: string }) => {
       if (creator.name) {
@@ -61,47 +73,35 @@ const Host = () => {
   // create
   if (mode === 'create') {
     // TODO
-    // const hostOptions = calendarList.filter(Boolean).map(cItem => {
-    //   const item = getUserBaseInfo(cid2uid(cItem.cid));
-    //   return {
-    //     label: cItem.name || cleanUserNameForDisplay(item),
-    //     value: cItem.cid,
-    //   };
-    // });
+    const hostOptions = calendarList.filter(Boolean).map(cItem => {
+      const curUid = cid2uid(cItem.cid);
+      const item = getUserBaseInfoSync(curUid);
+      return {
+        label: cItem.name || cleanUserNameForDisplay(item),
+        value: cItem.cid,
+      };
+    });
 
-    const hostOptions = [
-      {
-        label: myId,
-        value: uid2cid(myId),
-      },
-    ];
-
-    // const setNewItems = (cid: string) => (items: any[]) => {
-    //   const curUid = cid2uid(cid);
-    //   const groupMembers = groupInfo?.gid ? (getUserBaseInfo(groupInfo.gid)?.members ?? []) : [];
-
-    //   const isGroupUser = groupMembers.includes(curUid);
-
-    //   const calendarUser = {
-    //     ...getUserBaseInfo(curUid),
-    //     isRemovable: false,
-    //     isGroupUser,
-    //   };
-    //   const newItems = uniqBy([calendarUser, ...items], 'id');
-
-    //   return newItems.filter(item => {
-    //     if (cid2uid(cid) === item.id) {
-    //       return true;
-    //     }
-    //     const itemIsHost = hostOptions.some(o => cid2uid(o.value) === item.id);
-    //     // 不是群成员则移除
-    //     if (itemIsHost) {
-    //       return groupMembers.includes(item.id);
-    //     }
-
-    //     return true;
-    //   });
-    // };
+    const getNewMembers = (cid: string, members: DetailData['members']): DetailData['members'] => {
+      const curUid = cid2uid(cid);
+      const isInMembers = members.some(item => item.uid === curUid);
+      if (isInMembers) {
+        return members;
+      }
+      const { name, email } = getUserBaseInfoSync(curUid);
+      return [
+        ...members.map(item => ({ ...item, role: 'attendee' })),
+        {
+          uid: curUid,
+          name,
+          email,
+          isRemovable: true,
+          isGroupUser: false,
+          role: 'host',
+          going: 'maybe',
+        },
+      ] as unknown as DetailData['members'];
+    };
 
     return (
       <div className="item">
@@ -111,10 +111,10 @@ const Host = () => {
           variant="outlined"
           size="large"
           value={calendarId}
-          onChange={cid => {
+          onChange={async cid => {
             console.log('current calendar id', cid);
-            // setCalenderId(cid);
-            // setItems(setNewItems(cid));
+            const newMembers = getNewMembers(cid, members);
+            setData({ calendarId: cid, members: newMembers, host: cid2uid(cid) });
           }}
           options={hostOptions}
           popupClassName="schedule-selector"

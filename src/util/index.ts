@@ -12,7 +12,6 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import isBetween from 'dayjs/plugin/isBetween';
 import { pick, uniqBy } from 'lodash';
 import lzString from 'lz-string';
-import { getAppName, getGlobalConfig, getUserBaseInfo } from '../shims/globalAdapter';
 import 'dayjs/locale/zh-cn';
 import { DetailData } from '@/atoms/detail';
 import { fetchUserInfo } from '@/atoms/userInfo';
@@ -162,15 +161,6 @@ export enum Tab2Type {
   Calendar = '1',
   Meeting = '2',
 }
-
-export const getMeetingType = () => {
-  const globalConfig = getGlobalConfig() ?? {};
-  const scheduleType =
-    (globalConfig.scheduler?.scheduleType as MeetingType) ||
-    (getAppName().includes('Wea') ? MeetingType.Google : MeetingType.Native);
-
-  return scheduleType;
-};
 
 export const getSameTimeSuffix = (a: Dayjs, b: Dayjs, offset: number) => {
   return (
@@ -740,20 +730,12 @@ export const formarDetailResponse = (data: any, myTimeZone: string) => {
   fetchUserInfo(userIds);
   const members = event.attendees
     .map((atd: any) => {
-      const isAppUser = isMatchUserId(atd.uid);
-      const userInfo = getUserBaseInfo(atd.uid);
-      const email = isAppUser ? userInfo.email || '' : atd.email || '';
-      const name = isAppUser ? userInfo.name || '' : atd.name || userInfo.name || '';
       if (atd.isGroupUser) {
         groupUserMap.set(atd.uid, 1);
       }
       return {
         ...atd,
-        ...(userInfo || {
-          id: atd.uid,
-        }),
-        name,
-        email,
+        id: atd.uid,
       };
     })
     .filter(Boolean);

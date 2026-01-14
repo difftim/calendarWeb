@@ -377,3 +377,22 @@ export const IconTablerDots = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+
+export const IconTablerInfoCircle = (props: SVGProps<SVGSVGElement>) => (
+  <svg width={16} height={16} fill="none" viewBox="0 0 16 16" {...props}>
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.167}
+      d="M8 6.25h.006M2.75 8a5.25 5.25 0 1 0 10.5 0 5.25 5.25 0 0 0-10.5 0"
+    />
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.167}
+      d="M7.417 8H8v2.333h.584"
+    />
+  </svg>
+);

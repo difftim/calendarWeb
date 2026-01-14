@@ -285,6 +285,7 @@ const Layout = () => {
                 title="Other Calendars"
                 checked={otherChecked}
                 onChange={setOtherChecked}
+                style={{ marginTop: '24px' }}
               />
             )}
           </div>

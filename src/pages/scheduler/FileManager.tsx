@@ -7,7 +7,7 @@ function FileManager() {
   const { mode, attachment: _attachment, canModify, showMore } = useDetailDataValue();
   const attachment = _attachment || [];
   const { i18n } = useI18n();
-  const canNotEdit = mode === 'view' && !canModify;
+  const canNotEdit = mode !== 'create' && !canModify;
   const setData = useSetDetailData();
   const setFile = (attachment: any) => {
     setData({ attachment });

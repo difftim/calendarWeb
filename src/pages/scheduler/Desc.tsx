@@ -4,7 +4,7 @@ import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 
 const Desc = () => {
   const { mode, description = '', showMore, canModify } = useDetailDataValue();
-  const canNotEdit = mode === 'view' && !canModify;
+  const canNotEdit = mode !== 'create' && !canModify;
   const setData = useSetDetailData();
 
   if (mode === 'view') {

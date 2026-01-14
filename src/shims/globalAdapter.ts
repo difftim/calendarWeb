@@ -205,21 +205,6 @@ export const registerIPCScheduleWithSomeone = (callback: (id: string) => void) =
   (window as any).__scheduleWithSomeoneCallback = callback;
 };
 
-export const getUserBaseInfo = (id: string) => {
-  console.warn('Mocked getUserBaseInfo called for:', id);
-  return {
-    id,
-    name: `User ${id}`,
-    email: `${id}@example.com`,
-    type: 'direct' as 'direct' | 'group',
-    directoryUser: true,
-    avatarPath: '',
-    timeZone: 8,
-    isRemovable: false,
-  };
-};
-// 返回指定ID的用户基本信息，包括ID、姓名、邮箱、类型、是否为目录用户、头像路径、时区和是否可移除
-
 export const getConversations = <T = any>() => {
   console.warn('Mocked getConversations called');
   return [] as T[];
