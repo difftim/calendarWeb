@@ -1,10 +1,9 @@
-import {
-  addLiveStreamToCalendar,
-  copyScheduleMeetingInfo,
-  deleteMeetingSchedule,
-  goingScheduleMeeting,
-  scheduleMeetingReceiveNotify,
-} from '@/api';
+import React, { useMemo, useRef, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { Button, Checkbox, Flex, Popover, Tooltip } from 'antd';
+import classNames from 'classnames';
+import dayjs from 'dayjs';
+
 import { userIdAtom } from '@/atoms';
 import { Permission, showPannelAtom } from '@/atoms/detail';
 import {
@@ -23,11 +22,13 @@ import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import { useRadioModal } from '@/hooks/useRadioModal';
 import { cid2uid, copyText, stopClick } from '@/util';
-import { Button, Checkbox, Flex, Popover, Tooltip } from 'antd';
-import classNames from 'classnames';
-import dayjs from 'dayjs';
-import { useAtomValue, useSetAtom } from 'jotai';
-import React, { useMemo, useRef, useState } from 'react';
+import {
+  addLiveStreamToCalendar,
+  copyScheduleMeetingInfo,
+  deleteMeetingSchedule,
+  goingScheduleMeeting,
+  scheduleMeetingReceiveNotify,
+} from '@/api';
 
 enum GOING {
   YES = 'yes',
@@ -134,25 +135,18 @@ function Bottom() {
       }
 
       try {
-        const res = await goingScheduleMeeting({
+        await goingScheduleMeeting({
           eventId: eid,
           calendarId,
           going: _going,
           isRecurring: isRecurring,
           isAllEvent,
         });
-
-        if (res.status === 0) {
-          setData({ going: _going, receiveNotification: _going === GOING.YES });
-          goingBtnLoading.current = false;
-          toastSuccess(
-            `Respond "${_going == GOING.YES ? 'Yes' : 'No'}" to "${topic || 'No topic'}"`
-          );
-        } else {
-          res.reason && toastError(res.reason);
-          throw Error(res.reason);
-        }
-      } catch (error) {
+        setData({ going: _going, receiveNotification: _going === GOING.YES });
+        goingBtnLoading.current = false;
+        toastSuccess(`Respond "${_going == GOING.YES ? 'Yes' : 'No'}" to "${topic || 'No topic'}"`);
+      } catch (error: any) {
+        toastError(error?.message || 'set going failed!');
         goingBtnLoading.current = false;
         console.log('set going error', error);
       }
@@ -255,18 +249,13 @@ function Bottom() {
       }
 
       try {
-        const res = await deleteMeetingSchedule({
+        await deleteMeetingSchedule({
           isAllEvent: allEvent,
           isRecurring: isRecurring || false,
           eventId: eid,
           calendarId,
         });
-
-        if (res.status === 0) {
-          toastSuccess('Canceled!');
-        } else {
-          throw Error(res.reason);
-        }
+        toastSuccess('Canceled!');
       } catch (error: any) {
         toastError(error?.message || 'cancel failed');
       } finally {
@@ -387,18 +376,11 @@ function Bottom() {
           return;
         }
         setPostLoading(true);
-
-        const res = await addLiveStreamToCalendar(eid!);
-
-        if (res.status !== 0) {
-          toastError(res.reason || 'operate failed!');
-        } else {
-          toastSuccess('operate success!');
-          setShowPanel(false);
-        }
-      } catch (e) {
-        toastError('operate failed!');
+        await addLiveStreamToCalendar(eid!);
+        toastSuccess('operate success!');
+      } catch (e: any) {
         console.log('add live stream to calendar error', e);
+        toastError(e?.message || 'operate failed!');
       } finally {
         setPostLoading(false);
       }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -6,68 +6,59 @@ import { MyCalendar } from '@difftim/scheduler-component';
 import classNames from 'classnames';
 
 import {
-  calendarVersionAtom,
   currentScheduleDetailInfoAtom,
   dateAtom,
   myCalendarCheckedAtom,
   otherCalendarCheckedAtom,
   timeZoneAtom,
+  userIdAtom,
 } from '@/atoms';
-import { cid2uid, cleanUserNameForDisplay, getOffset, getUtcOffset } from '@/util';
-import { Avatar } from '@/components/shared/Avatar';
 import { toastError } from '@/components/shared/Message';
 import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
 import { IconTablerSetting } from '@/components/shared/IconsNew';
 import { calendarQueryAtom } from '@/atoms/query';
 import { Spin } from 'antd';
 import useFormatCalendarList from '@/components/CalendarList/hooks/useFormatCalendarList';
-import { unstable_batchedUpdates } from 'react-dom';
 import { uniqBy } from 'lodash';
+import HeaderAvatar from './components/HeaderAvatar';
+import { useSetDetailData } from '@/hooks/useDetailData';
+import { useQueryDetail } from '@/hooks/useQueryDetail';
+import { showPannelAtom } from '@/atoms/detail';
+import { useGetEventColors } from '@/components/shared/ConfigProvider/useTheme';
 
-export default function Calendar({ userId }: { userId: string }) {
+export default function Calendar() {
   const [date, setDate] = useAtom(dateAtom);
   const [searchParams] = useSearchParams();
+  const userId = useAtomValue(userIdAtom);
   const { createTzDayjs } = useTimeZoneDayjs();
   const navigate = useNavigate();
   const timeZone = useAtomValue(timeZoneAtom);
-  const [myCheckedCalendar, setMyCheckedCalendar] = useAtom(myCalendarCheckedAtom);
-  const [otherCheckedCalendar, setOtherCheckedCalendar] = useAtom(otherCalendarCheckedAtom);
+  const { getEventColor } = useGetEventColors();
+  const myCheckedCalendar = useAtomValue(myCalendarCheckedAtom);
+  const otherCheckedCalendar = useAtomValue(otherCalendarCheckedAtom);
   const [_, setCurrentDetailInfo] = useAtom(currentScheduleDetailInfoAtom);
-  const setCalendarVersion = useSetAtom(calendarVersionAtom);
-  const {
-    data: { events, version = 0, myUsers = [], otherUsers = [] } = {},
-    isFetching,
-    isFetched,
-  } = useAtomValue(calendarQueryAtom);
+  const { data: { events, myUsers = [], otherUsers = [] } = {}, isFetching } =
+    useAtomValue(calendarQueryAtom);
   const allCalendars = useMemo(
     () => uniqBy([...myUsers, ...otherUsers], 'cid'),
     [myUsers, otherUsers]
   );
+  const eventColors = useMemo(() => getEventColor(allCalendars), [allCalendars, getEventColor]);
 
   const allCheckedCalendar = useMemo(
     () => new Set([...myCheckedCalendar, ...otherCheckedCalendar]),
     [myCheckedCalendar, otherCheckedCalendar]
   );
   const scrollToTime = dayjs().startOf('day').add(9.5, 'hour').toDate();
-  const { getEventsToRender } = useFormatCalendarList(allCalendars, allCheckedCalendar);
+  const { getEventsToRender, members } = useFormatCalendarList(allCalendars, allCheckedCalendar);
   const { list: eventsToRender, hasCrossDayEvent } = useMemo(
     () => getEventsToRender(events),
     [events, getEventsToRender]
   );
+  const { getDetailData } = useQueryDetail();
 
-  useEffect(() => {
-    if (isFetched) {
-      unstable_batchedUpdates(() => {
-        setCalendarVersion(version);
-        setMyCheckedCalendar(prev =>
-          prev.filter(id => myUsers.some(user => cid2uid(user.cid) === id))
-        );
-        setOtherCheckedCalendar(prev =>
-          prev.filter(id => otherUsers.some(user => cid2uid(user.cid) === id))
-        );
-      });
-    }
-  }, [isFetched, version, myUsers, otherUsers]);
+  const setShowPannel = useSetAtom(showPannelAtom);
+  const setDetailData = useSetDetailData();
 
   // 直接从 URL 参数读取 view，默认为 'week'
   const view = useMemo(() => {
@@ -106,34 +97,14 @@ export default function Calendar({ userId }: { userId: string }) {
           }));
         }}
         events={eventsToRender}
-        members={[]}
+        members={members}
         timeZone={timeZone}
         style={{ width: `calc(100vw - 300px)` }}
-        eventColors={{}}
+        eventColors={eventColors}
         scrollToTime={scrollToTime}
         onRenderHeader={item => {
-          const timeZoneNum = getOffset(item);
-          const utcOffset =
-            item.id === userId
-              ? getUtcOffset(timeZone)
-              : `UTC${timeZoneNum >= 0 ? '+' : ''}${timeZoneNum}`;
-
-          const totalChecked = myCheckedCalendar.length + otherCheckedCalendar.length;
-
           return (
-            <div className="avatar-header">
-              {totalChecked > 1 && (
-                <Avatar
-                  conversationType="direct"
-                  size={36}
-                  name={item.name}
-                  id={item.id}
-                  avatarPath={item.avatarPath}
-                />
-              )}
-              <div className="name ellipsis-1">{item.cname || cleanUserNameForDisplay(item)}</div>
-              <div className="utc">{utcOffset}</div>
-            </div>
+            <HeaderAvatar timeZone={timeZone} item={item} totalChecked={allCheckedCalendar.size} />
           );
         }}
         onSelectEvent={(e: any) => {
@@ -141,16 +112,15 @@ export default function Calendar({ userId }: { userId: string }) {
           // setOpenSetting(false);
           if (e.id !== userId && !e.isBossProxy) {
             toastError('You have no access to view details');
-
             return;
           }
-          // TODO
-          // showDetail(e);
+          setShowPannel(true);
+          setDetailData(getDetailData(e.eid, e.cid, e.source ?? 'difft'));
         }}
         onSelectSlot={(slot: any) => {
           console.log('slot', slot);
           // 不能跟自己约会
-          const slotInMyCalendar = myUsers.find(item => item.id === slot.resourceId);
+          const slotInMyCalendar = myUsers.find((item: any) => item.id === slot.resourceId);
           const isBossProxy = slotInMyCalendar?.role === 'proxy';
 
           if (slot?.resourceId && slotInMyCalendar && !isBossProxy && slot.resourceId !== userId) {

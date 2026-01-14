@@ -12,7 +12,7 @@ type Props = {
 };
 
 const ScheduleMeetingFileManager = (props: Props) => {
-  const { files, setFile, preview = false, disabled = false } = props;
+  const { files = [], setFile, preview = false, disabled = false } = props;
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState('');
   const [link, setLink] = useState('');

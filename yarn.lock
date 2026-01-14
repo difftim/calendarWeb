@@ -233,6 +233,11 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.6.1.tgz#b6c75a56a1947cc916ea058772d666a2c8932f31"
   integrity sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==
 
+"@difftim/jsbridge-utils@1.6.2":
+  version "1.6.2"
+  resolved "https://npm.pkg.github.com/download/@difftim/jsbridge-utils/1.6.2/691994bb7d202abc05bb8bbb040e8976369a5610#691994bb7d202abc05bb8bbb040e8976369a5610"
+  integrity sha512-+AqTfRfIKhzHx+yta8ovoDdyoSJaJTqm/FYmXS4xcdnYYjgF06yGZhG5E1r9APrE6Rp9IyAIzkGOvXTODGmATg==
+
 "@difftim/scheduler-component@0.1.8-beta.1":
   version "0.1.8-beta.1"
   resolved "https://npm.pkg.github.com/download/@difftim/scheduler-component/0.1.8-beta.1/5599f4a5996a28518a25069fa4924bfc8d9c8337#5599f4a5996a28518a25069fa4924bfc8d9c8337"
@@ -1134,6 +1139,11 @@ json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
+
+ky@^1.14.2:
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-1.14.2.tgz#385d6d05d2825502e68898ace125124e6fe7357d"
+  integrity sha512-q3RBbsO5A5zrPhB6CaCS8ZUv+NWCXv6JJT4Em0i264G9W0fdPB8YRfnnEi7Dm7X7omAkBIPojzYJ2D1oHTHqug==
 
 lodash-es@^4.17.21:
   version "4.17.22"

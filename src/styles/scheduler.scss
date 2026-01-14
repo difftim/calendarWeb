@@ -1,4 +1,13 @@
 .meeting-schedule-dialog {
+  &.loading {
+    .ant-drawer-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      height: 100%;
+    }
+  }
   .ant-drawer-header {
     height: 58px;
     .schedule-meeting-header {
@@ -8,10 +17,13 @@
       > h3 {
         font-weight: normal;
         margin-bottom: 0;
+        font-weight: 400;
+        font-size: 16px;
       }
 
       > svg {
         cursor: pointer;
+        -webkit-app-region: no-drag;
       }
     }
   }

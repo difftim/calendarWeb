@@ -34,6 +34,7 @@
         cursor: pointer;
         transition: all 0.2s;
         font-size: 14px;
+        color: var(--dsw-color-text-primary);
 
         &:hover {
           background-color: var(--dsw-color-background-2);

@@ -1,29 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { themeModeAtom } from '@/atoms';
+import { getUserBgColor } from '@/util';
 
 export type ThemeMode = 'light' | 'dark';
 
-const getThemeMode = (): ThemeMode => {
-  const isDark = document.body.classList.contains('dark-theme');
-  return isDark ? 'dark' : 'light';
-};
-
 const useTheme = () => {
-  const [mode, setMode] = useState<ThemeMode>(() => getThemeMode());
+  const themeMode = useAtomValue(themeModeAtom);
 
-  useEffect(() => {
-    const handleThemeChanged = () => {
-      const theme = getThemeMode();
-      setMode(theme);
-    };
+  useLayoutEffect(() => {
+    if (themeMode.state === 'hasData') {
+      const theme = themeMode.data;
+      document.body.classList.replace(
+        'light-theme',
+        theme === 'dark' ? 'dark-theme' : 'light-theme'
+      );
+    }
+  }, [themeMode]);
 
-    window.addEventListener('themeSettingChanged', handleThemeChanged);
-
-    return () => {
-      window.removeEventListener('themeSettingChanged', handleThemeChanged);
-    };
-  }, []);
+  const mode = useMemo(() => {
+    if (themeMode.state === 'hasData') {
+      return themeMode.data === 'dark' ? 'dark' : 'light';
+    }
+    return 'light';
+  }, [themeMode]);
 
   return mode;
+};
+
+export const useGetEventColors = () => {
+  const mode = useTheme();
+  const { checkBoxBg, eventBg, textColor } = useMemo(() => getUserBgColor(mode), [mode]);
+  const getEventColor = useCallback(
+    (calendars: any[], isListView: boolean = false) => {
+      return calendars.reduce((sum, item, index) => {
+        sum[item.id] = {
+          bgColor: isListView ? checkBoxBg[index] : eventBg[index],
+          color: textColor[index],
+        };
+        return sum;
+      }, {});
+    },
+    [checkBoxBg, eventBg, textColor]
+  );
+  return { getEventColor };
 };
 
 export default useTheme;

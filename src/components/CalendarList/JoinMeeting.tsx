@@ -1,8 +1,5 @@
 import React from 'react';
-import BeforeJoinMeeting from './BeforeJoinMeeting';
-import { getWebApi, showCallVoiceGroup } from '../../shims/globalAdapter';
-import { Modal } from 'antd';
-import { isExternalProtocol } from '../../linkProtocol';
+import { showCallVoiceGroup } from '../../shims/globalAdapter';
 
 export const joinMeeting = async (
   e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -27,7 +24,7 @@ export const joinMeeting = async (
     topic: meetingName,
     channelName,
     isLiveStream,
-    appType,
+    // appType,
     eid,
     googleMeetingLink,
     outlookMeetingLink,
@@ -43,74 +40,49 @@ export const joinMeeting = async (
     return;
   }
 
-  const isExternal = isExternalProtocol(appType);
-
-  // no need to call api if isExternal true
-  const serverToken = isExternal ? undefined : await getWebApi().getServerTokenDirect();
+  // TODO isExternal
+  // const isExternal =
+  // isExternalProtocol(appType);
 
   const callOptions: any = {
     callType: 'passive',
     isPrivate: false,
     meetingName,
     channelName,
-    serverToken,
     callerId: undefined,
     meetingId: 0,
     isLiveStream,
-    isExternal,
+    // isExternal,
     eid,
   };
 
-  if (!isExternal && isLiveStream) {
-    try {
-      const res = await (window as any).textsecure?.messaging.getLiveStreamToken(channelName, eid);
+  // if (!isExternal && isLiveStream) {
+  try {
+    const res = await (window as any).textsecure?.messaging.getLiveStreamToken(channelName, eid);
 
-      if (res.status !== 0) {
-        (window as any).noticeWarning(res.reason || 'livestream is not start yet');
-        return;
-      }
-
-      const isAudience = res.data.role === 'audience';
-
-      Object.assign(callOptions, {
-        isAudience,
-        agoraToken: res.data.token,
-        isLiveStarted: res.data.isLiveStarted,
-      });
-      if (isAudience) {
-        showCallVoiceGroup(callOptions);
-        return;
-      }
-    } catch (error) {
-      console.log('join livestream error', error);
-      (window as any).noticeError('join livestream error');
+    if (res.status !== 0) {
+      (window as any).noticeWarning(res.reason || 'livestream is not start yet');
       return;
     }
-  }
 
-  const { destroy } = Modal.confirm({
-    className: 'before-join-meeting-modal',
-    icon: null,
-    centered: true,
-    closable: false,
-    destroyOnClose: true,
-    title: '',
-    width: 384,
-    footer: null,
-    autoFocusButton: null,
-    content: (
-      <BeforeJoinMeeting
-        meetingOptions={callOptions}
-        buttonCall={callOptions.buttonCall}
-        setMeetingOptions={(getNewOptions: any) =>
-          Object.assign(callOptions, getNewOptions(callOptions))
-        }
-        onOk={() => {
-          showCallVoiceGroup(callOptions);
-          destroy();
-        }}
-        onCancel={() => destroy()}
-      />
-    ),
-  });
+    const isAudience = res.data.role === 'audience';
+
+    Object.assign(callOptions, {
+      isAudience,
+      agoraToken: res.data.token,
+      isLiveStarted: res.data.isLiveStarted,
+    });
+    if (isAudience) {
+      showCallVoiceGroup(callOptions);
+      return;
+    }
+  } catch (error) {
+    console.log('join livestream error', error);
+    (window as any).noticeError('join livestream error');
+    return;
+  }
+  // }
+
+  // TODO
+  // dispatch to outSide
 };

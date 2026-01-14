@@ -22,10 +22,16 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/api': {
+        target: 'https://calendar.test.difft.org/',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
   },
   optimizeDeps: {
     esbuildOptions: {

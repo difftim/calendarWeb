@@ -1,13 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { uniqBy } from 'lodash';
 
-import { cid2uid, getOffset, getTimeFormatWithUtc, isOverlap } from '@/util';
+import { cid2uid, getOffset, getSimpleName, getTimeFormatWithUtc, isOverlap } from '@/util';
 import { IconLiveStream, IconTablerPlus } from '@shared/IconsNew';
 import { useTimeZoneDayjs } from './useTimeZoneDayjs';
-import { currentScheduleDetailInfoAtom, userIdAtom } from '@/atoms';
+import { currentScheduleDetailInfoAtom, timeZoneAtom, userInfoAtom } from '@/atoms';
 import classNames from 'classnames';
+import { getUserBaseInfoSync } from '@/atoms/userInfo';
+import { useCreateSchedule } from '@/hooks/useCreateSchedule';
 
 type Item = {
   channelName: string;
@@ -34,8 +36,11 @@ type Item = {
 
 const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>) => {
   const { utcOffset, createTzDayjs, timeZone } = useTimeZoneDayjs();
-  const myId = useAtomValue(userIdAtom);
+  const myTimeZone = useAtomValue(timeZoneAtom);
+  const myInfo = useAtomValue(userInfoAtom);
   const { selectItem } = useAtomValue(currentScheduleDetailInfoAtom);
+  const { createSchedule } = useCreateSchedule(myTimeZone);
+  const myId = myInfo.id;
 
   const isSameDay = (start: Dayjs, end: Dayjs) =>
     start.startOf('day').unix() === end.startOf('day').unix();
@@ -147,9 +152,9 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
     [userCheckedSet, myId, createTzDayjs, utcOffset, timeZone]
   );
 
-  const filterCheckedUser = useCallback(
-    (users: any[]) => users.filter(u => userCheckedSet.has(u.id)),
-    [userCheckedSet]
+  const members = useMemo(
+    () => allCalendars.filter(u => userCheckedSet.has(cid2uid(u.cid))),
+    [allCalendars, userCheckedSet]
   );
 
   const getTempEventInfo = useCallback(
@@ -177,20 +182,67 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
         const end = dayjs(item.end * 1000);
         // 这里通过 utcOffset 去设置，无需使用类型的 CreateTzDayjs
         const timeStr = getTimeFormatWithUtc(start, end, timeZone);
-        // const meetingName = getMeetingName(item);
-        const meetingName = `primo's Meeting`;
+        const myName = getSimpleName(myInfo.name);
+        let topic = `${myName}'s Meeting`;
+        let members = [
+          {
+            uid: myInfo.id,
+            name: myName,
+            email: myInfo.email,
+            role: 'host',
+            going: 'maybe',
+            isGroupUser: false,
+            isRemovable: false,
+          },
+        ];
+        if (item.resourceId && item.resourceId !== myInfo.id) {
+          const otherInfo = getUserBaseInfoSync(item.resourceId);
+          const otherName = getSimpleName(otherInfo.name);
+          if (item.isBossProxy) {
+            topic = `${getSimpleName(otherName)}'s Meeting`;
+            members = [
+              {
+                uid: otherInfo.id,
+                name: otherName,
+                email: otherInfo.email ?? '',
+                role: 'host',
+                going: 'maybe',
+                isGroupUser: false,
+                isRemovable: false,
+              },
+            ];
+          } else {
+            topic = `${myName} and ${getSimpleName(otherName)}'s Meeting`;
+            members.push({
+              uid: otherInfo.id,
+              name: otherName,
+              email: otherInfo.email ?? '',
+              role: 'attendee',
+              going: 'maybe',
+              isGroupUser: false,
+              isRemovable: true,
+            });
+          }
+        }
 
         return (
           <div
             onClick={e => {
               e.stopPropagation();
+              console.log('doSchedule2', item);
+              createSchedule('meeting', {
+                topic,
+                members,
+                start: item.start,
+                end: item.end,
+              });
               // TODO
               // createNativeMeeting(item);
             }}
             className={classNames('temp-event', { busy: isBusy })}
           >
             <div className="text-area">
-              <div className="ellipsis-1">{meetingName}</div>
+              <div className="ellipsis-1">{topic}</div>
               <div className="ellipsis-1">{timeStr}</div>
             </div>
             <div className={classNames('schedule-icon', { busy: isBusy })}>
@@ -211,14 +263,14 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
 
       return tempEventNode;
     },
-    [timeZone]
+    [timeZone, myInfo]
   );
 
   const getEventsToRender = useCallback(
     data => {
       const { list, hasCrossDayEvent } = filterEvents(data);
       if (selectItem) {
-        const { timeZone, isBusy } = getTempEventInfo(list, selectItem, utcOffset);
+        const { timeZone, isBusy } = getTempEventInfo(data, selectItem, utcOffset);
         const selectedEvent = createTemperateOperateEvent(selectItem, timeZone, isBusy);
         list.unshift(selectedEvent);
       }
@@ -230,7 +282,7 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
     [selectItem, utcOffset, filterEvents, getTempEventInfo, createTemperateOperateEvent]
   );
 
-  return { getEventsToRender, filterCheckedUser };
+  return { getEventsToRender, members };
 };
 
 export default useFormatCalendarList;

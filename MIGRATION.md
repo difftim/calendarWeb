@@ -170,7 +170,6 @@ calendarWeb/
   instantMeeting() -
   registerReadScheduleNotifyCallback() -
   registerIPCScheduleWithSomeone() -
-  getUserBaseInfo() -
   getConversations() -
   updateTodayUnreadSchedule() -
   isInsiderUpdate() -

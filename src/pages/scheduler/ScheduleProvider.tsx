@@ -5,8 +5,9 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useLoadableDetailData, useSetDetailData } from '@/hooks/useDetailData';
 import { INITIAL_DETAIL_DATA, showPannelAtom } from '@/atoms/detail';
 import { currentScheduleDetailInfoAtom } from '@/atoms';
-import Header from './Header';
+import Header, { LoadingHeader } from './Header';
 import { ConfigProvider } from '@/components/shared';
+import classNames from 'classnames';
 
 export const ScheduleProvider: React.FC = ({ children }) => {
   const [show, setShow] = useAtom(showPannelAtom);
@@ -15,7 +16,7 @@ export const ScheduleProvider: React.FC = ({ children }) => {
   const setData = useSetDetailData();
   // const resetData = useResetDetailData();
   const isError = loadableDetailData.state === 'hasError';
-  const isLoading = loadableDetailData.state === 'loading';
+  const loading = loadableDetailData.state === 'loading';
   const hasData = loadableDetailData.state === 'hasData';
   const isLoaded = hasData && !loadableDetailData.data.loading;
 
@@ -36,11 +37,11 @@ export const ScheduleProvider: React.FC = ({ children }) => {
   return (
     <ConfigProvider isLightlyDisableMode>
       <Drawer
-        className="meeting-schedule-dialog"
+        className={classNames('meeting-schedule-dialog', { loading })}
         closeIcon={false}
-        title={hasData && <Header />}
+        title={hasData ? <Header /> : <LoadingHeader />}
         open={show}
-        loading={isLoading}
+        loading={loading}
         width={360}
         push={false}
         onClose={() => {

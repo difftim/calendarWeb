@@ -7,8 +7,6 @@ import ListPage from './pages/list';
 import CalendarPage from './pages/calendar';
 import { store } from './atoms/store';
 
-const userId = '+747099999222';
-
 const Router = () => {
   return (
     <Provider store={store}>
@@ -18,10 +16,10 @@ const Router = () => {
             {/* 根路径默认重定向到 /list */}
             <Route index element={<Navigate to="/calendar" replace />} />
             {/* /list 路由显示列表页面 */}
-            <Route path="list" element={<ListPage userId={userId} />} />
-            <Route path="calendar" element={<CalendarPage userId={userId} />} />
+            <Route path="list" element={<ListPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
             {/* 404 时也显示列表页面 */}
-            <Route path="*" element={<CalendarPage userId={userId} />} />
+            <Route path="*" element={<CalendarPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

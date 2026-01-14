@@ -2,29 +2,41 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { unstable_batchedUpdates } from 'react-dom';
 import { AutoSizer, List } from 'react-virtualized';
 
-import ListItem from './ListItem';
-import { cid2uid } from '@/util';
-import { currentScheduleDetailInfoAtom, dateAtom, myCalendarCheckedAtom } from '@/atoms';
+import ListItem from './components/ListItem';
+import { cid2uid, uid2cid } from '@/util';
+import {
+  currentScheduleDetailInfoAtom,
+  dateAtom,
+  myCalendarCheckedAtom,
+  timeZoneAtom,
+  userIdAtom,
+} from '@/atoms';
 import { useAtom, useAtomValue } from 'jotai';
 import dayjs from 'dayjs';
 import useFormatMeetingList from '@/hooks/useFormatMeetingList';
 import { calendarQueryAtom } from '@/atoms/query';
+import { useCreateSchedule } from '@/hooks/useCreateSchedule';
+import { useGetEventColors } from '@/components/shared/ConfigProvider/useTheme';
 
-const ListView = (props: {
-  userId: string;
-  eventColors?: Record<string, { bgColor: string; color: string }>;
-}) => {
+const ListView = () => {
+  const timeZone = useAtomValue(timeZoneAtom);
+  const { createSchedule } = useCreateSchedule(timeZone);
   const [date, setDate] = useAtom(dateAtom);
-  const { data } = useAtomValue(calendarQueryAtom);
+  const { data: { events = [], myUsers = [] } = {} } = useAtomValue(calendarQueryAtom);
   const myCheckedAccounts = useAtomValue(myCalendarCheckedAtom);
+  const myId = useAtomValue(userIdAtom);
+  const myAccounts = myCheckedAccounts
+    .sort((a, b) => (a === myId ? -1 : b === myId ? 1 : 0))
+    .map(uid2cid);
   const { formatList } = useFormatMeetingList();
-  const list = formatList(data?.events ?? [], date.startOf('week'), myCheckedAccounts);
+  const list = formatList(events, date.startOf('week'), myAccounts);
   const { currentEid, currentCid, currentFreeTimeId } = useAtomValue(currentScheduleDetailInfoAtom);
-  const { eventColors = {} } = props;
   const [curDay, setCurDay] = useState(null);
   const [scrollToIndex, setScrollToIndex] = useState<number>(-1);
   const lastRenderedRow = useRef(0);
   const listRef = useRef<any>(null);
+  const { getEventColor } = useGetEventColors();
+  const eventColors = useMemo(() => getEventColor(myUsers, true), [myUsers, getEventColor]);
   const onListRef = useCallback(d => {
     listRef.current = d;
   }, []);
@@ -61,6 +73,10 @@ const ListView = (props: {
 
   const doSchedule = (options: any) => {
     console.log('doSchedule', options);
+    createSchedule('meeting', {
+      start: options.start.unix(),
+      freeTimeId: options.id,
+    });
   };
 
   const renderRow = ({ index, style }: any) => {

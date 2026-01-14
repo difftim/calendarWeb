@@ -15,6 +15,7 @@ import lzString from 'lz-string';
 import { getAppName, getGlobalConfig, getUserBaseInfo } from '../shims/globalAdapter';
 import 'dayjs/locale/zh-cn';
 import { DetailData } from '@/atoms/detail';
+import { fetchUserInfo } from '@/atoms/userInfo';
 
 const BAD_CHARACTERS = /[^A-Za-z\s]+/g;
 const WHITESPACE = /\s+/g;
@@ -53,14 +54,6 @@ export const formatNoonAndMidNight = (date: any) => {
     time = time.replace('PM', 'NOON');
   }
   return time;
-};
-
-// 获取 hostname
-export const getHostNameFromScheduleList = (item: any, getUserBaseInfo: (id: string) => any) => {
-  const host = item.host || item.hostInfo?.uid;
-  if (!host) return '';
-  const userInfo = getUserBaseInfo(host);
-  return userInfo?.name || cleanUserNameForDisplay(userInfo) || host;
 };
 
 export const uid2cid = (uid: string = '') => uid.replace('+', 'user_');
@@ -665,15 +658,14 @@ export type CalendarItem = {
   events: any[];
 };
 
-export const formatDashboardResponse = (data: {
-  myCalendar: CalendarItem[];
-  otherCalendar: CalendarItem[];
-  version: number;
-}) => {
-  const initialData = { result: [], users: [], version: 0 } as {
-    result: any[];
-    users: any[];
-  };
+export const formatDashboardResponse = (
+  data: {
+    myCalendar: CalendarItem[];
+    otherCalendar: CalendarItem[];
+    version: number;
+  },
+  myId: string
+) => {
   const getCalendarType = (role: CalendarItem['role']) => {
     switch (role) {
       case 'proxy':
@@ -685,44 +677,58 @@ export const formatDashboardResponse = (data: {
     }
   };
 
-  let myCalendar = new Map<string, 1>();
+  const myCalendar = new Map<string, 1>();
   const [{ result: myEvents, users: myUsers }, { result: otherEvents, users: otherUsers }] = (
     ['myCalendar', 'otherCalendar'] as const
   ).map(key => {
     const calendar = data[key];
+    const initialData = { result: [], users: [], version: 0 } as {
+      result: any[];
+      users: any[];
+    };
     if (!isValidArray(calendar)) {
       return initialData;
     }
     const isMyCalendar = key === 'myCalendar';
+    const userIds = calendar.map((user: any) => cid2uid(user.cid));
+    fetchUserInfo(userIds);
+    const isExistInMyCalendar = (cid: string) => !isMyCalendar && myCalendar.has(cid);
+
     return calendar.reduce((sum, user) => {
       const picked = pick(user, ['cid', 'name', 'timeZone', 'role', 'timeZoneName']);
       const calendarType = getCalendarType(user.role);
       if (isMyCalendar) {
         myCalendar.set(user.cid, 1);
-      } else if (!myCalendar.has(user.cid)) {
-        sum.users.push({ ...picked, calendarType });
-        sum.result.push(
-          ...(user.events ?? []).map((item: any) => ({
-            ...item,
-            cname: user.name,
-            timeZone: user.timeZone,
-            isBusy: !isMyCalendar,
-            topic: isMyCalendar ? item.topic : 'Busy',
-            role: user.role,
-            isBossProxy: user.role === 'proxy',
-            calendarType,
-          }))
-        );
+      } else if (isExistInMyCalendar(user.cid)) {
+        return sum;
       }
+      sum.users.push({ ...picked, calendarType, cname: user.name, id: cid2uid(user.cid) });
+      sum.result.push(
+        ...(user.events ?? []).map((item: any) => ({
+          ...item,
+          id: cid2uid(user.cid),
+          cname: user.name,
+          timeZone: user.timeZone,
+          isBusy: !isMyCalendar,
+          topic: isMyCalendar ? item.topic : 'Busy',
+          role: user.role,
+          isBossProxy: user.role === 'proxy',
+          calendarType,
+        }))
+      );
 
       return sum;
     }, initialData);
   });
 
+  const myCid = uid2cid(myId);
+
+  console.log('myUsers', myUsers, otherUsers);
+
   return {
     version: data.version,
     events: [...myEvents, ...otherEvents],
-    myUsers,
+    myUsers: myUsers.sort((a, b) => (a.cid === myCid ? -1 : b.cid === myCid ? 1 : 0)),
     otherUsers,
   };
 };
@@ -730,6 +736,8 @@ export const formatDashboardResponse = (data: {
 export const formarDetailResponse = (data: any, myTimeZone: string) => {
   const { event, ...extraInfo } = data;
   const groupUserMap = new Map<string, 1>();
+  const userIds = event.attendees.map((atd: any) => atd.uid);
+  fetchUserInfo(userIds);
   const members = event.attendees
     .map((atd: any) => {
       const isAppUser = isMatchUserId(atd.uid);
@@ -785,4 +793,11 @@ export const copyText = (text: string) => navigator.clipboard.writeText(text);
 export const stopClick = (e: React.MouseEvent) => {
   e.stopPropagation();
   e.preventDefault();
+};
+
+export const getSimpleName = (name: string) => {
+  if (!name) {
+    return '';
+  }
+  return name.slice(0, name.indexOf('('));
 };

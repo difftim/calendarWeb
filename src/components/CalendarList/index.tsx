@@ -1054,7 +1054,7 @@ const CalendarList = (props: any) => {
           <SelectList
             myId={props.ourNumber}
             listStyle={{ flexShrink: 0 }}
-            list={myCalendar}
+            list={[]}
             bgColors={checkBoxBg.slice(0, myCalendar.length)}
             title="My Calendars"
             checked={myCalendarChecked}

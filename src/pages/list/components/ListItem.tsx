@@ -1,19 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
+import { useAtomValue } from 'jotai';
 // import { StartType } from './hooks/useMeetingStatusCheck';
 import { Button } from '@shared/Button';
-// import { Avatar } from '@shared/SimpleComponent/Avatar';
+import { Avatar } from '@shared/Avatar';
 import { IconGoogle, IconLiveStream, IconOutLook, IconTablerBell } from '@shared/IconsNew';
 import { toastError, toastSuccess } from '@shared/Message';
-import { onMuteMeeting, getUserBaseInfo } from '@/shims/globalAdapter';
-import { getHostNameFromScheduleList, StartType } from '@/util';
+import { onMuteMeeting } from '@/shims/globalAdapter';
+import { userInfoByIdAtom } from '@/atoms/userInfo';
+import { StartType, cleanUserNameForDisplay } from '@/util';
 // TODO
 // import { joinMeeting } from './JoinMeeting';
-
-const Avatar = (props: any) => {
-  console.log('Avatar', props);
-  return <div>avatar</div>;
-};
 
 type Props = {
   style: any;
@@ -65,6 +62,13 @@ const ListItem = ({
   onCreateByFreeTime,
   redpointColor,
 }: Props) => {
+  // Hooks 必须在组件顶部，不能在条件 return 之后
+  const hostId = item.hostInfo?.uid || item.host || '';
+  const hostUserInfo = useAtomValue(userInfoByIdAtom(hostId));
+
+  // 获取显示名称，使用 cleanUserNameForDisplay 处理
+  const displayName = hostUserInfo.name ? cleanUserNameForDisplay(hostUserInfo) : hostId;
+
   if (item.rowType === 'title') {
     return (
       <div className="item-title" style={style}>
@@ -144,36 +148,20 @@ const ListItem = ({
     return <div className="status-btn-wrapper">{muteBtn}</div>;
   };
 
-  const getAvatarPath = (item: Props['item']) => {
-    const host = item.host;
-    if (host) {
-      const user = getUserBaseInfo(host);
-      if (user.type === 'direct' && user.directoryUser) {
-        return user.avatarPath || '';
-      }
-    }
-
-    return '';
-  };
-
   const canClick = (item: Props['item']) => {
     const host = item.host;
     if (!host || typeof host !== 'string' || item.disabled) {
       return false;
     }
-
     if (host.includes('@')) {
       return false;
     }
-
     if (!host.startsWith('+')) {
       return false;
     }
-
     if (!/^\+\d{11}$/.test(host)) {
       return false;
     }
-
     return true;
   };
 
@@ -194,12 +182,12 @@ const ListItem = ({
       <div className="main-info">
         <div onClick={e => e.stopPropagation()}>
           <Avatar
-            size={48}
+            size={40}
             noClickEvent={!canClick(item)}
-            name={getHostNameFromScheduleList(item, getUserBaseInfo)}
+            name={displayName}
             conversationType="direct"
-            avatarPath={getAvatarPath(item)}
-            id={item.hostInfo?.uid || item.host}
+            avatarPath={hostUserInfo.avatarPath || ''}
+            id={hostId}
           />
         </div>
         <div style={{ minWidth: 0, flexGrow: 1 }}>

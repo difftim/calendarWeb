@@ -4,7 +4,8 @@ import ScheduleMeetingFileManager from './components/ScheduleMeetingFileManager'
 import { useI18n } from '@/hooks/useI18n';
 
 function FileManager() {
-  const { mode, attachment = [], canModify, showMore } = useDetailDataValue();
+  const { mode, attachment: _attachment, canModify, showMore } = useDetailDataValue();
+  const attachment = _attachment || [];
   const { i18n } = useI18n();
   const canNotEdit = mode === 'view' && !canModify;
   const setData = useSetDetailData();

@@ -247,6 +247,10 @@
   }
 }
 
+.rbc-time-header {
+  user-select: none;
+}
+
 .rbc-event-label {
   display: none !important;
 }
@@ -383,6 +387,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
       border-bottom: 1px solid var(--dsw-color-line-1);
+      color: var(--dsw-color-text-primary);
       .meeting-block {
         font-size: 12px;
         padding: 12px;
@@ -397,15 +402,15 @@
           height: 16px;
         }
         &.book {
-          background-color: #deffe7;
+          background-color: var(--dsw-color-schedule-book-bg);
           &:hover {
-            background-color: #eafff1;
+            background-color: var(--dsw-color-schedule-book-bg-hover);
           }
         }
         &.instant {
-          background-color: #ebf7ff;
+          background-color: var(--dsw-color-schedule-instant-bg);
           &:hover {
-            background-color: #f4faff;
+            background-color: var(--dsw-color-schedule-instant-bg-hover);
           }
         }
         &.webCall {
@@ -486,6 +491,7 @@
       top: 13.5px;
       right: 50px;
       z-index: 300;
+      -webkit-app-region: no-drag;
 
       button {
         color: var(--dsw-color-text-primary);
@@ -968,12 +974,18 @@
     font-style: normal;
     font-weight: 400;
     line-height: 20px;
+    color: var(--dsw-color-text-primary);
   }
   .select-icons {
     margin-left: auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--dsw-color-text-primary);
+    }
   }
   .arrow {
     transform: rotate(90deg);
@@ -1024,7 +1036,7 @@
 
 .avatar-header {
   padding: 20px 10px 0px;
-  .only-for-before-join-meeting {
+  .dsw-simple-avatar-container {
     width: 36px;
     margin: 0 auto;
   }

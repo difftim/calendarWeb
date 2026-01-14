@@ -1,12 +1,82 @@
 import { atom } from 'jotai';
 import dayjs, { Dayjs } from 'dayjs';
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage, loadable } from 'jotai/utils';
 import { uniq } from 'lodash';
 import { initDayjs } from '@/util';
+import { getUserInfo, isBridgeSupported, initialize, getTheme } from '@difftim/jsbridge-utils';
+import { fetchUserInfo } from './userInfo';
 
 initDayjs();
 
-export const userIdAtom = atom<string>('111111');
+const initialPromise = new Promise(resolve => {
+  initialize({ defaultTimeoutMs: 5 * 1000 })
+    .then(() => resolve(true))
+    .catch(() => resolve(false));
+});
+
+// 异步 atom，存储 isBridgeSupported 的结果
+const bridgeSupportedAsyncAtom = atom(async () => {
+  try {
+    const isInitialized = await initialPromise;
+    if (!isInitialized) {
+      return false;
+    }
+    return await isBridgeSupported();
+  } catch {
+    return false;
+  }
+});
+
+const initializeAsyncAtom = atom(async () => {
+  try {
+    await initialize();
+    return true;
+  } catch {
+    return false;
+  }
+});
+
+export const bridgeInitializedAtom = loadable(initializeAsyncAtom);
+
+export const userInfoAsyncAtom = atom(async () => {
+  try {
+    const info = await getUserInfo({ timeoutMs: 1000 });
+    fetchUserInfo([info.id]);
+    return info;
+  } catch {
+    return { id: '', name: '', email: '' };
+  }
+});
+
+export const userInfoLoadableAtom = loadable(userInfoAsyncAtom);
+
+// 使用 loadable 包装，可以同步获取状态
+export const bridgeSupportedAtom = loadable(bridgeSupportedAsyncAtom);
+
+const userIdAsyncAtom = atom(async get => {
+  const info = await get(userInfoAsyncAtom);
+  return info.id || '';
+});
+
+// 使用 loadable 包装，可以同步获取状态而不触发 Suspense
+export const userIdLoadableAtom = loadable(userIdAsyncAtom);
+
+// 提供一个同步版本的 userId atom，在加载完成前返回空字符串
+export const userIdAtom = atom(get => {
+  const userIdLoadable = get(userIdLoadableAtom);
+  if (userIdLoadable.state === 'hasData') {
+    return userIdLoadable.data;
+  }
+  return '';
+});
+
+export const userInfoAtom = atom(get => {
+  const userInfoLoadable = get(userInfoLoadableAtom);
+  if (userInfoLoadable.state === 'hasData') {
+    return userInfoLoadable.data;
+  }
+  return { id: '', name: '', email: '' };
+});
 export const isSystemTimeZoneAtom = atom(true);
 export const timeZoneAtom = atom<string>(dayjs.tz.guess());
 export const _dateAtom = atom<Dayjs>(dayjs());
@@ -60,8 +130,11 @@ export const calendarVersionAtom = atomWithStorage<number>('calendarVersion', 0)
 export const myCalendarCheckedAtom = atom(
   get => {
     const myCalendarChecked = get(_myCalendarCheckedAtom);
-    const ourNumber = get(userIdAtom);
-    return uniq([ourNumber, ...myCalendarChecked]);
+    const userInfo = get(userInfoAtom);
+    if (userInfo.id) {
+      return uniq([userInfo.id, ...myCalendarChecked]);
+    }
+    return uniq(myCalendarChecked);
   },
   (_, set, value: string[] | ((prev: string[]) => string[])) => {
     set(_myCalendarCheckedAtom, value);
@@ -71,4 +144,25 @@ export const myCalendarCheckedAtom = atom(
 export const bossCalendarAtom = atomWithStorage<{ cid: string; timeZone: string; name: string }[]>(
   'bossCalendar',
   []
+);
+
+export const userCacheAtom = atom<
+  Map<
+    string,
+    {
+      id: string;
+      name: string;
+      email?: string;
+      avatarPath?: string;
+      avatar?: string;
+      timeZone?: string;
+    }
+  >
+>(new Map());
+
+export const themeModeAtom = loadable(
+  atom(async () => {
+    const theme = await getTheme();
+    return theme === 'dark' ? 'dark' : 'light';
+  })
 );

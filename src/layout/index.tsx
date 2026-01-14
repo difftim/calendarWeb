@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { Calendar, ConfigProvider, Flex } from 'antd';
+import { Calendar, Flex } from 'antd';
+import ConfigProvider, { useTheme } from '@/components/shared/ConfigProvider';
 import { Outlet, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 import { createInstantMeeting, createRoom, createWebCall } from '@/bridge';
@@ -17,13 +18,22 @@ import {
 } from '@/components/shared/IconsNew';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { currentScheduleDetailInfoAtom, timeZoneAtom } from '@/atoms';
-import { fixScrollToTimePosition } from '@/util';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+  currentScheduleDetailInfoAtom,
+  myCalendarCheckedAtom,
+  otherCalendarCheckedAtom,
+  timeZoneAtom,
+  userIdAtom,
+} from '@/atoms';
+import { fixScrollToTimePosition, getUserBgColor } from '@/util';
 import { showPannelAtom } from '@/atoms/detail';
 import { ScheduleMeetingDialog } from '@/pages/scheduler';
 import { useSetDetailData } from '@/hooks/useDetailData';
 import { useQueryDetail } from '@/hooks/useQueryDetail';
+import { SelectList } from '@/pages/calendar/components/SelectList';
+import { calendarQueryAtom } from '@/atoms/query';
+import { useCreateSchedule } from '@/hooks/useCreateSchedule';
 
 const ViewChangePanel = () => {
   const navigate = useNavigate();
@@ -87,11 +97,17 @@ const Layout = () => {
   const location = useLocation();
   const { date, setDate, showDate, setShowDate } = useSetDate();
   const timeZone = useAtomValue(timeZoneAtom);
-  const setShowPannel = useSetAtom(showPannelAtom);
+  const [showPannel, setShowPannel] = useAtom(showPannelAtom);
   const setDetailInfo = useSetAtom(currentScheduleDetailInfoAtom);
   const setDetailData = useSetDetailData();
   const { getDetailData } = useQueryDetail();
-
+  const myId = useAtomValue(userIdAtom);
+  const mode = useTheme();
+  const isListActive = location.pathname === '/list';
+  const [myChecked, setMyChecked] = useAtom(myCalendarCheckedAtom);
+  const [otherChecked, setOtherChecked] = useAtom(otherCalendarCheckedAtom);
+  const { data: { myUsers = [], otherUsers = [] } = {} } = useAtomValue(calendarQueryAtom);
+  const { createSchedule } = useCreateSchedule(timeZone);
   const headerRender = ({ value /*onChange*/ }: any) => {
     return (
       <Flex className="calendar-header" align="center" justify="center" gap={8}>
@@ -127,6 +143,7 @@ const Layout = () => {
       </Flex>
     );
   };
+  const { checkBoxBg } = useMemo(() => getUserBgColor(mode), [mode]);
 
   const fullCellRender = (curDate: Dayjs, info: any) => {
     const now = dayjs();
@@ -141,6 +158,18 @@ const Layout = () => {
     });
   };
 
+  useEffect(() => {
+    if (!showPannel) {
+      setDetailInfo({
+        selectItem: null,
+        currentFreeTimeId: '',
+        currentEid: '',
+        currentCid: 'default',
+        currentSource: '',
+      });
+    }
+  }, [showPannel]);
+
   return (
     <div className="meeting-schedule-pane-wrapper">
       <div className="calendar-left-panel">
@@ -148,6 +177,7 @@ const Layout = () => {
           <span
             onClick={() => {
               // setDetailData(getDetailData('123', 'default', 'difft'));
+              console.log('setDetailData', getDetailData);
               const start = dayjs().unix();
               const end = start + 1800;
               setDetailData({
@@ -168,7 +198,8 @@ const Layout = () => {
         <div className="main-block">
           <div
             onClick={() => {
-              // createNativeMeeting();
+              createSchedule('meeting');
+              console.log('ua', navigator.userAgent);
             }}
             className="meeting-block book"
           >
@@ -178,7 +209,7 @@ const Layout = () => {
           <div
             className="meeting-block instant"
             onClick={() => {
-              // createEvent();
+              createSchedule('event');
             }}
           >
             <IconCalendarEvent />
@@ -188,7 +219,12 @@ const Layout = () => {
             <IconFlashLineF />
             <div>Instant Meet</div>
           </div>
-          <div onClick={() => {}} className="meeting-block instant">
+          <div
+            onClick={() => {
+              createSchedule('livestream');
+            }}
+            className="meeting-block instant"
+          >
             <IconFluentLive24Filled />
             <div>Live Stream</div>
           </div>
@@ -231,42 +267,34 @@ const Layout = () => {
           />
         </ConfigProvider>
 
-        <div className="select-list-wrapper">
-          {/* <SelectList
-            myId={props.ourNumber}
-            listStyle={{ flexShrink: 0 }}
-            list={myCalendar}
-            bgColors={checkBoxBg.slice(0, myCalendar.length)}
-            title="My Calendars"
-            checked={myCalendarChecked}
-            onChange={list => {
-              localStorage.setItem('myChecked', JSON.stringify(list));
-              setMyCalendarChecked(list);
-            }}
-          />
-          {view !== 'list' ? (
+        {myId && (
+          <div className="select-list-wrapper">
             <SelectList
-              style={{ marginTop: '24px' }}
-              bgColors={checkBoxBg.slice(
-                myCalendar.length,
-                myCalendar.length + otherCalendar.length
-              )}
-              // height 0 makes height scroll
-              list={otherCalendar}
-              title="Other Calendars"
-              checked={otherCalendarChecked}
-              onChange={list => {
-                localStorage.setItem('otherChecked', JSON.stringify(list));
-                setOtherCalendarChecked(list);
-              }}
+              listStyle={{ flexShrink: 0 }}
+              list={myUsers}
+              bgColors={checkBoxBg.slice(0, myUsers.length)}
+              title="My Calendars"
+              checked={myChecked}
+              onChange={setMyChecked}
             />
-          ) : null} */}
-        </div>
+            {!isListActive && (
+              <SelectList
+                bgColors={checkBoxBg.slice(myUsers.length, myUsers.length + otherUsers.length)}
+                // height 0 makes height scroll
+                list={otherUsers}
+                title="Other Calendars"
+                checked={otherChecked}
+                onChange={setOtherChecked}
+              />
+            )}
+          </div>
+        )}
       </div>
       {/* 这里是主要内容区域，会根据路由切换 */}
       <div className="calendar-main-panel">
-        <ViewChangePanel />
         <Outlet />
+        {/* for index and not drag */}
+        <ViewChangePanel />
       </div>
       <ScheduleMeetingDialog />
     </div>

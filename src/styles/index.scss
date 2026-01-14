@@ -34,3 +34,7 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.ellipsis-1 {
+  @include ellipsis(1);
+}

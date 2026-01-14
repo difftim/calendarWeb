@@ -63,6 +63,8 @@
     --dsw-color-room-bg: #328afd;
     --dsw-color-room-hover-opacity: rgba(24, 26, 32, 0.25);
     --dsw-color-room-hover-btn-bg: rgba(246, 239, 253, 1);
+    --dsw-color-schedule-book-bg: #deffe7;
+    --dsw-color-schedule-instant-bg: #ebf7ff;
   }
 
   @if $theme ==dark {
@@ -130,6 +132,10 @@
     --dsw-color-room-bg: #474d57;
     --dsw-color-room-hover-opacity: rgba(24, 26, 32, 0.5);
     --dsw-color-room-hover-btn-bg: rgba(59, 37, 93, 1);
+    --dsw-color-schedule-book-bg: #174446;
+    --dsw-color-schedule-book-bg-hover: #45696b;
+    --dsw-color-schedule-instant-bg: #036;
+    --dsw-color-schedule-instant-bg-hover: #335c85;
   }
 }
 
