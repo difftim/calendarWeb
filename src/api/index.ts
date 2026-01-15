@@ -1876,6 +1876,9 @@ export const createMeetingSchedule = async (data: any) => {
   const { calendarId = 'default', ...body } = data;
   return request.post(`v1/calendar/${encodeURIComponent(calendarId)}/events`, {
     json: body,
+    headers: {
+      'x-full-response': '1',
+    },
   }) as any;
 };
 
@@ -1883,6 +1886,9 @@ export const updateMeetingSchedule = async (data: any) => {
   const { calendarId = 'default', eventId, ...body } = data;
   return request.put(`v1/calendar/${encodeURIComponent(calendarId)}/events/${eventId}`, {
     json: body,
+    headers: {
+      'x-full-response': '1',
+    },
   }) as any;
 };
 

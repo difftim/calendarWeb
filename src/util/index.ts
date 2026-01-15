@@ -814,3 +814,26 @@ export const sortUserList = (arr: any[]) => {
   });
   return arr;
 };
+
+export const formatTZ = (tz = '') => {
+  try {
+    tz = tz.trim();
+    if (!tz) {
+      return '';
+    }
+
+    const num = tz.startsWith('+') || tz.startsWith('-') ? tz.slice(1) : tz;
+    let digital: number | string = Number(num) - Math.floor(Number(num));
+
+    if (Number.isNaN(digital)) {
+      throw Error();
+    }
+
+    digital = `00${Math.round(60 * digital)}`.slice(-2);
+
+    return `${tz.split('.')[0]}:${digital}`;
+  } catch (error) {
+    console.log('[timezone format error]', tz);
+    return tz;
+  }
+};

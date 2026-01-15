@@ -29,8 +29,6 @@ import {
 import { fixScrollToTimePosition, getUserBgColor } from '@/util';
 import { showPannelAtom } from '@/atoms/detail';
 import { ScheduleMeetingDialog } from '@/pages/scheduler';
-import { useSetDetailData } from '@/hooks/useDetailData';
-import { useQueryDetail } from '@/hooks/useQueryDetail';
 import { SelectList } from '@/pages/calendar/components/SelectList';
 import { calendarQueryAtom } from '@/atoms/query';
 import { useCreateSchedule } from '@/hooks/useCreateSchedule';
@@ -99,8 +97,6 @@ const Layout = () => {
   const timeZone = useAtomValue(timeZoneAtom);
   const [showPannel, setShowPannel] = useAtom(showPannelAtom);
   const setDetailInfo = useSetAtom(currentScheduleDetailInfoAtom);
-  const setDetailData = useSetDetailData();
-  const { getDetailData } = useQueryDetail();
   const myId = useAtomValue(userIdAtom);
   const mode = useTheme();
   const isListActive = location.pathname === '/list';
@@ -174,26 +170,7 @@ const Layout = () => {
     <div className="meeting-schedule-pane-wrapper">
       <div className="calendar-left-panel">
         <div className="title">
-          <span
-            onClick={() => {
-              // setDetailData(getDetailData('123', 'default', 'difft'));
-              console.log('setDetailData', getDetailData);
-              const start = dayjs().unix();
-              const end = start + 1800;
-              setDetailData({
-                mode: 'create',
-                start,
-                end,
-                date: dayjs().tz(timeZone),
-                time: dayjs().tz(timeZone),
-                source: 'difft',
-                calendarId: 'default',
-              });
-              setShowPannel(true);
-            }}
-          >
-            Calendar
-          </span>
+          <span>Calendar</span>
         </div>
         <div className="main-block">
           <div

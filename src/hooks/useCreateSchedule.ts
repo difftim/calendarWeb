@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { useSetDetailData } from './useDetailData';
 import { DetailData, showPannelAtom } from '@/atoms/detail';
-import { estimateTime, getSimpleName } from '@/util';
+import { estimateTime, getSimpleName, uid2cid } from '@/util';
 import { useSetAtom } from 'jotai';
 import { unstable_batchedUpdates } from 'react-dom';
 import { useGetAtom } from './useGetAtom';
@@ -42,7 +42,7 @@ export const useCreateSchedule = (timeZone: string) => {
         name: myInfo.name,
       },
       source: 'difft',
-      calendarId: 'default',
+      calendarId: uid2cid(myInfo.id),
       loading: false,
       isGroup: false,
       isLiveStream,

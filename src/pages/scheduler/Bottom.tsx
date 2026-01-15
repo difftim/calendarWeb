@@ -13,21 +13,29 @@ import {
   IconHelperF,
   IconTablerCopy,
   IconTablerDots,
-  // IconTablerForward,
+  IconTablerForward,
   IconTablerTransfer,
 } from '@/shared/IconsNew';
-import { toastError, toastSuccess } from '@/shared/Message';
+import { toastError, toastSuccess, toastWarning } from '@/shared/Message';
 import { POPOVER_INNER_STYLE } from '@/constants';
-import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
+import { useSetDetailData } from '@/hooks/useDetailData';
+import {
+  useCurrentTimeZone,
+  useDetailDataValueWithTimeZone as useDetailData,
+} from '@/hooks/useCurrentTimeZone';
 import { useI18n } from '@/hooks/useI18n';
 import { useRadioModal } from '@/hooks/useRadioModal';
-import { cid2uid, copyText, stopClick } from '@/util';
+import { cid2uid, copyText, formatTZ, stopClick, uid2cid } from '@/util';
 import {
   addLiveStreamToCalendar,
   copyScheduleMeetingInfo,
+  createMeetingSchedule,
   deleteMeetingSchedule,
   goingScheduleMeeting,
+  scheduleMeetingGetFreeTime,
+  scheduleMeetingGetGroupFreeTime,
   scheduleMeetingReceiveNotify,
+  updateMeetingSchedule,
 } from '@/api';
 
 enum GOING {
@@ -58,7 +66,19 @@ function Bottom() {
     topic,
     date,
     time,
-  } = useDetailDataValue();
+    description,
+    attachment = [],
+    recurringRule,
+    group,
+    guests,
+    source,
+    syncToGoogle,
+    everyoneCanModify,
+    everyoneCanInviteOthers,
+    speechTimerEnabled,
+    speechTimerDuration,
+  } = useDetailData();
+  const { timeZone } = useCurrentTimeZone();
   const { i18n } = useI18n();
   const myId = useAtomValue(userIdAtom);
   const goingBtnLoading = useRef(false);
@@ -99,7 +119,7 @@ function Bottom() {
     const buttonCopy = viewMode.buttonCopy;
     const buttonCopyEvent = viewMode.buttonDuplicate;
     const buttonTransfer = viewMode.buttonTransferHost;
-    // const buttonCopyLiveStream = viewMode.buttonCopyLiveStream;
+    const buttonCopyLiveStream = viewMode.buttonCopyLiveStream;
     const buttonDelete = viewMode.buttonDelete;
     const buttonJoin = viewMode.buttonJoin;
 
@@ -176,7 +196,7 @@ function Bottom() {
       }
 
       try {
-        const res = await scheduleMeetingReceiveNotify({
+        await scheduleMeetingReceiveNotify({
           isRecurring,
           eventId: eid,
           calendarId,
@@ -184,32 +204,26 @@ function Bottom() {
           isAllEvent,
         });
 
-        if (res.status === 0) {
-          receiveLoading.current = false;
-        } else {
-          throw Error(`${res.status}__${res.reason}`);
-        }
-      } catch (error) {
+        receiveLoading.current = false;
+        setData({ receiveNotification });
+      } catch (error: any) {
         receiveLoading.current = false;
         console.log('set receive notify error', error);
+        toastError(error?.message || 'set receive notify failed!');
       }
-      setData({ receiveNotification });
     };
 
     const copyItem = async (action: 'copy' | 'share') => {
       try {
-        const res = await copyScheduleMeetingInfo({
+        const data = await copyScheduleMeetingInfo({
           eventId: eid,
           calendarId,
           action,
         });
-
-        const content = res?.data?.content;
-
-        if (!content || res?.status !== 0) {
-          throw Error(res?.reason || res?.status);
+        const content = data?.content;
+        if (!content) {
+          throw Error('copy failed');
         }
-
         if (action == 'share') {
           // TODO
           // showForwardModal({
@@ -224,7 +238,6 @@ function Bottom() {
           // });
           return;
         }
-
         await copyText(content);
         toastSuccess(`Copied!`);
       } catch (error: any) {
@@ -322,12 +335,12 @@ function Bottom() {
               </Flex>
             </div>
           ) : null}
-          {/* {buttonCopyLiveStream === Permission.ReadWrite ? (
-              <div className="item" onClick={() => copyItem('share')}>
-                <IconTablerForward width={16} height={16} />
-                <span>{i18n('schedule.shareLiveTo')}</span>
-              </div>
-            ) : null} */}
+          {buttonCopyLiveStream === Permission.ReadWrite ? (
+            <div className="item" onClick={() => copyItem('share')}>
+              <IconTablerForward width={16} height={16} />
+              <span>{i18n('schedule.shareLiveTo')}</span>
+            </div>
+          ) : null}
 
           {buttonCopyEvent === Permission.ReadWrite ? (
             <div className="item" onClick={copyEvent}>
@@ -506,7 +519,264 @@ function Bottom() {
     );
   }
 
-  const createOrUpdateMeeting = () => {};
+  const createOrUpdateMeeting = async () => {
+    if (postLoading) {
+      return;
+    }
+
+    const buildRRule = (repeat?: string) => {
+      if (!repeat || repeat === 'Never') {
+        return null;
+      }
+      return {
+        rrule: repeat,
+      };
+    };
+
+    try {
+      if (!date || !time) {
+        return;
+      }
+
+      const getStartTimestamp = () => {
+        if (!date || !time) {
+          return null;
+        }
+        return date
+          .set('hour', time.get('hour'))
+          .set('minute', time.get('minute'))
+          .set('second', 0)
+          .set('millisecond', 0)
+          .unix();
+      };
+
+      const repeat = recurringRule?.rrule || 'Never';
+      const isUpdateMode = mode !== 'create';
+      const isPrivate = !group?.gid;
+      const attendeesSource = members || [];
+      const meetingStart = getStartTimestamp();
+      let startTime = meetingStart ?? start;
+      let endTime = startTime + Math.round(duration) * 60;
+      let allDayStart = null;
+      let allDayEnd = null;
+
+      if (isEvent && isAllDay) {
+        const startDay = date.startOf('day');
+        const days = Math.round(duration / 1440);
+        allDayStart = startDay.format('YYYYMMDD');
+        allDayEnd = startDay.add(days, 'days').format('YYYYMMDD');
+        startTime = startDay.unix();
+        endTime = startDay
+          .add(Math.max(days - 1, 0), 'days')
+          .endOf('day')
+          .unix();
+      }
+
+      if (!isEvent && startTime * 1000 < Date.now()) {
+        toastError('The start time cannot be earlier than current time. Please select again.');
+        return;
+      }
+
+      setPostLoading(true);
+
+      const notValidUser = attendeesSource.filter(
+        (item: any) => item.validUser === false && item.email?.includes('@')
+      );
+      const showUsers = notValidUser.slice(0, 5);
+      if (notValidUser.length) {
+        const { ok: stillPost } = await openModal({
+          title: (
+            <div>
+              The following attendee(s) are from outside your organization:
+              {showUsers.map(item => (
+                <span key={item.email} style={{ color: 'var(--dsw-color-bg-primary)' }}>
+                  {' ' + item.email}
+                </span>
+              ))}
+              {notValidUser.length > 5 ? ' etc. ' : ' '}
+              Will send invitation emails to external attendees.
+            </div>
+          ),
+          okText: 'Got it',
+          cancelText: 'Continue editing',
+          hideRadio: true,
+        });
+        if (!stillPost) {
+          setPostLoading(false);
+          return;
+        }
+      }
+
+      if (!isUpdateMode) {
+        const steps = [
+          {
+            api: () =>
+              scheduleMeetingGetFreeTime({
+                start: startTime,
+                end: endTime,
+                uid: cid2uid(calendarId) || myId,
+              }),
+            modalParam: {
+              title: 'There is already an event at the time. Are you sure to continue?',
+            },
+          },
+        ];
+
+        if (!isPrivate && group?.gid) {
+          steps.unshift({
+            api: () =>
+              scheduleMeetingGetGroupFreeTime({
+                start: startTime,
+                end: endTime,
+                gid: group.gid,
+              }),
+            modalParam: {
+              title:
+                'There is already an event FROM THIS GROUP at the time. Are you sure to continue?',
+            },
+          });
+        }
+
+        for (const { api, modalParam } of steps) {
+          const data = (await api().catch(() => ({}))) as { freebusy?: string };
+          if (data?.freebusy === 'busy') {
+            const { ok: stillPost } = await openModal({
+              okText: 'Yes',
+              cancelText: 'No',
+              hideRadio: true,
+              ...modalParam,
+            });
+            if (!stillPost) {
+              setPostLoading(false);
+              return;
+            }
+            break;
+          }
+        }
+      }
+
+      const hostUid = cid2uid(calendarId) || host;
+      const getMemberUid = (item: any) => item.uid || item.id || '';
+      const getAttendees = () => {
+        if (isUpdateMode) {
+          return attendeesSource.map(item => ({
+            uid: getMemberUid(item),
+            name: item.name,
+            email: item.email || '',
+            role: item.role || 'attendee',
+            going: item.going || 'maybe',
+            isGroupUser: item.isGroupUser,
+          }));
+        }
+        return attendeesSource
+          .filter(item => {
+            if (isPrivate || isLiveStream) {
+              return true;
+            }
+            return item.isRemovable;
+          })
+          .map(item => {
+            const uid = getMemberUid(item);
+            return {
+              uid,
+              name: item.name,
+              email: item.email || '',
+              role: uid === hostUid ? 'host' : 'attendee',
+            };
+          });
+      };
+
+      const defaultTimeZone = formatTZ(timeZone || '+8.00');
+      const isMyCalendar = calendarId === uid2cid(myId);
+      const normalizedGuests =
+        isLiveStream && guests
+          ? {
+              ...guests,
+              users: guests.allStaff ? [] : guests.users,
+            }
+          : null;
+      const normalizedSpeechTimer = speechTimerEnabled
+        ? { duration: Math.round(Number(speechTimerDuration) || 2 * 60) }
+        : null;
+
+      let postData: any = {
+        topic,
+        description: description || '',
+        start: startTime,
+        end: endTime,
+        allDayStart,
+        allDayEnd,
+        timezone: isMyCalendar ? dayjs.tz.guess() : timeZone || defaultTimeZone,
+        calendarId: isMyCalendar ? 'default' : calendarId,
+        isAllDay: isEvent && isAllDay,
+        isRecurring: repeat !== 'Never',
+        recurringRule: buildRRule(repeat),
+        host: hostUid,
+        attendees: getAttendees(),
+        isGroup: !isPrivate && !isLiveStream,
+        group: !isPrivate && !isLiveStream ? group : null,
+        attachment,
+        category: isEvent ? 'event' : 'meeting',
+        isLiveStream,
+        receiveNotification,
+        everyoneCanModify,
+        everyoneCanInviteOthers,
+        syncToGoogle,
+        ...(isLiveStream ? { guests: normalizedGuests } : {}),
+        speechTimerEnabled: Boolean(speechTimerEnabled),
+        speechTimer: normalizedSpeechTimer,
+      };
+
+      if (isUpdateMode) {
+        let isAllEvent = false;
+        if (isRecurring) {
+          const { ok, allEvent } = await openModal({
+            title: i18n(isEvent ? 'schedule.updateEventDetail' : 'schedule.updateDetail'),
+            isEvent,
+            okText: 'Yes',
+            cancelText: 'No',
+          });
+          if (!ok) {
+            setPostLoading(false);
+            return;
+          }
+          isAllEvent = allEvent!;
+        }
+        postData.syncToGoogle = source === 'google';
+        postData = {
+          event: postData,
+          isRecurring,
+          isAllEvent,
+          eventId: eid,
+          calendarId: calendarId || 'default',
+        };
+      }
+
+      const res = isUpdateMode
+        ? await updateMeetingSchedule(postData)
+        : await createMeetingSchedule(postData);
+
+      if (res?.status !== 0) {
+        throw Error(res?.reason);
+      }
+
+      if (res?.reason && res.reason !== 'success') {
+        toastWarning(res.reason);
+      } else {
+        toastSuccess(
+          `${isUpdateMode ? 'update' : 'create'} ${
+            isLiveStream ? 'livestream' : isEvent ? 'event' : 'meeting'
+          } successfully!`
+        );
+      }
+
+      setPostLoading(false);
+      setShowPanel(false);
+    } catch (error: any) {
+      setPostLoading(false);
+      toastError(error?.message || 'network error');
+    }
+  };
 
   const getBtnDisabled = () => members.length === 0 || !date || !time;
 
