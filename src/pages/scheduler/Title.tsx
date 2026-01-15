@@ -1,5 +1,5 @@
-import { IconTablerInfoCircle } from '@/components/shared/IconsNew';
-import Input from '@/components/shared/Input';
+import { IconTablerInfoCircle } from '@/shared/IconsNew';
+import Input from '@/shared/Input';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import { Flex, Tooltip } from 'antd';

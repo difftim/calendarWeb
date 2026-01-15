@@ -6,7 +6,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { Checkbox, CheckboxChangeEvent, Flex, InputNumber, Space, Tooltip } from 'antd';
 import { DetailData } from '@/atoms/detail';
 import { useI18n } from '@/hooks/useI18n';
-import { IconHelperF } from '@/components/shared/IconsNew';
+import { IconHelperF } from '@/shared/IconsNew';
 import { queryScheduleConfigAtom } from '@/atoms/query';
 
 type setOptionKey = keyof Pick<

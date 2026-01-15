@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Checkbox, ConfigProvider, Flex } from 'antd';
 import classNames from 'classnames';
-import { useGetColor } from '@shared/ConfigProvider';
-import { IconChevronRight1 as ChevronRight } from '@shared/IconsNew';
+import { useGetColor } from '@/shared/ConfigProvider';
+import { IconChevronRight1 as ChevronRight } from '@/shared/IconsNew';
 import { cid2uid, cleanUserNameForDisplay } from '@/util';
 import { useAtomValue } from 'jotai';
 import { userIdAtom } from '@/atoms';

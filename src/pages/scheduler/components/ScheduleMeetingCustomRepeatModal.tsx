@@ -4,7 +4,7 @@ import { Flex, InputNumber, Modal } from 'antd';
 import { Dayjs } from 'dayjs';
 import classNames from 'classnames';
 
-import Select from '@shared/Select';
+import Select from '@/shared/Select';
 import { getDayOfMonth, getNthWeekdayOfMonth, isLastWeekdayOfMonth } from '@/util';
 
 export interface CustomRepeat {

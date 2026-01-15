@@ -29,7 +29,7 @@
         "src/*"
       ],
       "@shared/*": [
-        "src/components/shared/*"
+        "src/shared/*"
       ]
     },
     "esModuleInterop": true,

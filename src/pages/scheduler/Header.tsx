@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconCloseF, IconLiveStream } from '@shared/IconsNew';
+import { IconCloseF, IconLiveStream } from '@/shared/IconsNew';
 import { useDetailDataValue } from '@/hooks/useDetailData';
 import { showPannelAtom } from '@/atoms/detail';
 import { useSetAtom } from 'jotai';

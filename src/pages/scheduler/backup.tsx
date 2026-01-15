@@ -25,7 +25,7 @@ import {
   IconTablerForward,
   IconTablerTransfer,
   IconTablerInfoCircle,
-} from '@shared/IconsNew';
+} from '@/shared/IconsNew';
 import { useGoToGoogleMeeting } from './CalendarTab/hooks/useGoToGoogleMeeting';
 import { useRadioModal } from '../hooks/useAllMeetingRadioModal';
 import { sortUserList } from './utils/sortScheduleMeetingUser';

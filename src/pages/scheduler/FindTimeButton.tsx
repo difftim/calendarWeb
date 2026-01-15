@@ -1,4 +1,4 @@
-import { toastInfo } from '@/components/shared/Message';
+import { toastInfo } from '@/shared/Message';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import React from 'react';

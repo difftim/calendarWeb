@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { DatePicker, DatePickerProps, Space } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 
-import TimePicker from '@shared/TimerPicker';
-import { IconCalendar } from '@shared/IconsNew';
+import TimePicker from '@/shared/TimerPicker';
+import { IconCalendar } from '@/shared/IconsNew';
 import { unstable_batchedUpdates } from 'react-dom';
 
 type Props = {

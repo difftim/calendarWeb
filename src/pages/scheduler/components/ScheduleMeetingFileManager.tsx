@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Input, Button, Popover } from 'antd';
-import { IconCloseF, IconTablerPlus } from '@shared/IconsNew';
+import { IconCloseF, IconTablerPlus } from '@/shared/IconsNew';
 
 type Props = {
   files: any[];

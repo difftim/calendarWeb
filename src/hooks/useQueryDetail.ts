@@ -1,6 +1,6 @@
 import { timeZoneAtom } from '@/atoms';
 import { useGetAtom } from './useGetAtom';
-import { toastError } from '@/components/shared/Message';
+import { toastError } from '@/shared/Message';
 import { formarDetailResponse } from '@/util';
 import { DetailData } from '@/atoms/detail';
 import { getMeetingScheduleDetail } from '@/api';

@@ -6,7 +6,7 @@ import { useSetAtom } from 'jotai';
 import { unstable_batchedUpdates } from 'react-dom';
 import { useGetAtom } from './useGetAtom';
 import { currentScheduleDetailInfoAtom, userInfoAsyncAtom } from '@/atoms';
-import { toastError } from '@/components/shared/Message';
+import { toastError } from '@/shared/Message';
 
 export const useCreateSchedule = (timeZone: string) => {
   const setCurrentScheduleInfo = useSetAtom(currentScheduleDetailInfoAtom);

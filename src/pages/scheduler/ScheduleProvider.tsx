@@ -6,7 +6,7 @@ import { useLoadableDetailData, useSetDetailData } from '@/hooks/useDetailData';
 import { INITIAL_DETAIL_DATA, showPannelAtom } from '@/atoms/detail';
 import { currentScheduleDetailInfoAtom } from '@/atoms';
 import Header, { LoadingHeader } from './Header';
-import { ConfigProvider } from '@/components/shared';
+import { ConfigProvider } from '@/shared';
 import classNames from 'classnames';
 
 export const ScheduleProvider: React.FC = ({ children }) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 
 import { bossCalendarAtom, timeZoneAtom, userInfoAtom } from '@/atoms';
-import Select from '@/components/shared/Select';
+import Select from '@/shared/Select';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import {
   cleanUserNameForDisplay,

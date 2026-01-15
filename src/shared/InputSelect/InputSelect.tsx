@@ -1,7 +1,7 @@
 import { AutoComplete, AutoCompleteProps, Input } from 'antd';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { IconChevronDown2 as ChevronDown } from '@shared/IconsNew';
+import { IconChevronDown2 as ChevronDown } from '@/shared/IconsNew';
 import { prefixCls } from '@/constants';
 
 export type Props = Omit<AutoCompleteProps, 'onChange' | 'options' | 'labelRender'> & {

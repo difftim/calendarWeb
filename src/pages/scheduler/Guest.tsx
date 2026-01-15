@@ -1,5 +1,5 @@
-import { IconChevronRight, IconHelperF } from '@/components/shared/IconsNew';
-import Select from '@/components/shared/Select';
+import { IconChevronRight, IconHelperF } from '@/shared/IconsNew';
+import Select from '@/shared/Select';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import { stopClick } from '@/util';

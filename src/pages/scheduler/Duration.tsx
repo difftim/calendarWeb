@@ -12,7 +12,7 @@ import { formatRoundMinute, formatTime, uid2cid } from '@/util';
 import { useSetDetailData } from '@/hooks/useDetailData';
 import { DURATION_OPTIONS } from '@/constants';
 import classNames from 'classnames';
-import InputSelect from '@/components/shared/InputSelect';
+import InputSelect from '@/shared/InputSelect';
 import ScheduleEventEndPicker from './components/ScheduleEventEndPicker';
 
 function Duration() {

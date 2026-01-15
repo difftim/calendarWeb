@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Calendar, Flex } from 'antd';
-import ConfigProvider, { useTheme } from '@/components/shared/ConfigProvider';
+import ConfigProvider, { useTheme } from '@/shared/ConfigProvider';
 import { Outlet, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 import { createInstantMeeting, createRoom, createWebCall } from '@/bridge';
@@ -15,7 +15,7 @@ import {
   IconTablerLink,
   IconTablerUser,
   IconTablerVideo,
-} from '@/components/shared/IconsNew';
+} from '@/shared/IconsNew';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';

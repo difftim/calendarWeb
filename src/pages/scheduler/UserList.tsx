@@ -5,12 +5,7 @@ import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import CommonUserList from './components/SchedulerUserList';
 import { useI18n } from '@/hooks/useI18n';
 import { cid2uid, sortUserList, stopClick } from '@/util';
-import {
-  IconBackF,
-  IconCloseF,
-  IconHelperF,
-  IconTablerUserPlus,
-} from '@/components/shared/IconsNew';
+import { IconBackF, IconCloseF, IconHelperF, IconTablerUserPlus } from '@/shared/IconsNew';
 import { useSetAtom } from 'jotai';
 import { showPannelAtom } from '@/atoms/detail';
 

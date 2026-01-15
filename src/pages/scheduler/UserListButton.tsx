@@ -1,4 +1,4 @@
-import { IconChevronRight, IconHelperF, IconTablerPlus } from '@/components/shared/IconsNew';
+import { IconChevronRight, IconHelperF, IconTablerPlus } from '@/shared/IconsNew';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import { isBotId } from '@/util';

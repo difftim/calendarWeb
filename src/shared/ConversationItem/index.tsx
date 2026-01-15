@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 
-import { Avatar } from '@shared/Avatar';
+import { Avatar } from '@/shared/Avatar';
 import { cleanUserIdForDisplay, isBotId } from '@/util';
 import { useAtomValue } from 'jotai';
 import { userInfoByIdAtom } from '@/atoms/userInfo';

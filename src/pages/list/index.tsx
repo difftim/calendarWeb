@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import useFormatMeetingList from '@/hooks/useFormatMeetingList';
 import { calendarQueryAtom } from '@/atoms/query';
 import { useCreateSchedule } from '@/hooks/useCreateSchedule';
-import { useGetEventColors } from '@/components/shared/ConfigProvider/useTheme';
+import { useGetEventColors } from '@/shared/ConfigProvider/useTheme';
 
 const ListView = () => {
   const timeZone = useAtomValue(timeZoneAtom);

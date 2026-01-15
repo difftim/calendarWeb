@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Modal, ModalFuncProps, Space } from 'antd';
-import Radio, { RadioGroup } from '@shared/Radio';
-import ConfigProvider from '@shared/ConfigProvider';
+import Radio, { RadioGroup } from '@/shared/Radio';
+import ConfigProvider from '@/shared/ConfigProvider';
 
 // 二次确认弹窗
 export const useRadioModal = () => {

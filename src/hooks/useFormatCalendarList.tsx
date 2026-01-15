@@ -4,8 +4,8 @@ import { useAtomValue } from 'jotai';
 import { uniqBy } from 'lodash';
 
 import { cid2uid, getOffset, getSimpleName, getTimeFormatWithUtc, isOverlap } from '@/util';
-import { IconLiveStream, IconTablerPlus } from '@shared/IconsNew';
-import { useTimeZoneDayjs } from '../components/CalendarList/hooks/useTimeZoneDayjs';
+import { IconLiveStream, IconTablerPlus } from '@/shared/IconsNew';
+import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
 import { currentScheduleDetailInfoAtom, timeZoneAtom, userInfoAtom } from '@/atoms';
 import classNames from 'classnames';
 import { getUserBaseInfoSync } from '@/atoms/userInfo';

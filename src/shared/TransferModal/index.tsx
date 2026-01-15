@@ -14,9 +14,9 @@ import { uniqBy } from 'lodash';
 import { SearchInput } from '../Input';
 import { unstable_batchedUpdates } from 'react-dom';
 import { TransferModalStoreProvider, useTranferModalStore } from './TransferModalContext';
-import useI18n from '../../../hooks/useI18n';
+import useI18n from '../../hooks/useI18n';
 import { LocalizerType } from '../../../types/Util';
-import { CloseF, TablerSearch } from '@shared/IconsNew';
+import { CloseF, TablerSearch } from '@/shared/IconsNew';
 import { ExcludeOnClose } from './useTransferModal';
 import ConfigProvider from '../ConfigProvider';
 

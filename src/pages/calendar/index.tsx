@@ -13,9 +13,9 @@ import {
   timeZoneAtom,
   userIdAtom,
 } from '@/atoms';
-import { toastError } from '@/components/shared/Message';
+import { toastError } from '@/shared/Message';
 import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
-import { IconTablerSetting } from '@/components/shared/IconsNew';
+import { IconTablerSetting } from '@/shared/IconsNew';
 import { calendarQueryAtom } from '@/atoms/query';
 import { Spin } from 'antd';
 import useFormatCalendarList from '@/hooks/useFormatCalendarList';
@@ -24,7 +24,7 @@ import HeaderAvatar from './components/HeaderAvatar';
 import { useSetDetailData } from '@/hooks/useDetailData';
 import { useQueryDetail } from '@/hooks/useQueryDetail';
 import { showPannelAtom } from '@/atoms/detail';
-import { useGetEventColors } from '@/components/shared/ConfigProvider/useTheme';
+import { useGetEventColors } from '@/shared/ConfigProvider/useTheme';
 
 export default function Calendar() {
   const [date, setDate] = useAtom(dateAtom);

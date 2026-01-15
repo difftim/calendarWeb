@@ -2,8 +2,8 @@ import React from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import classNames from 'classnames';
 
-import { ContactListItem } from '@/components/shared/ConversationItem';
-import { IconTablerCircleMinus } from '@shared/IconsNew';
+import { ContactListItem } from '@/shared/ConversationItem';
+import { IconTablerCircleMinus } from '@/shared/IconsNew';
 import { cleanUserNameForDisplay } from '@/util';
 
 type Props = {

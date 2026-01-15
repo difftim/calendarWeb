@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import { Select as AntdSelect } from 'antd';
-import { IconChevronDown2 as ChevronDown } from '@shared/IconsNew';
+import { IconChevronDown2 as ChevronDown } from '@/shared/IconsNew';
 import type { SelectProps } from 'antd';
 
 export type Props = {} & SelectProps;

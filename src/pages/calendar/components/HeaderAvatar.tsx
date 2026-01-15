@@ -1,6 +1,6 @@
 import { userIdAtom } from '@/atoms';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
-import { Avatar } from '@/components/shared/Avatar';
+import { Avatar } from '@/shared/Avatar';
 import { cid2uid, cleanUserNameForDisplay, getOffset, getUtcOffset } from '@/util';
 import { useAtomValue } from 'jotai';
 import React from 'react';

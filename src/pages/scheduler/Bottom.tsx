@@ -15,8 +15,8 @@ import {
   IconTablerDots,
   // IconTablerForward,
   IconTablerTransfer,
-} from '@/components/shared/IconsNew';
-import { toastError, toastSuccess } from '@/components/shared/Message';
+} from '@/shared/IconsNew';
+import { toastError, toastSuccess } from '@/shared/Message';
 import { POPOVER_INNER_STYLE } from '@/constants';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';

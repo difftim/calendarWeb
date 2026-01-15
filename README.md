@@ -77,64 +77,71 @@ npm run type-check
 yarn type-check
 ```
 
-## 项目结构
+## 项目目录结构
 
-```
-calendarWeb/
-├── src/
-│   ├── components/
-│   │   ├── IndependentPageEntry/  # 根组件
-│   │   └── shared/
-│   │       └── ConfigProvider/    # 主题配置提供者
-│   ├── styles/                    # 样式文件
-│   │   ├── variables.scss         # SCSS 变量
-│   │   └── index.scss             # 全局样式
-│   ├── types/                     # TypeScript 类型定义
-│   │   └── Util.ts
-│   ├── utils/                     # 工具函数
-│   │   ├── exported_variables.ts  # 主题变量
-│   │   ├── globalAdapter.ts       # 全局适配器
-│   │   ├── i18n.ts                # 国际化
-│   │   ├── initDayjs.ts           # Dayjs 初始化
-│   │   └── loopCall.ts            # 循环调用工具
-│   └── main.tsx                   # 应用入口
-├── index.html                     # HTML 模板
-├── vite.config.ts                 # Vite 配置
-├── tsconfig.json                  # TypeScript 配置
-└── package.json                   # 项目配置
-
+```text
+src/
+├── api/          # 接口层：定义业务 API 与 axios 拦截器
+├── atoms/        # 状态层：基于 Jotai 的全局状态定义 (用户、时区、主题、编辑器等)
+├── bridge/       # 桥接层：负责与跨端宿主环境的 JSBridge 通信
+├── components/   # 组件层：包含通用 UI (shared) 与业务大组件
+├── hooks/        # 逻辑封装：从 UI 中抽离的业务逻辑 (数据处理、日期操作等)
+├── layout/       # 布局层：页面的整体框架结构
+├── pages/        # 页面层：具体的业务模块页面 (日历主视图、列表视图、编辑器)
+├── provider/     # 提供者：国际化 (I18n) 等全局 Context Provider
+├── shims/        # 适配层：环境差异适配与全局变量 Mock
+├── styles/       # 样式目录：SCSS 变量、Mixin 与全局样式
+└── util/         # 工具类：纯函数工具集
 ```
 
-## 特性
+## 页面与布局架构
 
-- ✅ 基于 Vite 的快速开发环境
-- ✅ TypeScript 支持
-- ✅ 亮色/暗色主题切换
-- ✅ Ant Design 组件库集成
-- ✅ SCSS 样式预处理
-- ✅ React Query 数据管理
-- ✅ 国际化支持
-- ✅ **精简依赖**：仅 9 个核心依赖，快速安装
+项目采用 **侧边栏 + 主内容区** 的布局模式，利用 `react-router-dom` 的 `Outlet` 实现动态内容切换。
 
-## 注意事项
+- **Layout (`src/layout/index.tsx`)**:
+  - **左侧面板**: 常驻展示。包含新建按钮、迷你日历控件、日历分类选择列表。
+  - **右侧面板 (`Outlet`)**: 根据路由映射展示 `pages/calendar` 或 `pages/list`。
+  - **视图切换 (`ViewChangePanel`)**: 浮动在右下角的视图切换器（List/Week/Day）。
+  - **编辑器弹窗**: `ScheduleMeetingDialog` 挂载在 Layout 顶层，由全局状态 `showPannelAtom` 控制。
 
-由于这是从 Electron 桌面应用移植的独立 Web 版本，某些依赖于 Electron 的功能已被模拟或移除：
+## 数据结构
 
-- IPC 通信相关功能
-- 本地文件系统访问
-- Electron 特定的 API
+### 1. 日历列表数据 (`calendarQueryAtom`)
 
-这些功能在 `src/utils/globalAdapter.ts` 中提供了 mock 实现。
+通过 `jotai-tanstack-query` 获取的周数据，核心结构包含：
 
-## 后续开发
+- `events`: 经过格式化的事件数组，包含 `eid`, `start`, `end`, `topic`, `source` 等。
+- `myUsers` / `otherUsers`: 用于侧边栏日历勾选列表的数据，包含用户信息及颜色配置。
 
-如果需要完整的 CalendarList 功能，需要进一步移植：
+### 2. 详情/编辑器数据 (`DetailData`)
 
-1. CalendarList 组件的完整实现
-2. ListView 和相关子组件
-3. 会议调度相关的业务逻辑
-4. 与后端 API 的集成
+存储在 `schedulerDataAtom` 中，包含创建、查看或编辑一个会议所需的所有信息。
 
-## License
+- `mode`: `'create' | 'view' | 'update'` 决定编辑器行为。
+- `members`: 参与者详情，包括权限、角色及响应状态。
+- `permissions`: 按钮级权限配置（由后端返回，决定用户能否编辑或删除）。
 
-GPL-3.0
+## 同步与异步处理机制
+
+项目深度集成了 **Jotai**，通过不同的 Atom 类型和 Hook 实现了高效的同步与异步协同：
+
+### 1. 异步数据流 (`jotai-tanstack-query`)
+
+- **自动触发**: `calendarQueryAtom` 依赖于 `dateAtom` (当前选中日期) 和 `userIdAtom`。当用户在左侧迷你日历切换日期或周时，这些 Atom 发生变化，Jotai 会自动重新触发异步请求获取该周的日历数据。
+- **持久化与缓存**: 利用 React Query 的特性，数据在获取后会进行缓存。`keepPreviousData: true` 确保在加载新数据时，旧数据依然可见，避免界面闪烁。
+
+### 2. 异步状态同步化 (`loadable`)
+
+- **非阻塞式获取**: 使用 `jotai/utils` 的 `loadable` 包装异步 Atom。
+- **优势**: 传统的异步 Atom 在读取时会触发 React Suspense，导致组件树挂起。`loadable` 将异步状态转化为一个同步对象（包含 `state`, `data`, `error`），允许我们在组件中通过 `state === 'loading'` 同步地判断加载状态，提供更好的用户体验。
+
+### 3. 数据更新机制 (`useSetDetailData`)
+
+- **多态 Setter**: 该 Hook 返回一个高度封装的 setter 函数。
+- **同步更新**: 传入 `Partial<DetailData>` 对象时，立即同步更新状态中的部分字段（如修改标题、勾选选项）。
+- **异步更新**: 传入一个 `Promise` 时（例如调用 `getDetailData` 接口），setter 会自动识别并将状态设为 `loading: true`，待 Promise resolve 后再同步结果并重置 loading。
+- **原子化更新**: 通过传入函数 `(prev) => Partial<DetailData>`，利用前一次的状态进行计算更新，避免闭包导致的旧数据覆盖问题。
+
+### 4. 外部 Store 访问 (`atoms/store.ts`)
+
+- **跨组件/React 外部操作**: 定义了全局 `store` 实例。在 `main.tsx` 启动时或接口拦截器中，可以直接使用 `store.set(atom, value)` 操作状态，而无需处于 React 组件生命周期内。这在处理如“启动时预加载主题”等逻辑时非常有用。
