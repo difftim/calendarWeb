@@ -6,13 +6,14 @@ import { Button } from '@shared/Button';
 import { Avatar } from '@shared/Avatar';
 import { IconGoogle, IconLiveStream, IconOutLook, IconTablerBell } from '@shared/IconsNew';
 import { toastError, toastSuccess } from '@shared/Message';
-import { onMuteMeeting } from '@/shims/globalAdapter';
+// import { onMuteMeeting } from '@/shims/globalAdapter';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
 import { StartType, cleanUserNameForDisplay } from '@/util';
 import { useSetDetailData } from '@/hooks/useDetailData';
 import { useQueryDetail } from '@/hooks/useQueryDetail';
 import { unstable_batchedUpdates } from 'react-dom';
 import { showPannelAtom } from '@/atoms/detail';
+import { onMuteMeeting } from '@/api';
 // TODO
 // import { joinMeeting } from './JoinMeeting';
 
@@ -106,13 +107,15 @@ const ListItem = ({
   const renderStatusBtn = () => {
     const isGoogleMeet = !item.channelName && item.googleMeetingLink;
     const isOutlookMeet = !item.channelName && item.outlookMeetingLink;
+
     const renderMuteBtn = () => {
       if (item.receiveNotification && Date.now() <= item.start * 1000 && !!item.channelName) {
         return (
           <div
             className="mute-btn hover-show"
             onClick={async e => {
-              const { success, reason } = await onMuteMeeting(e, item);
+              e.stopPropagation();
+              const { success, reason } = await onMuteMeeting(item);
               if (success) {
                 toastSuccess('success!');
               } else {
@@ -178,15 +181,12 @@ const ListItem = ({
       onClick={() => {
         if (item.disabled) {
           toastError('You have no access to view details');
-
           return;
         }
-
         unstable_batchedUpdates(() => {
           setDetailData(getDetailData(item.eid, item.cid, item.source));
           setShowPannel(true);
         });
-        // TODO
       }}
       style={style}
     >

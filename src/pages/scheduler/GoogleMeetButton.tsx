@@ -4,7 +4,6 @@ import { useDetailDataValue } from '@/hooks/useDetailData';
 
 function GoogleMeetButton() {
   const { mode, isLiveStream, category, showMore } = useDetailDataValue();
-  // TODO
   const isEvent = category === 'event';
   if (mode !== 'create' || !showMore || isEvent || isLiveStream) {
     return null;

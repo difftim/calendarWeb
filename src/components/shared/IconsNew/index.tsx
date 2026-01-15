@@ -396,3 +396,27 @@ export const IconTablerInfoCircle = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+
+export const IconTablerCircleMinus = (props: SVGProps<SVGSVGElement>) => (
+  <svg width={20} height={20} fill="none" viewBox="0 0 20 20" {...props}>
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.667}
+      d="M7.5 10h5m-10 0a7.5 7.5 0 1 0 15 0 7.5 7.5 0 0 0-15 0"
+    />
+  </svg>
+);
+
+export const IconTablerUserPlus = (props: SVGProps<SVGSVGElement>) => (
+  <svg width={20} height={20} fill="none" viewBox="0 0 20 20" {...props}>
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.667}
+      d="M7.5 9.167a3.333 3.333 0 1 0 0-6.667 3.333 3.333 0 0 0 0 6.667M15.833 6.667v5M2.5 17.5v-1.667A3.334 3.334 0 0 1 5.833 12.5h3.334a3.333 3.333 0 0 1 3.333 3.333V17.5zm10.833-8.333h5z"
+    />
+  </svg>
+);

@@ -14,6 +14,7 @@ import More from './More';
 import GoogleMeetButton from './GoogleMeetButton';
 import Permit from './Permit';
 import Bottom from './Bottom';
+import UserList from './UserList';
 
 export const ScheduleMeetingDialog = () => {
   return (
@@ -32,6 +33,7 @@ export const ScheduleMeetingDialog = () => {
       <More />
       <GoogleMeetButton />
       <Bottom />
+      <UserList />
     </Provider>
   );
 };

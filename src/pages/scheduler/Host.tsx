@@ -72,7 +72,6 @@ const Host = () => {
 
   // create
   if (mode === 'create') {
-    // TODO
     const hostOptions = calendarList.filter(Boolean).map(cItem => {
       const curUid = cid2uid(cItem.cid);
       const item = getUserBaseInfoSync(curUid);

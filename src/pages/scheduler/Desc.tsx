@@ -1,6 +1,15 @@
 import React from 'react';
 import { Input } from 'antd';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
+import Linkify from 'linkify-react';
+import { registerCustomProtocol } from 'linkifyjs';
+
+registerCustomProtocol('difft');
+registerCustomProtocol('wea');
+registerCustomProtocol('cctm');
+registerCustomProtocol('weatest');
+registerCustomProtocol('ccm');
+registerCustomProtocol('chative');
 
 const Desc = () => {
   const { mode, description = '', showMore, canModify } = useDetailDataValue();
@@ -12,7 +21,6 @@ const Desc = () => {
       return null;
     }
 
-    // TODO replace with linkify
     return (
       <div className="item">
         <div className="item-title">Desc.</div>
@@ -26,8 +34,7 @@ const Desc = () => {
             whiteSpace: 'break-spaces',
           }}
         >
-          {description}
-          {/* <Linkify text={description} getUrlCheckResult={() => ({ status: 1 })} i18n={i18n} /> */}
+          <Linkify options={{ attributes: { target: '_blank' } }}>{description}</Linkify>
         </div>
       </div>
     );

@@ -18,7 +18,7 @@ import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
 import { IconTablerSetting } from '@/components/shared/IconsNew';
 import { calendarQueryAtom } from '@/atoms/query';
 import { Spin } from 'antd';
-import useFormatCalendarList from '@/components/CalendarList/hooks/useFormatCalendarList';
+import useFormatCalendarList from '@/hooks/useFormatCalendarList';
 import { uniqBy } from 'lodash';
 import HeaderAvatar from './components/HeaderAvatar';
 import { useSetDetailData } from '@/hooks/useDetailData';

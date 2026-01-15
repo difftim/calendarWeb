@@ -5,7 +5,7 @@ import { uniqBy } from 'lodash';
 
 import { cid2uid, getOffset, getSimpleName, getTimeFormatWithUtc, isOverlap } from '@/util';
 import { IconLiveStream, IconTablerPlus } from '@shared/IconsNew';
-import { useTimeZoneDayjs } from './useTimeZoneDayjs';
+import { useTimeZoneDayjs } from '../components/CalendarList/hooks/useTimeZoneDayjs';
 import { currentScheduleDetailInfoAtom, timeZoneAtom, userInfoAtom } from '@/atoms';
 import classNames from 'classnames';
 import { getUserBaseInfoSync } from '@/atoms/userInfo';
@@ -236,8 +236,6 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
                 start: item.start,
                 end: item.end,
               });
-              // TODO
-              // createNativeMeeting(item);
             }}
             className={classNames('temp-event', { busy: isBusy })}
           >

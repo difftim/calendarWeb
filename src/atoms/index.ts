@@ -3,7 +3,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { atomWithStorage, loadable } from 'jotai/utils';
 import { uniq } from 'lodash';
 import { initDayjs } from '@/util';
-import { getUserInfo, isBridgeSupported, initialize, getTheme } from '@difftim/jsbridge-utils';
+import { getUserInfo, isBridgeSupported, initialize } from '@difftim/jsbridge-utils';
 import { fetchUserInfo } from './userInfo';
 
 initDayjs();
@@ -160,9 +160,5 @@ export const userCacheAtom = atom<
   >
 >(new Map());
 
-export const themeModeAtom = loadable(
-  atom(async () => {
-    const theme = await getTheme();
-    return theme === 'dark' ? 'dark' : 'light';
-  })
-);
+// 主题 atom - 由 main.tsx 在启动时通过 store.set 初始化
+export const themeAtom = atom<'light' | 'dark'>('light');

@@ -271,3 +271,65 @@ $prefix-simple: dsw-simple;
     }
   }
 }
+
+// Radio confirm modal - theme support via CSS variables
+.common-confirm-radio-modal {
+  .ant-modal-content {
+    background-color: var(--dsw-color-bg-modal);
+    box-shadow: var(--dsw-elevation-02);
+
+    .ant-modal-confirm-title {
+      color: var(--dsw-color-text-primary);
+    }
+
+    .ant-modal-confirm-content {
+      color: var(--dsw-color-text-primary);
+    }
+
+    .ant-btn-default {
+      background-color: transparent;
+      border-color: var(--dsw-color-line);
+      color: var(--dsw-color-text-primary);
+
+      &:hover {
+        background-color: transparent;
+        border-color: var(--dsw-color-primary);
+        color: var(--dsw-color-primary);
+      }
+    }
+
+    .ant-btn-primary {
+      &:focus,
+      &:focus-visible,
+      &:active {
+        box-shadow: none;
+        outline: none;
+      }
+    }
+  }
+}
+
+// Toast message - theme support via CSS variables
+.ant-message {
+  .ant-message-notice {
+    .ant-message-notice-content {
+      background-color: var(--dsw-color-bg-modal) !important;
+      box-shadow: var(--dsw-elevation-02);
+      color: var(--dsw-color-text-primary);
+
+      .ant-message-custom-content {
+        display: flex;
+        align-items: center;
+        color: var(--dsw-color-text-primary);
+
+        > span:not(.anticon) {
+          color: var(--dsw-color-text-primary);
+        }
+
+        > .anticon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}

@@ -1,29 +1,18 @@
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { themeModeAtom } from '@/atoms';
+import { themeAtom } from '@/atoms';
 import { getUserBgColor } from '@/util';
 
 export type ThemeMode = 'light' | 'dark';
 
 const useTheme = () => {
-  const themeMode = useAtomValue(themeModeAtom);
+  const mode = useAtomValue(themeAtom);
 
+  // 同步更新 body class
   useLayoutEffect(() => {
-    if (themeMode.state === 'hasData') {
-      const theme = themeMode.data;
-      document.body.classList.replace(
-        'light-theme',
-        theme === 'dark' ? 'dark-theme' : 'light-theme'
-      );
-    }
-  }, [themeMode]);
-
-  const mode = useMemo(() => {
-    if (themeMode.state === 'hasData') {
-      return themeMode.data === 'dark' ? 'dark' : 'light';
-    }
-    return 'light';
-  }, [themeMode]);
+    document.body.classList.remove('light-theme', 'dark-theme');
+    document.body.classList.add(mode === 'dark' ? 'dark-theme' : 'light-theme');
+  }, [mode]);
 
   return mode;
 };

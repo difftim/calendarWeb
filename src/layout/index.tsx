@@ -5,8 +5,8 @@ import ConfigProvider, { useTheme } from '@/components/shared/ConfigProvider';
 import { Outlet, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 import { createInstantMeeting, createRoom, createWebCall } from '@/bridge';
-import { useAntdLocale } from '@/components/CalendarList/hooks/useAntdLocale';
-import { useSetDate } from '@/components/CalendarList/hooks/useSetDate';
+import { useAntdLocale } from '@/hooks/useAntdLocale';
+import { useSetDate } from '@/hooks/useSetDate';
 import {
   IconCalendarEvent,
   IconChevronRight,

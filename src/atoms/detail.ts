@@ -101,7 +101,7 @@ export type DetailData = {
   syncToGoogle?: boolean;
   speechTimerEnabled?: boolean;
   speechTimerDuration?: number | null;
-  childModalType?: 'attendee' | 'guest' | 'findTime';
+  childModalType?: 'attendee' | 'guest' | 'findTime' | '';
   showMore?: boolean;
 };
 

@@ -783,3 +783,34 @@ export const getSimpleName = (name: string) => {
   }
   return name.slice(0, name.indexOf('('));
 };
+
+export const sortUserList = (arr: any[]) => {
+  arr.sort((a, b) => {
+    if (a.role === 'host') {
+      return -1;
+    }
+    if (b.role === 'host') {
+      return 1;
+    }
+    if (a.isMe) {
+      return -1;
+    }
+    if (b.isMe) {
+      return 1;
+    }
+    // sort by name
+    if (a.name && !b.name) {
+      return -1;
+    }
+    if (!a.name && b.name) {
+      return 1;
+    }
+    if (!a.name && !b.name) {
+      return -1;
+    }
+    const _a = a.name.slice(0, 1).toLowerCase();
+    const _b = b.name.slice(0, 1).toLowerCase();
+    return _a < _b ? -1 : 1;
+  });
+  return arr;
+};

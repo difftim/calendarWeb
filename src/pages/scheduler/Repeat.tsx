@@ -35,7 +35,7 @@ const Repeat = () => {
     return null;
   }
 
-  const repeatOptions = recurringRule.repeatOptions || REPEAT_OPTIONS;
+  const repeatOptions = recurringRule?.repeatOptions || REPEAT_OPTIONS;
 
   // view
   if (mode === 'view') {

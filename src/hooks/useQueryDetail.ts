@@ -1,9 +1,9 @@
 import { timeZoneAtom } from '@/atoms';
 import { useGetAtom } from './useGetAtom';
-import { getMeetingScheduleDetail } from '@/shims/globalAdapter';
 import { toastError } from '@/components/shared/Message';
 import { formarDetailResponse } from '@/util';
 import { DetailData } from '@/atoms/detail';
+import { getMeetingScheduleDetail } from '@/api';
 
 export const useQueryDetail = () => {
   const getTimeZone = useGetAtom(timeZoneAtom);

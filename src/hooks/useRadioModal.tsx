@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Modal, ModalFuncProps, Space } from 'antd';
 import Radio, { RadioGroup } from '@shared/Radio';
+import ConfigProvider from '@shared/ConfigProvider';
 
 // 二次确认弹窗
 export const useRadioModal = () => {
@@ -17,22 +18,24 @@ export const useRadioModal = () => {
       return null;
     }
     return (
-      <RadioGroup
-        style={{ margin: '16px 0' }}
-        onChange={e => {
-          const newValue = e.target.value;
-          typeRef.current = newValue;
-          instanceRef.current?.update({
-            content: createContent(hideRadio, isEvent, instanceRef, newValue),
-          });
-        }}
-        value={type}
-      >
-        <Space direction="vertical" size={16}>
-          <Radio value={1}>{isEvent ? 'This event' : 'This meeting'}</Radio>
-          <Radio value={2}>{isEvent ? 'All events' : 'All meetings'}</Radio>
-        </Space>
-      </RadioGroup>
+      <ConfigProvider>
+        <RadioGroup
+          style={{ margin: '16px 0' }}
+          onChange={e => {
+            const newValue = e.target.value;
+            typeRef.current = newValue;
+            instanceRef.current?.update({
+              content: createContent(hideRadio, isEvent, instanceRef, newValue),
+            });
+          }}
+          value={type}
+        >
+          <Space direction="vertical" size={16}>
+            <Radio value={1}>{isEvent ? 'This event' : 'This meeting'}</Radio>
+            <Radio value={2}>{isEvent ? 'All events' : 'All meetings'}</Radio>
+          </Space>
+        </RadioGroup>
+      </ConfigProvider>
     );
   };
 
@@ -55,6 +58,7 @@ export const useRadioModal = () => {
 
     return new Promise<{ ok: boolean; allEvent?: boolean }>(resolve => {
       instanceRef.current = Modal.confirm({
+        className: 'common-confirm-radio-modal',
         icon: null,
         closeIcon: null,
         width: 384,
