@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   cloneElement,
   useEffect,
+  useRef,
 } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import { Button, ButtonProps, Flex, Modal, Spin } from 'antd';
@@ -13,8 +14,14 @@ import { uniqBy } from 'lodash';
 import { searchUsers } from '@difftim/jsbridge-utils';
 
 import { SearchInput } from '../Input';
+import Select from '../Select';
 import { unstable_batchedUpdates } from 'react-dom';
-import { TransferModalStoreProvider, useTranferModalStore } from './TransferModalContext';
+import {
+  AfterSearchFn,
+  ShouldSearchRemoteFn,
+  TransferModalStoreProvider,
+  useTranferModalStore,
+} from './TransferModalContext';
 import { useI18n } from '@/hooks/useI18n';
 import { LocalizerType } from '@/types/Util';
 import { IconCloseF, TablerSearch } from '@/shared/IconsNew';
@@ -49,6 +56,11 @@ export interface TransferModalProps<T extends { id: string }> {
   renderTopArea?: (store: Store<T>) => ReactNode;
   renderSelectedTitle?: (store: Store<T>) => ReactNode;
   renderSearchInput?: (store: Store<T>) => ReactElement;
+  enableTypeFilter?: boolean;
+  typeFilterOptions?: Array<{ value: 'direct' | 'group'; label: ReactNode }>;
+  defaultTypeFilter?: 'direct' | 'group';
+  typeFilterSelectTypeMap?: Partial<Record<'direct' | 'group', string>>;
+  emptySearchTip?: ReactNode;
   renderRow: (props: {
     item: T;
     style: CSSProperties;
@@ -62,6 +74,8 @@ export interface TransferModalProps<T extends { id: string }> {
     payload: Store<T>['payload'];
     disabledItems?: T[];
   }) => ReactElement;
+  afterSearch?: AfterSearchFn<T>;
+  shouldSearchRemote?: ShouldSearchRemoteFn<T>;
   onClose: () => void;
   onConfirm: OnConfirm<T>;
 }
@@ -161,37 +175,176 @@ export const defaultIsSearchMatch = (c: any, searchTerm: string) => {
 
 const DefaultSearch = <T extends { id: string }>(props: {
   isSearchMatch: (item: T, searchText: string, i18n: any) => boolean;
+  enableTypeFilter?: boolean;
+  typeFilterOptions?: Array<{ value: 'direct' | 'group'; label: ReactNode }>;
+  defaultTypeFilter?: 'direct' | 'group';
+  typeFilterSelectTypeMap?: Partial<Record<'direct' | 'group', string>>;
+  emptySearchTip?: ReactNode;
   [key: string]: any;
 }) => {
   const { i18n } = useI18n();
   const t = (key: string, substitutions?: string | string[]) => i18n(key as never, substitutions);
-  const { isSearchMatch, ...rest } = props;
-  const { dataSource, payload, setLeftItems, searchText, setSearchText, setNoResult } =
-    useTranferModalStore<T>();
+  const {
+    isSearchMatch,
+    enableTypeFilter,
+    typeFilterOptions = [
+      { value: 'direct', label: 'contact' },
+      { value: 'group', label: 'group' },
+    ],
+    defaultTypeFilter = 'direct',
+    typeFilterSelectTypeMap = { direct: 'direct', group: 'group' },
+    emptySearchTip,
+    ...rest
+  } = props;
+  const {
+    dataSource,
+    payload,
+    setLeftItems,
+    searchText,
+    setSearchText,
+    setNoResult,
+    setSearchLoading,
+    setPayload,
+    afterSearch,
+    shouldSearchRemote,
+  } = useTranferModalStore<T>();
+  const [filterType, setFilterType] = React.useState<'direct' | 'group'>(defaultTypeFilter);
+  const payloadRef = useRef(payload);
+
+  useEffect(() => {
+    payloadRef.current = payload;
+  }, [payload]);
 
   // hook to set left sources
   useEffect(() => {
-    if (!dataSource.length) {
-      return;
-    }
-
-    const leftItems = searchText
-      ? dataSource.filter(item => isSearchMatch(item, searchText, i18n))
+    let active = true;
+    const keyword = searchText.trim();
+    const effectiveSource = enableTypeFilter
+      ? dataSource.filter((item: any) => item.type === filterType)
       : dataSource;
 
-    unstable_batchedUpdates(() => {
-      if (!leftItems.length) {
-        setNoResult(<Flex justify="center">{t('noSearchResults', [searchText])}</Flex>);
-        return;
+    const finalize = (items: T[], hasSearch: boolean) => {
+      unstable_batchedUpdates(() => {
+        if (!items.length && hasSearch) {
+          setNoResult(<Flex justify="center">{t('noSearchResults', [keyword])}</Flex>);
+        } else if (!items.length && !hasSearch && emptySearchTip) {
+          setNoResult(<Flex justify="center">{emptySearchTip}</Flex>);
+        } else {
+          setNoResult(null);
+        }
+        setLeftItems(items);
+        setSearchLoading(false);
+      });
+    };
+    if (!keyword) {
+      setSearchLoading(false);
+      finalize(effectiveSource, false);
+      return () => {
+        active = false;
+      };
+    }
+
+    const localMatches = effectiveSource.filter(item => isSearchMatch(item, keyword, i18n));
+    if (localMatches.length) {
+      finalize(localMatches, true);
+      return () => {
+        active = false;
+      };
+    }
+
+    if (
+      shouldSearchRemote &&
+      !shouldSearchRemote({ keyword, payload: payloadRef.current, dataSource: effectiveSource })
+    ) {
+      finalize([], true);
+      return () => {
+        active = false;
+      };
+    }
+
+    setSearchLoading(true);
+    setLeftItems([]);
+
+    (async () => {
+      const remoteUsers = await searchRemoteUsers(keyword);
+      if (!active) return;
+      const remoteItems = remoteUsers as unknown as T[];
+      if (afterSearch) {
+        const extra = await afterSearch({
+          keyword,
+          localItems: localMatches,
+          remoteItems,
+          dataSource: effectiveSource,
+        });
+        if (!active) return;
+        if (extra && extra.length) {
+          finalize(extra, true);
+          return;
+        }
       }
-      setNoResult(null);
-      setLeftItems(leftItems);
-    });
-  }, [dataSource, searchText, payload]);
+      finalize(remoteItems, true);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [dataSource, searchText, enableTypeFilter, filterType]);
+
+  useEffect(() => {
+    if (!enableTypeFilter) return;
+    const selectType = typeFilterSelectTypeMap[filterType] || filterType;
+    setPayload((prev: any) => ({
+      ...prev,
+      selected: [],
+      selectType,
+    }));
+  }, [enableTypeFilter, filterType]);
+
+  const renderPrefix = () => {
+    if (!enableTypeFilter) {
+      return <TablerSearch className="module-common-header__searchinput-prefix" />;
+    }
+
+    const renderLabel = (label: ReactNode) => (
+      <Flex
+        justify="space-between"
+        gap="5px"
+        align="center"
+        style={{
+          padding: '0 1px',
+          color: 'var(--dsw-color-text-primary)',
+        }}
+      >
+        <span>{label}</span>
+        <span className="arrow" />
+      </Flex>
+    );
+
+    return (
+      <Flex align="center" gap="6px">
+        <Select
+          popupClassName="edit-select-search-popup"
+          className="edit-select-search-select"
+          suffixIcon={null}
+          labelRender={v => renderLabel(v.label)}
+          optionRender={v => <div className="edit-select-search-option">{v.label}</div>}
+          onClick={e => e.stopPropagation()}
+          popupMatchSelectWidth={false}
+          dropdownAlign={{ offset: [-6, 8] }}
+          options={typeFilterOptions}
+          value={filterType}
+          onChange={(next: 'direct' | 'group') => setFilterType(next)}
+        />
+        <TablerSearch className="search-icon" />
+      </Flex>
+    );
+  };
 
   return (
     <SearchInput
-      prefix={<TablerSearch className="module-common-header__searchinput-prefix" />}
+      prefix={renderPrefix()}
+      variant={enableTypeFilter ? 'borderless' : undefined}
+      className={enableTypeFilter ? 'edit-select-search' : undefined}
       style={{ width: '100%' }}
       placeholder={t('search')}
       dir="auto"
@@ -215,6 +368,13 @@ export const TransferModalConsumer = <T extends { id: string }>({
   renderTopArea = () => null,
   renderSelectedTitle = () => null,
   renderSearchInput,
+  enableTypeFilter = false,
+  typeFilterOptions,
+  defaultTypeFilter = 'direct',
+  typeFilterSelectTypeMap,
+  emptySearchTip,
+  afterSearch,
+  shouldSearchRemote,
   renderFooter = ({ OkBtn, CancelBtn }) => (
     <>
       <CancelBtn />
@@ -237,7 +397,23 @@ export const TransferModalConsumer = <T extends { id: string }>({
     // searchText,
     noResult,
     searchLoading,
+    setAfterSearch,
+    setShouldSearchRemote,
   } = store;
+  const lastAfterSearchRef = useRef(afterSearch);
+  const lastShouldSearchRemoteRef = useRef(shouldSearchRemote);
+
+  useEffect(() => {
+    if (lastAfterSearchRef.current === afterSearch) return;
+    lastAfterSearchRef.current = afterSearch;
+    setAfterSearch(() => afterSearch ?? null);
+  }, [afterSearch]);
+
+  useEffect(() => {
+    if (lastShouldSearchRemoteRef.current === shouldSearchRemote) return;
+    lastShouldSearchRemoteRef.current = shouldSearchRemote;
+    setShouldSearchRemote(() => shouldSearchRemote ?? null);
+  }, [shouldSearchRemote]);
 
   const rightList = uniqBy(
     [...payload.selected, ...(showDisabledItemInRight ? disabledItems : [])],
@@ -294,7 +470,16 @@ export const TransferModalConsumer = <T extends { id: string }>({
         <Flex gap="36px">
           <div className="left">
             <div style={{ padding: '15px' }}>
-              {renderSearchInput?.(store) || <DefaultSearch<T> isSearchMatch={isSearchMatch} />}
+              {renderSearchInput?.(store) || (
+                <DefaultSearch<T>
+                  isSearchMatch={isSearchMatch}
+                  enableTypeFilter={enableTypeFilter}
+                  typeFilterOptions={typeFilterOptions}
+                  defaultTypeFilter={defaultTypeFilter}
+                  typeFilterSelectTypeMap={typeFilterSelectTypeMap}
+                  emptySearchTip={emptySearchTip}
+                />
+              )}
             </div>
             {!searchLoading &&
               (noResult || (

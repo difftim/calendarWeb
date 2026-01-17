@@ -1,6 +1,19 @@
 import { atom, PrimitiveAtom, useAtom } from 'jotai';
 import React, { PropsWithChildren, ReactNode, useContext, useMemo } from 'react';
 
+export type AfterSearchFn<T extends { id: string }> = (params: {
+  keyword: string;
+  localItems: T[];
+  remoteItems: T[];
+  dataSource: T[];
+}) => T[] | null | Promise<T[] | null>;
+
+export type ShouldSearchRemoteFn<T extends { id: string }> = (params: {
+  keyword: string;
+  payload: { selected: T[]; [key: string]: any };
+  dataSource: T[];
+}) => boolean;
+
 interface TransferModalSharedData<T extends { id: string }> {
   dataSourceAtom: PrimitiveAtom<T[]>;
   payloadAtom: PrimitiveAtom<{ selected: T[]; [key: string]: any }>;
@@ -10,6 +23,8 @@ interface TransferModalSharedData<T extends { id: string }> {
   noResultAtom: PrimitiveAtom<ReactNode>;
   loadingAtom: PrimitiveAtom<boolean>;
   searchLoadingAtom: PrimitiveAtom<boolean>;
+  afterSearchAtom: PrimitiveAtom<AfterSearchFn<T> | null>;
+  shouldSearchRemoteAtom: PrimitiveAtom<ShouldSearchRemoteFn<T> | null>;
 }
 
 export const TransferModalPropsContext = React.createContext<TransferModalSharedData<any>>(
@@ -44,6 +59,8 @@ export const TransferModalStoreProvider = <T extends { id: string }>(
       noResultAtom: atom<ReactNode>(null),
       loadingAtom: atom(false),
       searchLoadingAtom: atom(false),
+      afterSearchAtom: atom<AfterSearchFn<T> | null>(null),
+      shouldSearchRemoteAtom: atom<ShouldSearchRemoteFn<T> | null>(null),
     }),
     []
   );
@@ -65,6 +82,8 @@ export const useTranferModalStore = <T extends { id: string }>() => {
     noResultAtom,
     disabledItemsAtom,
     searchLoadingAtom,
+    afterSearchAtom,
+    shouldSearchRemoteAtom,
   } = useTransferModalContext<T>();
 
   const [dataSource, setDataSource] = useAtom(dataSourceAtom);
@@ -75,6 +94,8 @@ export const useTranferModalStore = <T extends { id: string }>() => {
   const [disabledItems, setDisabledItems] = useAtom(disabledItemsAtom);
   const [noResult, setNoResult] = useAtom(noResultAtom);
   const [searchLoading, setSearchLoading] = useAtom(searchLoadingAtom);
+  const [afterSearch, setAfterSearch] = useAtom(afterSearchAtom);
+  const [shouldSearchRemote, setShouldSearchRemote] = useAtom(shouldSearchRemoteAtom);
 
   return {
     dataSource,
@@ -93,5 +114,9 @@ export const useTranferModalStore = <T extends { id: string }>() => {
     setNoResult,
     searchLoading,
     setSearchLoading,
+    afterSearch,
+    setAfterSearch,
+    shouldSearchRemote,
+    setShouldSearchRemote,
   };
 };
