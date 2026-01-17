@@ -1,5 +1,6 @@
 import { IconChevronRight, IconHelperF, IconTablerPlus } from '@/shared/IconsNew';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
+import { mergeMembersUniq, useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
 import { useI18n } from '@/hooks/useI18n';
 import { isBotId } from '@/util';
 import { Flex, Tooltip } from 'antd';
@@ -22,6 +23,7 @@ const UserListButton = () => {
 
   const isPrivate = !group?.gid;
   const { i18n } = useI18n();
+  const { openForMembers } = useAddMembersDialog();
 
   const renderInOutGroup = () => {
     if (isPrivate || isLiveStream || showGoogleSync) {
@@ -86,8 +88,11 @@ const UserListButton = () => {
     );
   }
 
-  // TODO
-  const addAttendeeFromDialog = () => {};
+  const addAttendeeFromDialog = async () => {
+    const newMembers = await openForMembers(members);
+    if (!newMembers.length) return;
+    setData(prev => ({ members: mergeMembersUniq(prev.members, newMembers) }));
+  };
 
   const renderEditAction = () => {
     if (mode !== 'create' && !canInvite) {

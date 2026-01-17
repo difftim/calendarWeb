@@ -2,6 +2,8 @@ import React from 'react';
 import { Drawer, Flex, Tooltip } from 'antd';
 
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
+import { mergeMembersUniq, useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
+import { useLiveGuestInviteDialog } from '@/hooks/useLiveGuestInviteDialog';
 import CommonUserList from './components/SchedulerUserList';
 import { useI18n } from '@/hooks/useI18n';
 import { cid2uid, sortUserList, stopClick } from '@/util';
@@ -144,10 +146,12 @@ const UserListTitle = ({
   totalCount,
   type,
   isViewMode,
+  onAdd,
 }: {
   totalCount: number;
   type?: string;
   isViewMode: boolean;
+  onAdd?: () => void;
 }) => {
   const title =
     type === 'guest'
@@ -172,9 +176,7 @@ const UserListTitle = ({
       ) : (
         <IconTablerUserPlus
           onClick={() => {
-            console.log('add attendee or guest from dialog', type);
-            // TODO
-            // add attendee or guest from dialog
+            onAdd?.();
           }}
         />
       )}
@@ -184,10 +186,38 @@ const UserListTitle = ({
 
 const UserList = () => {
   const { isLiveStream, childModalType, guests, members, mode } = useDetailDataValue();
+  const setData = useSetDetailData();
+  const { openForMembers } = useAddMembersDialog();
+  const { openDialog: openGuestDialog } = useLiveGuestInviteDialog();
   const showGuestList = Boolean(childModalType === 'guest' && isLiveStream && guests?.users.length);
   const showAttendeeList = Boolean(childModalType === 'attendee' && members?.length);
   const totalCount = (showGuestList ? guests?.users.length : members?.length) || 0;
   const isViewMode = mode === 'view';
+
+  const addAttendeeFromDialog = async () => {
+    if (childModalType !== 'attendee') return;
+    const newMembers = await openForMembers(members);
+    if (!newMembers.length) return;
+    setData(prev => ({ members: mergeMembersUniq(prev.members, newMembers) }));
+  };
+
+  const addGuestFromDialog = async () => {
+    if (childModalType !== 'guest') return;
+    const newGuests = await openGuestDialog({ disabledIds: guests?.users || [] });
+    if (!newGuests.length) return;
+    setData(prev => {
+      const prevGuests = prev.guests ?? { allStaff: false, users: [], total: 0 };
+      const merged = Array.from(new Set([...(prevGuests.users || []), ...newGuests]));
+      return {
+        guests: {
+          ...prevGuests,
+          allStaff: false,
+          users: merged,
+          total: prevGuests.total ?? merged.length,
+        },
+      };
+    });
+  };
 
   return (
     <Drawer
@@ -195,7 +225,12 @@ const UserList = () => {
       className="user-list-drawer"
       closeIcon={false}
       title={
-        <UserListTitle totalCount={totalCount} type={childModalType} isViewMode={isViewMode} />
+        <UserListTitle
+          totalCount={totalCount}
+          type={childModalType}
+          isViewMode={isViewMode}
+          onAdd={childModalType === 'guest' ? addGuestFromDialog : addAttendeeFromDialog}
+        />
       }
     >
       {showGuestList ? <GuestUserList /> : showAttendeeList ? <AttendeeUserList /> : null}

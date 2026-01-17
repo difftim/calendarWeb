@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/useI18n';
 import { stopClick } from '@/util';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
+import { useLiveGuestInviteDialog } from '@/hooks/useLiveGuestInviteDialog';
 
 const Guest = () => {
   const {
@@ -14,6 +15,7 @@ const Guest = () => {
   } = useDetailDataValue();
   const setData = useSetDetailData();
   const { i18n } = useI18n();
+  const { openDialog } = useLiveGuestInviteDialog();
 
   if (!isLiveStream) {
     return null;
@@ -98,6 +100,23 @@ const Guest = () => {
   // TODO: fetch my org info
   const fetchMyOrgInfo = async () => {};
 
+  const addGuestFromDialog = async () => {
+    const newGuests = await openDialog({ disabledIds: guests.users || [] });
+    if (!newGuests.length) return;
+    setData(prev => {
+      const prevGuests = prev.guests ?? { allStaff: false, users: [], total: 0 };
+      const merged = Array.from(new Set([...(prevGuests.users || []), ...newGuests]));
+      return {
+        guests: {
+          ...prevGuests,
+          allStaff: false,
+          users: merged,
+          total: prevGuests.total ?? merged.length,
+        },
+      };
+    });
+  };
+
   const guestTipKey =
     mode === 'update' ? 'schedule.updateStaffTipWithTotal' : 'schedule.allStaffTipWithTotal';
 
@@ -147,8 +166,7 @@ const Guest = () => {
                   },
                 };
               });
-              // TODO
-              // addGuestFromDialog();
+              addGuestFromDialog();
             }
           }}
           variant="outlined"

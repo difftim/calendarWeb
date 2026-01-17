@@ -1,9 +1,8 @@
 import React from 'react';
 import { Avatar } from './Avatar';
-import { LocalizerType } from '../../../types/Util';
+import { Checkbox } from 'antd';
 import classNames from 'classnames';
-import Checkbox from '../Checkbox';
-import { cleanUserIdForDisplay } from '../../../util/id';
+import { cleanUserIdForDisplay } from '@/util';
 
 export interface ConversationListItemProps {
   id: string;
@@ -22,7 +21,6 @@ export interface ConversationListItemProps {
   ext?: boolean;
   members?: string[];
   activeAt?: number;
-  i18n: LocalizerType;
 }
 
 export const ConversationItem = (props: ConversationListItemProps) => {
@@ -36,7 +34,6 @@ export const ConversationItem = (props: ConversationListItemProps) => {
     members,
     onClick,
     isMe,
-    i18n,
     disabled = false,
     showMeNote = false,
     showCheckbox = false,
@@ -55,10 +52,8 @@ export const ConversationItem = (props: ConversationListItemProps) => {
           conversationType={type}
           isMe={isMe && showNote}
         />
-        {type === 'group' && (
-          <div className="module-avatar-group-members-count">
-            {members?.length}
-          </div>
+        {type === 'group' && members && members.length > 0 && (
+          <div className="module-avatar-group-members-count">{members?.length}</div>
         )}
       </div>
     );
@@ -69,9 +64,7 @@ export const ConversationItem = (props: ConversationListItemProps) => {
 
     return (
       <div className="conversation-list-item__header">
-        <div className="conversation-list-item__name">
-          {showNote ? i18n('noteToSelf') : nameOrId}
-        </div>
+        <div className="conversation-list-item__name">{nameOrId}</div>
       </div>
     );
   };

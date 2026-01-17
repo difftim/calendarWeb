@@ -202,5 +202,23 @@
     },
     "calendarProxyEmptyTips": {
         "message": "You have not granted anyone to manage your calendar"
+    },
+    "noSearchResults": {
+        "message": "No search results for $searchText$"
+    },
+    "confirmNumber": {
+        "message": "Confirm $count$"
+    },
+    "cancel": {
+        "message": "Cancel"
+    },
+    "searchToAddMembers": {
+        "message": "Please search to add members"
+    },
+    "searchToAddGuests": {
+        "message": "Please search to add guests"
+    },
+    "search": {
+        "message": "Search"
     }
 }

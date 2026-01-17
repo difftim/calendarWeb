@@ -1,6 +1,5 @@
 import { atom, PrimitiveAtom, useAtom } from 'jotai';
 import React, { PropsWithChildren, ReactNode, useContext, useMemo } from 'react';
-import { I18nProvider } from '@/provider/I18nProvider';
 
 interface TransferModalSharedData<T extends { id: string }> {
   dataSourceAtom: PrimitiveAtom<T[]>;
@@ -10,6 +9,7 @@ interface TransferModalSharedData<T extends { id: string }> {
   disabledItemsAtom: PrimitiveAtom<T[]>;
   noResultAtom: PrimitiveAtom<ReactNode>;
   loadingAtom: PrimitiveAtom<boolean>;
+  searchLoadingAtom: PrimitiveAtom<boolean>;
 }
 
 export const TransferModalPropsContext = React.createContext<TransferModalSharedData<any>>(
@@ -43,13 +43,14 @@ export const TransferModalStoreProvider = <T extends { id: string }>(
       disabledItemsAtom: atom<T[]>([]),
       noResultAtom: atom<ReactNode>(null),
       loadingAtom: atom(false),
+      searchLoadingAtom: atom(false),
     }),
     []
   );
 
   return (
     <TransferModalPropsContext.Provider value={value}>
-      <I18nProvider>{children}</I18nProvider>
+      {children}
     </TransferModalPropsContext.Provider>
   );
 };
@@ -63,6 +64,7 @@ export const useTranferModalStore = <T extends { id: string }>() => {
     loadingAtom,
     noResultAtom,
     disabledItemsAtom,
+    searchLoadingAtom,
   } = useTransferModalContext<T>();
 
   const [dataSource, setDataSource] = useAtom(dataSourceAtom);
@@ -72,6 +74,7 @@ export const useTranferModalStore = <T extends { id: string }>() => {
   const [loading, setLoading] = useAtom(loadingAtom);
   const [disabledItems, setDisabledItems] = useAtom(disabledItemsAtom);
   const [noResult, setNoResult] = useAtom(noResultAtom);
+  const [searchLoading, setSearchLoading] = useAtom(searchLoadingAtom);
 
   return {
     dataSource,
@@ -88,5 +91,7 @@ export const useTranferModalStore = <T extends { id: string }>() => {
     setDisabledItems,
     noResult,
     setNoResult,
+    searchLoading,
+    setSearchLoading,
   };
 };

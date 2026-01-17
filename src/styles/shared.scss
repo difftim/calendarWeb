@@ -90,7 +90,7 @@ $prefix-simple: dsw-simple;
 }
 
 .#{$prefix}-shared-transfer-modal {
-  padding: 5px 20px;
+  padding: 24px 20px 20px;
   border-radius: 8px;
   -webkit-app-region: no-drag !important;
   color: var(--dsw-color-text-primary);
@@ -108,7 +108,7 @@ $prefix-simple: dsw-simple;
     width: 286px;
     height: 440px;
     border: 1px solid var(--dsw-color-modal-pane-border);
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
 
     .module-left-pane__virtual-list {
@@ -150,6 +150,20 @@ $prefix-simple: dsw-simple;
 
 .ant-modal-content:has(.#{$prefix}-shared-transfer-modal) {
   padding: 0 !important;
+}
+
+.dsw-transfer-modal-wrapper {
+  .ant-modal-content {
+    padding: 0 !important;
+    background-color: var(--dsw-color-bg-modal);
+    color: var(--dsw-color-text-primary);
+    border-radius: 12px;
+  }
+
+  .ant-modal-body {
+    background-color: var(--dsw-color-bg-modal);
+    border-radius: 12px;
+  }
 }
 
 .#{$prefix-simple}-avatar-container {

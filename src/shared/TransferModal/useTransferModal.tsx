@@ -1,11 +1,11 @@
 import React, { PropsWithChildren, useRef } from 'react';
 import { Modal } from 'antd';
+import { Provider } from 'jotai';
 
 import { TransferModalStoreProvider } from './TransferModalContext';
+import { store } from '@/atoms/store';
 
-export type ExcludeOnClose<T> = T extends { onClose: () => void }
-  ? Omit<T, 'onClose'>
-  : T;
+export type ExcludeOnClose<T> = T extends { onClose: () => void } ? Omit<T, 'onClose'> : T;
 
 export const useTransferModalWithContent = <T extends unknown>(
   TransferModalContent: React.FC<T>
@@ -36,10 +36,13 @@ export const useTransferModalWithContent = <T extends unknown>(
       centered: true,
       width: 654,
       icon: null,
+      className: 'dsw-transfer-modal-wrapper',
       content: (
-        <TransferModalStoreProvider>
-          <TransferModalContent {...mergedProps} />
-        </TransferModalStoreProvider>
+        <Provider store={store}>
+          <TransferModalStoreProvider>
+            <TransferModalContent {...mergedProps} />
+          </TransferModalStoreProvider>
+        </Provider>
       ),
       onCancel: () => {
         lock.current = false;

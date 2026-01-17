@@ -1,4 +1,3 @@
-import { toastInfo } from '@/shared/Message';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
 import React from 'react';
@@ -20,9 +19,7 @@ const FindTimeButton = () => {
       <div
         className="text-button"
         onClick={() => {
-          console.log('findTime', typeof setData);
-          toastInfo('Comming soon');
-          // setData({ childModalType: 'findTime' });
+          setData({ childModalType: 'findTime' });
         }}
       >
         {i18n('schedule.findATime')}

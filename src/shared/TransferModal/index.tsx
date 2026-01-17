@@ -7,16 +7,17 @@ import React, {
   useEffect,
 } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
-import { Button, ButtonProps, Flex, Modal } from 'antd';
+import { Button, ButtonProps, Flex, Modal, Spin } from 'antd';
 import classNames from 'classnames';
 import { uniqBy } from 'lodash';
+import { searchUsers } from '@difftim/jsbridge-utils';
 
 import { SearchInput } from '../Input';
 import { unstable_batchedUpdates } from 'react-dom';
 import { TransferModalStoreProvider, useTranferModalStore } from './TransferModalContext';
-import useI18n from '../../hooks/useI18n';
-import { LocalizerType } from '../../../types/Util';
-import { CloseF, TablerSearch } from '@/shared/IconsNew';
+import { useI18n } from '@/hooks/useI18n';
+import { LocalizerType } from '@/types/Util';
+import { IconCloseF, TablerSearch } from '@/shared/IconsNew';
 import { ExcludeOnClose } from './useTransferModal';
 import ConfigProvider from '../ConfigProvider';
 
@@ -65,18 +66,30 @@ export interface TransferModalProps<T extends { id: string }> {
   onConfirm: OnConfirm<T>;
 }
 
-export const defalutSortFn = <T extends Record<string, any>>(arr: T[], i18n: LocalizerType) => {
+export type RemoteUser = {
+  id: string;
+  name?: string;
+  email?: string;
+  avatarPath?: string;
+  timeZone?: string;
+};
+
+export const searchRemoteUsers = async (keyword: string): Promise<RemoteUser[]> => {
+  if (!keyword) return [];
+  let users = await searchUsers(
+    { keyword, scope: ['userName', 'email', 'id'] },
+    { excludeBots: true }
+  ).catch(() => []);
+  if (!users.length) {
+    const legacyParams = keyword.includes('@') ? { email: keyword } : { name: keyword };
+    users = await searchUsers(legacyParams as any).catch(() => []);
+  }
+  return users as RemoteUser[];
+};
+
+export const defalutSortFn = <T extends Record<string, any>>(arr: T[]) => {
   const itemSort = (left: T, right: T) => {
     const collator = new Intl.Collator();
-
-    // 活跃排序
-    if (left.activeAt && !right.activeAt) {
-      return -1;
-    }
-    if (!left.activeAt && right.activeAt) {
-      return 1;
-    }
-
     const leftTimestamp = left.timestamp;
     const rightTimestamp = right.timestamp;
     if (leftTimestamp && !rightTimestamp) {
@@ -93,9 +106,6 @@ export const defalutSortFn = <T extends Record<string, any>>(arr: T[], i18n: Loc
       if (item.name) {
         return item.name.toLowerCase();
       }
-      if (item.type === 'group') {
-        return i18n('unknownGroup').toLowerCase();
-      }
       return item.id;
     };
 
@@ -107,7 +117,7 @@ export const defalutSortFn = <T extends Record<string, any>>(arr: T[], i18n: Loc
   return arr.slice().sort(itemSort);
 };
 
-export const defaultIsSearchMatch = (c: any, searchTerm: string, i18n: LocalizerType) => {
+export const defaultIsSearchMatch = (c: any, searchTerm: string) => {
   const search = searchTerm.toLowerCase();
   let name = c.id;
 
@@ -141,7 +151,6 @@ export const defaultIsSearchMatch = (c: any, searchTerm: string, i18n: Localizer
   }
 
   if (c.isMe) {
-    name = i18n('noteToSelf');
     if (name.toLowerCase().includes(search)) {
       return true;
     }
@@ -151,10 +160,11 @@ export const defaultIsSearchMatch = (c: any, searchTerm: string, i18n: Localizer
 };
 
 const DefaultSearch = <T extends { id: string }>(props: {
-  isSearchMatch: (item: T, searchText: string, i18n: LocalizerType) => boolean;
+  isSearchMatch: (item: T, searchText: string, i18n: any) => boolean;
   [key: string]: any;
 }) => {
   const { i18n } = useI18n();
+  const t = (key: string, substitutions?: string | string[]) => i18n(key as never, substitutions);
   const { isSearchMatch, ...rest } = props;
   const { dataSource, payload, setLeftItems, searchText, setSearchText, setNoResult } =
     useTranferModalStore<T>();
@@ -171,7 +181,7 @@ const DefaultSearch = <T extends { id: string }>(props: {
 
     unstable_batchedUpdates(() => {
       if (!leftItems.length) {
-        setNoResult(<Flex justify="center">{i18n('noSearchResults', [searchText])}</Flex>);
+        setNoResult(<Flex justify="center">{t('noSearchResults', [searchText])}</Flex>);
         return;
       }
       setNoResult(null);
@@ -183,7 +193,7 @@ const DefaultSearch = <T extends { id: string }>(props: {
     <SearchInput
       prefix={<TablerSearch className="module-common-header__searchinput-prefix" />}
       style={{ width: '100%' }}
-      placeholder={i18n('search')}
+      placeholder={t('search')}
       dir="auto"
       value={searchText}
       onChange={e => setSearchText(e.target.value)}
@@ -213,6 +223,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
   ),
 }: PropsWithChildren<TransferModalProps<T>>) => {
   const { i18n } = useI18n();
+  const t = (key: string, substitutions?: string | string[]) => i18n(key as never, substitutions);
   const store = useTranferModalStore<T>();
   const {
     // dataSource,
@@ -225,6 +236,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
     disabledItems,
     // searchText,
     noResult,
+    searchLoading,
   } = store;
 
   const rightList = uniqBy(
@@ -236,7 +248,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
 
   const CancelBtn: BtnComponent = ({ cancelText, ...rest }) => (
     <Button type="default" onClick={onClose} {...rest}>
-      {cancelText || i18n('cancel')}
+      {cancelText || t('cancel')}
     </Button>
   );
 
@@ -259,7 +271,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
       }}
       {...rest}
     >
-      {okText || i18n('confirmNumber', ['' + (rightList.length || '')])}
+      {okText || t('confirmNumber', ['' + (rightList.length || '')])}
     </Button>
   );
 
@@ -276,7 +288,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
       <div className={classNames('dsw-shared-transfer-modal', className)}>
         <Flex align="center" justify="space-between">
           <h3>{title}</h3>
-          <CloseF className="close" onClick={onClose} />
+          <IconCloseF className="close" onClick={onClose} />
         </Flex>
         {renderTopArea(store)}
         <Flex gap="36px">
@@ -284,51 +296,53 @@ export const TransferModalConsumer = <T extends { id: string }>({
             <div style={{ padding: '15px' }}>
               {renderSearchInput?.(store) || <DefaultSearch<T> isSearchMatch={isSearchMatch} />}
             </div>
-            {noResult || (
-              <AutoSizer className="list">
-                {({ height, width }) => (
-                  <List
-                    width={width}
-                    height={height}
-                    className="module-left-pane__virtual-list overflow-style-normal"
-                    rowCount={leftItems.length}
-                    rowHeight={rowHeight}
-                    rowRenderer={({ style, index }) => {
-                      const item = leftItems[index];
-                      const itemEle = renderRow({
-                        item,
-                        style,
-                        type: 'from',
-                        selected: payload.selected,
-                      });
-
-                      if (typeof itemEle.props.onClick !== 'function') {
-                        return cloneElement(itemEle, {
-                          onClick(e: React.MouseEvent) {
-                            e?.stopPropagation?.();
-                            if (disabledItems?.some(u => u.id === item.id)) {
-                              return;
-                            }
-
-                            unstable_batchedUpdates(() => {
-                              const checked = payload.selected.some(u => u.id === item.id);
-
-                              setPayload(v => ({
-                                ...v,
-                                selected: checked
-                                  ? v.selected.filter(u => u.id !== item.id)
-                                  : uniqBy([...v.selected, item], 'id'),
-                              }));
-                            });
-                          },
+            {!searchLoading &&
+              (noResult || (
+                <AutoSizer className="list">
+                  {({ height, width }) => (
+                    <List
+                      width={width}
+                      height={height}
+                      className="module-left-pane__virtual-list overflow-style-normal"
+                      rowCount={leftItems.length}
+                      rowHeight={rowHeight}
+                      rowRenderer={({ style, index }) => {
+                        const item = leftItems[index];
+                        const itemEle = renderRow({
+                          item,
+                          style,
+                          type: 'from',
+                          selected: payload.selected,
                         });
-                      }
-                      return itemEle;
-                    }}
-                  />
-                )}
-              </AutoSizer>
-            )}
+
+                        if (typeof itemEle.props.onClick !== 'function') {
+                          return cloneElement(itemEle, {
+                            onClick(e: React.MouseEvent) {
+                              e?.stopPropagation?.();
+                              if (disabledItems?.some(u => u.id === item.id)) {
+                                return;
+                              }
+
+                              unstable_batchedUpdates(() => {
+                                const checked = payload.selected.some(u => u.id === item.id);
+
+                                setPayload(v => ({
+                                  ...v,
+                                  selected: checked
+                                    ? v.selected.filter(u => u.id !== item.id)
+                                    : uniqBy([...v.selected, item], 'id'),
+                                }));
+                              });
+                            },
+                          });
+                        }
+                        return itemEle;
+                      }}
+                    />
+                  )}
+                </AutoSizer>
+              ))}
+            <Spin spinning={searchLoading} />
           </div>
           <div className="right">
             {renderSelectedTitle(store)}
@@ -415,6 +429,7 @@ export const createTranferModal =
         footer={null}
         width={654}
         closeIcon={null}
+        className="dsw-transfer-modal-wrapper"
         destroyOnClose
         keyboard={false}
         centered

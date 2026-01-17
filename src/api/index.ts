@@ -1860,6 +1860,13 @@ export const getSchedulerOrgInfo = () => {
   return request.get(`v1/org/users`) as any;
 };
 
+export const getMeetingViewScheduleList = async (data: any) => {
+  const { users = [], start, end } = data;
+  return request.post(`v1/user/freebusy`, {
+    json: { users, start, end },
+  }) as any;
+};
+
 export const scheduleMeetingGetFreeTime = async (data: any) => {
   const { uid, start, end } = data;
 

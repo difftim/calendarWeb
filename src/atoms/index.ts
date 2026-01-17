@@ -160,5 +160,22 @@ export const userCacheAtom = atom<
   >
 >(new Map());
 
+export type ContactListItem = {
+  id: string;
+  name: string;
+  email?: string;
+  avatarPath?: string;
+  avatar?: string;
+  timeZone?: string;
+};
+
+export type GroupListItem = {
+  groupId: string;
+  groupName: string;
+  members?: string[];
+};
+
+export const groupListAtom = atom<GroupListItem[]>([]);
+
 // 主题 atom - 由 main.tsx 在启动时通过 store.set 初始化
 export const themeAtom = atom<'light' | 'dark'>('light');
