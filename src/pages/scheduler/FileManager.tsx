@@ -10,7 +10,12 @@ function FileManager() {
   const canNotEdit = mode !== 'create' && !canModify;
   const setData = useSetDetailData();
   const setFile = (attachment: any) => {
-    setData({ attachment });
+    if (typeof attachment === 'function') {
+      const newAttachment = attachment(_attachment || []);
+      setData({ attachment: newAttachment });
+    } else {
+      setData({ attachment });
+    }
   };
 
   if (mode !== 'create') {
