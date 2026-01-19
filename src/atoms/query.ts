@@ -27,7 +27,6 @@ export const calendarQueryAtom = atomWithQuery(get => {
   const startDate = date.startOf('week');
   const endDate = date.endOf('week');
   const queryKey = [startDate, endDate].map(d => d.format('YYYY-MM-DD')).join('_');
-  console.log('userInfo...', userId, isBridgeSupported);
 
   return {
     queryKey: ['myEvents', queryKey],

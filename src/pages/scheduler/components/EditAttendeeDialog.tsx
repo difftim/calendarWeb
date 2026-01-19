@@ -145,7 +145,7 @@ const EditAttendeeContent = ({
     </div>
   );
 
-  const afterSearchHandler = useCallback(
+  const afterSearch = useCallback(
     (
       params: {
         keyword: string;
@@ -172,7 +172,7 @@ const EditAttendeeContent = ({
       title="Attendees"
       onClose={onClose}
       onConfirm={onConfirm}
-      afterSearch={afterSearchHandler}
+      afterSearch={afterSearch}
       shouldSearchRemote={shouldSearchRemoteHandler}
       enableTypeFilter
       defaultTypeFilter="direct"

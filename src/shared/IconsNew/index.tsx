@@ -167,12 +167,25 @@ export const IconOutLook = (props: SVGProps<SVGSVGElement>) => (
 );
 
 export const IconLiveStream = (props: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M12 14c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+  <svg width="28" height="16" fill="none" viewBox="0 0 28 16" {...props}>
+    <rect width="28" height="16" fill="url(#live-stream_svg__a)" rx="2"></rect>
     <path
-      d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"
-      opacity="0.5"
-    />
+      fill="#fff"
+      d="M4.782 11.5V5.159h1.134v5.387h2.905v.954zm5.265 0V5.159h1.134V11.5zm4.42 0-2.192-6.341h1.248l1.569 5.031h.074L16.74 5.16h1.248L15.79 11.5zm4.615 0V5.159h4.104v.953h-2.97v1.719h2.808v.9h-2.808v1.815h2.97v.954z"
+    ></path>
+    <defs>
+      <linearGradient
+        id="live-stream_svg__a"
+        x1="28.049"
+        x2="-0.584"
+        y1="14.957"
+        y2="13.738"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#F84135"></stop>
+        <stop offset="1" stopColor="#FE7566"></stop>
+      </linearGradient>
+    </defs>
   </svg>
 );
 

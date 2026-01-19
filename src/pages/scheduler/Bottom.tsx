@@ -24,6 +24,7 @@ import {
   useDetailDataValueWithTimeZone as useDetailData,
 } from '@/hooks/useCurrentTimeZone';
 import { useI18n } from '@/hooks/useI18n';
+import { useForwardModal } from '@/hooks/useForwardModal';
 import { useRadioModal } from '@/hooks/useRadioModal';
 import { cid2uid, copyText, formatTZ, stopClick, uid2cid } from '@/util';
 import {
@@ -37,6 +38,7 @@ import {
   scheduleMeetingReceiveNotify,
   updateMeetingSchedule,
 } from '@/api';
+import { shareLiveStream } from '@/schema';
 
 enum GOING {
   YES = 'yes',
@@ -87,6 +89,7 @@ function Bottom() {
   const setShowPanel = useSetAtom(showPannelAtom);
   const setData = useSetDetailData();
   const { openModal } = useRadioModal();
+  const { showForwardModal } = useForwardModal();
 
   const [operateOpen, setOperateOpen] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
@@ -225,17 +228,15 @@ function Bottom() {
           throw Error('copy failed');
         }
         if (action == 'share') {
-          // TODO
-          // showForwardModal({
-          //   list: getConversations(),
-          //   onConfirm: ({ selected }, close) => {
-          //     sendToConversation(
-          //       selected.map(u => u.id),
-          //       { content }
-          //     );
-          //     close();
-          //   },
-          // });
+          showForwardModal({
+            onConfirm: ({ selected }, close) => {
+              shareLiveStream(
+                content,
+                selected.map(item => item.id)
+              );
+              close();
+            },
+          });
           return;
         }
         await copyText(content);

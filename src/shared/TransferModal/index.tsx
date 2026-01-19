@@ -180,6 +180,8 @@ const DefaultSearch = <T extends { id: string }>(props: {
   defaultTypeFilter?: 'direct' | 'group';
   typeFilterSelectTypeMap?: Partial<Record<'direct' | 'group', string>>;
   emptySearchTip?: ReactNode;
+  afterSearch?: AfterSearchFn<T>;
+  shouldSearchRemote?: ShouldSearchRemoteFn<T>;
   [key: string]: any;
 }) => {
   const { i18n } = useI18n();
@@ -194,6 +196,8 @@ const DefaultSearch = <T extends { id: string }>(props: {
     defaultTypeFilter = 'direct',
     typeFilterSelectTypeMap = { direct: 'direct', group: 'group' },
     emptySearchTip,
+    afterSearch,
+    shouldSearchRemote,
     ...rest
   } = props;
   const {
@@ -205,15 +209,19 @@ const DefaultSearch = <T extends { id: string }>(props: {
     setNoResult,
     setSearchLoading,
     setPayload,
-    afterSearch,
-    shouldSearchRemote,
   } = useTranferModalStore<T>();
   const [filterType, setFilterType] = React.useState<'direct' | 'group'>(defaultTypeFilter);
   const payloadRef = useRef(payload);
+  const typeFilterSelectTypeMapRef = useRef(typeFilterSelectTypeMap);
+  const prevFilterTypeRef = useRef(filterType);
 
   useEffect(() => {
     payloadRef.current = payload;
   }, [payload]);
+
+  useEffect(() => {
+    typeFilterSelectTypeMapRef.current = typeFilterSelectTypeMap;
+  }, [typeFilterSelectTypeMap]);
 
   // hook to set left sources
   useEffect(() => {
@@ -244,18 +252,29 @@ const DefaultSearch = <T extends { id: string }>(props: {
       };
     }
 
+    const resolvedSelectType = enableTypeFilter
+      ? typeFilterSelectTypeMapRef.current?.[filterType] || filterType
+      : payloadRef.current?.selectType;
+    const resolvedPayload = { ...payloadRef.current, selectType: resolvedSelectType };
+    const shouldSearchRemoteResult = shouldSearchRemote
+      ? shouldSearchRemote({
+          keyword,
+          payload: resolvedPayload,
+          dataSource: effectiveSource,
+        })
+      : true;
+
     const localMatches = effectiveSource.filter(item => isSearchMatch(item, keyword, i18n));
     if (localMatches.length) {
       finalize(localMatches, true);
-      return () => {
-        active = false;
-      };
+      if (!shouldSearchRemoteResult) {
+        return () => {
+          active = false;
+        };
+      }
     }
 
-    if (
-      shouldSearchRemote &&
-      !shouldSearchRemote({ keyword, payload: payloadRef.current, dataSource: effectiveSource })
-    ) {
+    if (!shouldSearchRemoteResult) {
       finalize([], true);
       return () => {
         active = false;
@@ -288,17 +307,23 @@ const DefaultSearch = <T extends { id: string }>(props: {
     return () => {
       active = false;
     };
-  }, [dataSource, searchText, enableTypeFilter, filterType]);
+  }, [dataSource, searchText, enableTypeFilter, filterType, shouldSearchRemote]);
 
   useEffect(() => {
     if (!enableTypeFilter) return;
-    const selectType = typeFilterSelectTypeMap[filterType] || filterType;
+    const prevFilterType = prevFilterTypeRef.current;
+    if (prevFilterType === filterType) return;
+    prevFilterTypeRef.current = filterType;
+    const selectType = typeFilterSelectTypeMapRef.current?.[filterType] || filterType;
+    if (searchText) {
+      setSearchText('');
+    }
     setPayload((prev: any) => ({
       ...prev,
       selected: [],
       selectType,
     }));
-  }, [enableTypeFilter, filterType]);
+  }, [enableTypeFilter, filterType, searchText, setSearchText, setPayload]);
 
   const renderPrefix = () => {
     if (!enableTypeFilter) {
@@ -397,23 +422,7 @@ export const TransferModalConsumer = <T extends { id: string }>({
     // searchText,
     noResult,
     searchLoading,
-    setAfterSearch,
-    setShouldSearchRemote,
   } = store;
-  const lastAfterSearchRef = useRef(afterSearch);
-  const lastShouldSearchRemoteRef = useRef(shouldSearchRemote);
-
-  useEffect(() => {
-    if (lastAfterSearchRef.current === afterSearch) return;
-    lastAfterSearchRef.current = afterSearch;
-    setAfterSearch(() => afterSearch ?? null);
-  }, [afterSearch]);
-
-  useEffect(() => {
-    if (lastShouldSearchRemoteRef.current === shouldSearchRemote) return;
-    lastShouldSearchRemoteRef.current = shouldSearchRemote;
-    setShouldSearchRemote(() => shouldSearchRemote ?? null);
-  }, [shouldSearchRemote]);
 
   const rightList = uniqBy(
     [...payload.selected, ...(showDisabledItemInRight ? disabledItems : [])],
@@ -478,6 +487,8 @@ export const TransferModalConsumer = <T extends { id: string }>({
                   defaultTypeFilter={defaultTypeFilter}
                   typeFilterSelectTypeMap={typeFilterSelectTypeMap}
                   emptySearchTip={emptySearchTip}
+                  afterSearch={afterSearch}
+                  shouldSearchRemote={shouldSearchRemote}
                 />
               )}
             </div>

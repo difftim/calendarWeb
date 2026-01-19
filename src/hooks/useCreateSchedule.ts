@@ -27,7 +27,7 @@ export const useCreateSchedule = (timeZone: string) => {
     }
   ) => {
     const myInfo = await getMyInfo();
-    if (!myInfo.name) {
+    if (!myInfo.id) {
       toastError('Unsupport platform');
       return;
     }
