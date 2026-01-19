@@ -1803,6 +1803,22 @@ export const getSchedulerDashboard = ({ start, end, type }: any) => {
   ) as any;
 };
 
+export const addUserCalendar = async (data: { cid: string; type: string; name?: string }) => {
+  return request.post(`v1/user/calendar`, { json: data }) as any;
+};
+
+export const deleteUserCalendar = async (data: { cid: string; type: string }) => {
+  return request.delete(`v1/user/calendar`, { json: data }) as any;
+};
+
+export const updateUserCalendar = async (data: { cid: string; type: string; name?: string }) => {
+  return request.put(`v1/user/calendar`, { json: data }) as any;
+};
+
+export const uploadIcsData = async (data: { ics: string; email?: string }) => {
+  return request.post(`v1/ics/upload`, { json: data }) as any;
+};
+
 export const addLiveStreamToCalendar = async (eid: string, cid = 'default') => {
   return request.post(`v1/calendar/${cid}/livestream`, {
     json: { eid },

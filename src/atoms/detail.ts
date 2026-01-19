@@ -3,6 +3,8 @@ import { atom } from 'jotai';
 
 export const showPannelAtom = atom(false);
 
+export const showSettingAtom = atom(false);
+
 type Member = {
   going: 'maybe' | 'yes' | 'no';
   isGroupUser: boolean;

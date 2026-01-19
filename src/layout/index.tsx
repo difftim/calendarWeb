@@ -4,7 +4,7 @@ import { Calendar, Flex } from 'antd';
 import ConfigProvider, { useTheme } from '@/shared/ConfigProvider';
 import { Outlet, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
-import { createInstantMeeting, createRoom, createWebCall } from '@/bridge';
+import { createInstantMeeting, createRoom, createWebCall } from '@/schema';
 import { useAntdLocale } from '@/hooks/useAntdLocale';
 import { useSetDate } from '@/hooks/useSetDate';
 import {
@@ -13,6 +13,7 @@ import {
   IconFlashLineF,
   IconFluentLive24Filled,
   IconTablerLink,
+  IconTablerSetting,
   IconTablerUser,
   IconTablerVideo,
 } from '@/shared/IconsNew';
@@ -24,19 +25,21 @@ import {
   myCalendarCheckedAtom,
   otherCalendarCheckedAtom,
   timeZoneAtom,
-  userIdAtom,
+  userInfoAtom,
 } from '@/atoms';
 import { fixScrollToTimePosition, getUserBgColor } from '@/util';
-import { showPannelAtom } from '@/atoms/detail';
+import { showPannelAtom, showSettingAtom } from '@/atoms/detail';
 import { ScheduleMeetingDialog } from '@/pages/scheduler';
 import { SelectList } from '@/pages/calendar/components/SelectList';
 import { calendarQueryAtom } from '@/atoms/query';
 import { useCreateSchedule } from '@/hooks/useCreateSchedule';
+import CalendarSettingDialog from '@/pages/calendar/components/CalendarSettingDialog';
 
 const ViewChangePanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const setShowSetting = useSetAtom(showSettingAtom);
 
   // 判断当前激活的视图
   const isListActive = location.pathname === '/list';
@@ -81,6 +84,13 @@ const ViewChangePanel = () => {
       >
         Day
       </button>
+      <Flex className="setting-btn-wrapper" align="center" justify="center">
+        <IconTablerSetting
+          onClick={() => {
+            setShowSetting(true);
+          }}
+        />
+      </Flex>
     </div>
   );
 };
@@ -96,8 +106,9 @@ const Layout = () => {
   const { date, setDate, showDate, setShowDate } = useSetDate();
   const timeZone = useAtomValue(timeZoneAtom);
   const [showPannel, setShowPannel] = useAtom(showPannelAtom);
+  const [showSetting, setShowSetting] = useAtom(showSettingAtom);
   const setDetailInfo = useSetAtom(currentScheduleDetailInfoAtom);
-  const myId = useAtomValue(userIdAtom);
+  const myInfo = useAtomValue(userInfoAtom);
   const mode = useTheme();
   const isListActive = location.pathname === '/list';
   const [myChecked, setMyChecked] = useAtom(myCalendarCheckedAtom);
@@ -205,7 +216,7 @@ const Layout = () => {
             <IconFluentLive24Filled />
             <div>Live Stream</div>
           </div>
-          <div onClick={() => createRoom()} className="meeting-block instant">
+          <div onClick={() => createRoom(myInfo)} className="meeting-block instant">
             <IconTablerUser />
             <div>My Room</div>
           </div>
@@ -244,7 +255,7 @@ const Layout = () => {
           />
         </ConfigProvider>
 
-        {myId && (
+        {myInfo.id && (
           <div className="select-list-wrapper">
             <SelectList
               listStyle={{ flexShrink: 0 }}
@@ -275,6 +286,13 @@ const Layout = () => {
         <ViewChangePanel />
       </div>
       <ScheduleMeetingDialog />
+      <CalendarSettingDialog
+        open={showSetting}
+        onClose={() => setShowSetting(false)}
+        myList={myUsers}
+        otherList={otherUsers}
+        myId={myInfo.id}
+      />
     </div>
   );
 };

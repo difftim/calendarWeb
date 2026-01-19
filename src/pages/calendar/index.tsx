@@ -15,7 +15,6 @@ import {
 } from '@/atoms';
 import { toastError } from '@/shared/Message';
 import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
-import { IconTablerSetting } from '@/shared/IconsNew';
 import { calendarQueryAtom } from '@/atoms/query';
 import { Spin } from 'antd';
 import useFormatCalendarList from '@/hooks/useFormatCalendarList';
@@ -136,20 +135,7 @@ export default function Calendar() {
             },
           }));
         }}
-        onExtraHeaderRender={() => (
-          <div className="setting-">
-            <IconTablerSetting
-              onClick={() => {
-                // TODO
-                // setOpenSetting(open => !open);
-                setCurrentDetailInfo(v => ({
-                  ...v,
-                  selectItem: null,
-                }));
-              }}
-            />
-          </div>
-        )}
+        onExtraHeaderRender={() => <></>}
         renderCustomViewGroup={() => <></>}
       />
     </>

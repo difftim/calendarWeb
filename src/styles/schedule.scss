@@ -489,9 +489,11 @@
     .btn-wrapper {
       position: absolute;
       top: 13.5px;
-      right: 50px;
+      right: 16px;
       z-index: 300;
       -webkit-app-region: no-drag;
+      display: flex;
+      align-items: center;
 
       button {
         color: var(--dsw-color-text-primary);
@@ -518,14 +520,20 @@
           border-top-left-radius: 8px;
           border-bottom-left-radius: 8px;
         }
-        &:last-child {
+        &:last-of-type {
           border-top-right-radius: 8px;
           border-bottom-right-radius: 8px;
         }
-        &:not(:first-child):not(:last-child) {
+        &:not(:first-of-type):not(:last-of-type) {
           border-left-width: 0px;
           border-right-width: 0px;
         }
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
       }
     }
 
@@ -1072,9 +1080,197 @@
   border-left: 1px solid var(--dsw-color-line);
   margin-left: 16px;
   color: var(--dsw-color-icon);
+  height: 32px;
   svg {
     cursor: pointer;
   }
+}
+
+.calendar-setting-drawer {
+  .ant-drawer-header {
+    background-color: var(--dsw-color-bg-1);
+    padding: 16px;
+  }
+  .ant-drawer-body {
+    padding: 0;
+    background-color: var(--dsw-color-bg-1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+}
+
+.calendar-setting-header {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--dsw-color-text-primary);
+  position: relative;
+  width: 100%;
+  .calendar-setting-header__left,
+  .calendar-setting-header__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .calendar-setting-back,
+  .calendar-setting-close,
+  .calendar-setting-add {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.calendar-setting-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background-color: var(--dsw-color-bg-1);
+  .calendar-setting-item {
+    padding: 14px 16px;
+    border-radius: 0;
+    border: 0;
+    color: var(--dsw-color-text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    &.clickable {
+      cursor: pointer;
+      &:hover {
+        background-color: var(--dsw-color-bg-2);
+      }
+    }
+  }
+  .calendar-setting-item__title {
+    font-size: 14px;
+  }
+  .calendar-setting-item--timezone {
+    flex-direction: column;
+    align-items: stretch;
+    border-bottom: none;
+  }
+  .calendar-setting-timezone {
+    color: var(--dsw-color-text-primary);
+    cursor: pointer;
+    &.on {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    svg {
+      color: var(--dsw-color-icon);
+    }
+  }
+  .calendar-setting-timezone-tip {
+    margin-top: 8px;
+    color: var(--dsw-color-text-third);
+    font-size: 10px;
+    line-height: 12px;
+  }
+  .timezone-text {
+    max-width: 172px;
+  }
+}
+
+.calendar-setting-divider {
+  height: 10px;
+  background-color: var(--dsw-color-bg-2);
+}
+
+.calendar-setting-users {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-setting-user-item {
+  padding: 0 16px;
+  .calendar-setting-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.calendar-setting-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-setting-form {
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  .calendar-setting-form__label {
+    font-size: 14px;
+    color: var(--dsw-color-text-primary);
+    .required {
+      color: #f84135;
+      margin-right: 4px;
+    }
+  }
+  .calendar-setting-form__tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--dsw-color-text-secondary);
+  }
+  .calendar-setting-form__footer {
+    margin-top: 16px;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.calendar-setting-search {
+  padding: 8px 16px;
+}
+
+.calendar-setting-timezone-item {
+  padding: 6px 16px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--dsw-color-bg-2);
+  }
+  .timezone-utc {
+    color: var(--dsw-color-text-third);
+    font-size: 12px;
+  }
+}
+
+.calendar-setting-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--dsw-color-text-third);
+  font-size: 14px;
+}
+
+.calendar-setting-uploader {
+  padding: 24px 16px;
+  .calendar-setting-uploader__title {
+    font-size: 14px;
+    color: var(--dsw-color-text-primary);
+  }
+  .calendar-setting-uploader__desc {
+    font-size: 12px;
+    color: var(--dsw-color-text-third);
+    margin-top: 6px;
+  }
+}
+
+.calendar-setting-file-item {
+  width: 100%;
+  padding: 6px 0;
+}
+
+.calendar-setting-file-remove {
+  color: var(--dsw-color-text-third);
+  cursor: pointer;
 }
 
 .schdule-menu {
