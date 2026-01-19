@@ -1,9 +1,9 @@
 import { toastError } from '@/shared/Message';
 import { getSimpleName } from '@/util';
-import { compress } from 'lz-string';
+import { compressToBase64 } from 'lz-string';
 
 const getSchema = () => {
-  const ua = navigator.userAgent;
+  const ua = navigator.userAgent.toLowerCase();
   if (ua.includes('cctm')) {
     return 'cctm';
   }
@@ -29,15 +29,20 @@ export const createRoom = (info: { name: string; id: string }) => {
     toastError('failed to join my room');
     return;
   }
-  const topic = encodeURIComponent(`${getSimpleName(info.name)}'s Personal Meeting Room`);
-  const channelName = encodeURIComponent(`I-${window.btoa(`myroom:user:${info.id}`)}`);
-  const url = `${getSchema()}://meeting?v=1&meetingname=${topic}&channelname=${channelName}`;
+  const topic = `${getSimpleName(info.name)}'s Personal Meeting Room`;
+  const channelName = `I-${window.btoa(`myroom:user:${info.id}`)}`;
+  const searchParams = new URLSearchParams({
+    v: '1',
+    meetingname: topic,
+    channelname: channelName,
+  });
+  const url = `${getSchema()}://meeting?${searchParams.toString()}`;
 
   window.location.href = url;
 };
 
 export const shareLiveStream = (content: string, selected: string[]) => {
-  const listStr = encodeURIComponent(compress(selected.filter(Boolean).join(',')));
+  const list = compressToBase64(selected.filter(Boolean).join(','));
   const source = content || '';
   // Example content:
   // Topic: Live Stream
@@ -47,17 +52,22 @@ export const shareLiveStream = (content: string, selected: string[]) => {
   const timeMatch = source.match(/\$FORMAT-LOCAL-TIME\{(\d+)\}/);
   const topicMatch = source.match(/Topic:\s*([^\n\r]+)/);
   const eid = eidMatch?.[1] || '';
-  const unix = timeMatch?.[1] || '';
+  const t = timeMatch?.[1] || '';
   const topic = topicMatch?.[1] || 'Live Stream';
 
-  if (!eid || !unix) {
+  if (!eid || !t) {
     toastError('invalid share content');
     return;
   }
 
-  const url = `${getSchema()}://calendar-app?action=share-live&list=${listStr}&topic=${encodeURIComponent(
-    topic
-  )}&eid=${eid}&t=${unix}`;
+  const searchParams = new URLSearchParams({
+    action: 'share-live',
+    list,
+    topic,
+    eid,
+    t,
+  });
+  const url = `${getSchema()}://calendar-app?${searchParams.toString()}`;
   window.location.href = url;
 };
 
@@ -67,13 +77,13 @@ export const createWebCall = () => {
 };
 
 export const goToGoogle = (members: string[], topic?: string, channelName?: string) => {
-  const membersStr = encodeURIComponent(compress(members?.filter(Boolean).join(',')));
+  const membersStr = compressToBase64(members?.filter(Boolean).join(','));
   const searchParams = new URLSearchParams({
     action: 'go-to-google',
     members: membersStr,
   });
   if (topic) {
-    searchParams.append('meetingname', encodeURIComponent(topic));
+    searchParams.append('meetingname', topic);
   }
   if (channelName) {
     searchParams.append('channelname', channelName);
