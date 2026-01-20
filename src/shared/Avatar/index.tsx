@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { getInitials } from '@/util';
+import { IconTablerGroupIcon } from '../IconsNew';
+import { Flex } from 'antd';
 
 const BACKGROUND_COLORS = [
   'rgb(255,69,58)',
@@ -20,6 +22,7 @@ export interface AvatarProps {
   avatarPath?: string;
   conversationType: 'group' | 'direct';
   isMe?: boolean;
+  isGroup?: boolean;
   size?: number;
   noClickEvent?: boolean;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -55,7 +58,20 @@ export const Avatar = (props: AvatarProps) => {
   };
 
   const renderImage = () => {
-    const { avatarPath, isMe, size = 36 } = props;
+    const { avatarPath, isMe, isGroup, size = 36 } = props;
+
+    if (isGroup) {
+      return (
+        <Flex
+          className="default-group-avatar"
+          style={{ width: size, height: size }}
+          align="center"
+          justify="center"
+        >
+          <IconTablerGroupIcon width={size - 12} height={size - 12} />
+        </Flex>
+      );
+    }
     const hasImage = avatarPath && !imageBroken;
     if (!hasImage || isMe) {
       return null;
@@ -72,28 +88,14 @@ export const Avatar = (props: AvatarProps) => {
   };
 
   const renderNoImage = () => {
-    const { conversationType, id, name, avatarPath, isMe, size } = props;
+    const { conversationType, id, name, avatarPath, isMe, size, isGroup } = props;
     const hasImage = avatarPath && !imageBroken;
-    if (hasImage || isMe) {
+    if (hasImage || isMe || isGroup) {
       return null;
     }
 
     const initials = getInitials(name || id);
-    const isGroup = conversationType === 'group';
     const sizeClass = size ? `module-avatar--${size}` : '';
-
-    if (isGroup) {
-      return (
-        <div
-          className={classNames(
-            'default-group-avatar',
-            'avatar__icon',
-            `avatar__icon--${conversationType}`,
-            sizeClass
-          )}
-        />
-      );
-    }
 
     if (initials) {
       return (

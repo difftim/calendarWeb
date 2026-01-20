@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar } from './Avatar';
+import { Avatar } from '@/shared/Avatar';
 import { Checkbox } from 'antd';
 import classNames from 'classnames';
 import { cleanUserIdForDisplay } from '@/util';
@@ -51,6 +51,7 @@ export const ConversationItem = (props: ConversationListItemProps) => {
           avatarPath={avatarPath}
           conversationType={type}
           isMe={isMe && showNote}
+          isGroup={type === 'group'}
         />
         {type === 'group' && members && members.length > 0 && (
           <div className="module-avatar-group-members-count">{members?.length}</div>

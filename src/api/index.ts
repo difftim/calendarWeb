@@ -1819,6 +1819,18 @@ export const uploadIcsData = async (data: { ics: string; email?: string }) => {
   return request.post(`v1/ics/upload`, { json: data }) as any;
 };
 
+export const getProxyPermission = async (type: 'given' | 'own' = 'own') => {
+  return request.get(`v1/proxy/permissions?type=${type}`) as any;
+};
+
+export const addProxyPermission = async (uid: string) => {
+  return request.post(`v1/proxy/permissions`, { json: { users: [uid] } }) as any;
+};
+
+export const deleteProxyPermission = async (uid: string) => {
+  return request.delete(`v1/proxy/permissions`, { json: { uid } }) as any;
+};
+
 export const addLiveStreamToCalendar = async (eid: string, cid = 'default') => {
   return request.post(`v1/calendar/${cid}/livestream`, {
     json: { eid },

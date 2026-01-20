@@ -828,53 +828,6 @@
     transform: translate3d(-50%, 0, 0);
     z-index: 1000;
   }
-
-  .mainTabDialog,
-  .calendarScheduleDialog,
-  .calendarSettingDialog {
-    box-shadow: var(--dsw-elevation-02);
-    width: 360px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    // width: 100%;
-    // background-color: rgba(0, 0, 0, 0.5);
-    z-index: 201; // fix module-scroll-down__button
-    //overflow-y: auto;
-    display: none;
-  }
-
-  .calendarSettingDialog {
-    .uploader {
-      padding: 10px;
-      padding-top: 40px;
-      .ant-upload-wrapper {
-        max-width: 360px;
-      }
-
-      .file-item {
-        padding: 4px 16px;
-        border-radius: 6px;
-        margin-top: 8px;
-        &:hover {
-          background-color: var(--dsw-color-bg-2);
-        }
-      }
-
-      .importIcsBtn {
-        min-width: 66px;
-        height: 40px;
-        border-radius: 8px;
-        border: none !important;
-
-        &:disabled {
-          background-color: var(--dsw-color-bg-disable);
-          color: #b7bdc6;
-        }
-      }
-    }
-  }
 }
 
 .meeting-operate-list {
@@ -1088,12 +1041,13 @@
 
 .calendar-setting-drawer {
   .ant-drawer-header {
-    background-color: var(--dsw-color-bg-1);
+    background-color: var(--dsw-metting-background-color);
     padding: 16px;
+    border-bottom: 1px solid var(--dsw-color-line);
   }
   .ant-drawer-body {
     padding: 0;
-    background-color: var(--dsw-color-bg-1);
+    background-color: var(--dsw-metting-background-color);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -1108,9 +1062,15 @@
   width: 100%;
   .calendar-setting-header__left,
   .calendar-setting-header__right {
+    -webkit-app-region: no-drag;
     display: flex;
     align-items: center;
     gap: 12px;
+    > svg {
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
   }
   .calendar-setting-back,
   .calendar-setting-close,
@@ -1125,21 +1085,20 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-  background-color: var(--dsw-color-bg-1);
+  height: 100vh;
+  background-color: var(--dsw-color-bg-elevate);
   .calendar-setting-item {
     padding: 14px 16px;
     border-radius: 0;
     border: 0;
     color: var(--dsw-color-text-primary);
+    background-color: var(--dsw-color-bg-popup);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     &.clickable {
       cursor: pointer;
-      &:hover {
-        background-color: var(--dsw-color-bg-2);
-      }
     }
   }
   .calendar-setting-item__title {
@@ -1173,8 +1132,8 @@
 }
 
 .calendar-setting-divider {
-  height: 10px;
-  background-color: var(--dsw-color-bg-2);
+  background-color: var(--dsw-color-bg-elevate);
+  height: 12px;
 }
 
 .calendar-setting-users {
@@ -1185,11 +1144,19 @@
 }
 
 .calendar-setting-user-item {
-  padding: 0 16px;
+  padding-right: 18px;
   .calendar-setting-item-actions {
-    display: flex;
     align-items: center;
     gap: 8px;
+    display: none;
+  }
+
+  &:hover {
+    background-color: var(--dsw-color-bg-2);
+    .calendar-setting-item-actions {
+      display: flex;
+      cursor: pointer;
+    }
   }
 }
 
@@ -1197,6 +1164,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .calendar-setting-form {

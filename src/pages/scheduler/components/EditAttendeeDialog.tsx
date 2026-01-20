@@ -4,7 +4,7 @@ import { uniq, uniqBy } from 'lodash';
 
 import { useTranferModalStore } from '@/shared/TransferModal/TransferModalContext';
 import { useTransferModalWithContent } from '@/shared/TransferModal/useTransferModal';
-import { ConversationItem } from '@/shared/SimpleComponent';
+import { ConversationItem } from '@/shared/TransferModal/ConversationItem';
 import { useI18n } from '@/hooks/useI18n';
 import {
   createTranferModal,

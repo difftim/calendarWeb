@@ -3,16 +3,15 @@ import { AutoSizer, List as VList } from 'react-virtualized';
 import { Drawer, Flex, Popover, Spin, Switch, Upload } from 'antd';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/shared/Button';
 import Input from '@/shared/Input';
 import SearchInput from '@/shared/Input/SearchInput';
 import { ContactListItem } from '@/shared/ConversationItem';
 import {
-  IconBackF,
   IconChevronRight,
   IconCloseF,
+  IconTablerCheck,
   IconTablerInfoCircle,
   IconTablerLink,
   IconTablerPlus,
@@ -21,16 +20,29 @@ import {
 import { toastError, toastSuccess } from '@/shared/Message';
 import { useRadioModal } from '@/hooks/useRadioModal';
 import { useTimeZoneDayjs } from '@/hooks/useTimeZoneDayjs';
-import { uid2cid } from '@/util';
-import { addUserCalendar, deleteUserCalendar, updateUserCalendar, uploadIcsData } from '@/api';
+import { getSimpleName, uid2cid } from '@/util';
+import {
+  addUserCalendar,
+  deleteUserCalendar,
+  updateUserCalendar,
+  uploadIcsData,
+  getProxyPermission,
+  addProxyPermission,
+  deleteProxyPermission,
+} from '@/api';
+import { ConfigProvider } from '@/shared';
+import { getUserBaseInfoSync } from '@/atoms/userInfo';
+import { useI18n } from '@/hooks/useI18n';
 
 enum Step {
   Main = 0,
   My = 1,
   Other = 2,
   AddOther = 3,
-  TimeZone = 4,
-  UpdateIcs = 5,
+  Proxy = 4,
+  AddProxy = 5,
+  TimeZone = 6,
+  UpdateIcs = 7,
 }
 
 const isSearchMatchId = (id: string) => {
@@ -127,9 +139,9 @@ const EditUserForm = ({
         value={value}
         onChange={e => setValue(e.target.value?.slice(0, 30) || '')}
       />
-      <Button size="small" type="primary" onClick={() => onConfirm(value)}>
-        Save
-      </Button>
+      <div onClick={() => onConfirm(value)} style={{ cursor: 'pointer' }}>
+        <IconTablerCheck />
+      </div>
     </div>
   );
 };
@@ -142,9 +154,9 @@ const CalendarUserItem = ({
   onRemove,
 }: {
   item: any;
-  type: 'my' | 'other';
+  type: 'my' | 'other' | 'proxy';
   myId: string;
-  onRename: (item: any, name: string) => Promise<void>;
+  onRename?: (item: any, name: string) => Promise<void>;
   onRemove: (item: any) => Promise<void>;
 }) => {
   const [editOpen, setEditOpen] = useState(false);
@@ -153,30 +165,36 @@ const CalendarUserItem = ({
   return (
     <div className="calendar-setting-user-item">
       <ContactListItem
+        useSimpleName
         id={item.id}
+        calendarName={item.cname}
         noHover
         extraElement={
           <div className="calendar-setting-item-actions">
-            <Popover
-              destroyTooltipOnHide
-              open={editOpen}
-              onOpenChange={setEditOpen}
-              trigger="click"
-              arrow={false}
-              content={
-                <EditUserForm
-                  name={item.cname || item.name || ''}
-                  onConfirm={async nextName => {
-                    await onRename(item, nextName);
-                    setEditOpen(false);
-                  }}
-                />
-              }
-              placement="left"
-              overlayInnerStyle={{ padding: '12px', width: '250px' }}
-            >
-              <Button size="small">Edit</Button>
-            </Popover>
+            {type !== 'proxy' && (
+              <Popover
+                destroyTooltipOnHide
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                trigger="click"
+                arrow={false}
+                content={
+                  <EditUserForm
+                    name={
+                      item.cname || item.name || getSimpleName(getUserBaseInfoSync(item.id).name)
+                    }
+                    onConfirm={async nextName => {
+                      await onRename?.(item, nextName);
+                      setEditOpen(false);
+                    }}
+                  />
+                }
+                placement="left"
+                overlayInnerStyle={{ padding: '12px', width: '250px' }}
+              >
+                <Button size="small">Edit</Button>
+              </Popover>
+            )}
             <Button
               size="small"
               disabled={!canRemove}
@@ -187,7 +205,7 @@ const CalendarUserItem = ({
                 onRemove(item);
               }}
             >
-              {type === 'my' ? 'Unlink' : 'Unsubscribe'}
+              {type === 'my' ? 'Unlink' : type === 'proxy' ? 'Remove' : 'Unsubscribe'}
             </Button>
           </div>
         }
@@ -371,6 +389,77 @@ const IcsUploader = ({ onSuccess }: { onSuccess: () => void }) => {
   );
 };
 
+const AddProxyForm = ({ setStep, onSuccess }: any) => {
+  const [uid, setUid] = useState('');
+  const onConfirm = async () => {
+    try {
+      const _uid = uid.trim();
+      if (!_uid) {
+        return;
+      }
+      if (!isSearchMatchId(_uid)) {
+        toastError(`uid format error`);
+
+        return;
+      }
+
+      await addProxyPermission(getRealUid(_uid));
+      toastSuccess('Granted!');
+      setStep(Step.Proxy);
+      onSuccess();
+    } catch (error: any) {
+      toastError(error?.message || `add permission fail, try again later!`);
+    }
+  };
+
+  return (
+    <div style={{ padding: '28px 16px 16px' }}>
+      <div style={{ marginBottom: '8px' }} className="dsw-shared-typography-p3">
+        <span style={{ color: 'rgb(248, 65, 53)' }}>*</span>Enter the UID you would like to grant:
+      </div>
+      <Input
+        style={{
+          background: 'var(--dsw-color-bg-popup)',
+        }}
+        key="name"
+        placeholder="e.g. 71234567890"
+        value={uid}
+        onChange={e => setUid(e.target.value?.trim())}
+      />
+      <div
+        style={{
+          fontSize: '12px',
+          color: `var(--dsw-color-text-secondary)`,
+          marginTop: '24px',
+          alignItems: 'flex-start',
+        }}
+      >
+        NOTE: Once you granted, he/she will have access to manage your calendar, such as: <br />
+        <br />
+        1. View all events <br />
+        <br />
+        2. Create meetings <br />
+        <br />
+        3. Edit meetings <br />
+        <br />
+        4. Cancel meetings
+      </div>
+      <div style={{ position: 'absolute', left: 16, right: 16, bottom: 16 }}>
+        <Button
+          size="large"
+          key="ok"
+          disabled={!uid}
+          type="primary"
+          onClick={onConfirm}
+          style={{ width: '100%' }}
+        >
+          Grant
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export const CalendarSettingDialog = ({
   open,
   onClose,
@@ -388,12 +477,14 @@ export const CalendarSettingDialog = ({
   const [myCalendars, setMyCalendars] = useState<any[]>([]);
   const [otherCalendars, setOtherCalendars] = useState<any[]>([]);
   const { openModal } = useRadioModal();
-  const queryClient = useQueryClient();
+  const [proxyReqLoading, setProxyReqLoading] = useState(false);
+  const [proxyList, setProxyList] = useState<any[]>([]);
   const {
     timeZone: myTimeZone,
     isSystemTimeZoneSwitchOn,
     setSystemTimeZoneSwitchOn,
   } = useTimeZoneDayjs();
+  const { i18n } = useI18n();
 
   useEffect(() => {
     setMyCalendars(myList || []);
@@ -412,16 +503,29 @@ export const CalendarSettingDialog = ({
       'My Calendars',
       'Other Calendars',
       'Subscribe Other Calendar',
+      'Grant Management Permissions',
+      'Grant Management Permissions',
       'Setting Time Zone',
       'Import ics',
     ],
     []
   );
 
+  const openProxyPermission = () => {
+    const proxyList = myList.filter(item => item.role === 'proxy');
+    if (proxyList.length >= 10) {
+      toastError('You can only proxy less than 10 user');
+      return;
+    }
+
+    setStep(Step.AddProxy);
+  };
+
   const confirmRemove = async (currentStep: Step) => {
     const StepMap = {
       [Step.My]: 'Once unlink, if you want to link again, you will need to reapply.',
       [Step.Other]: 'Confirm to delete?',
+      [Step.Proxy]: 'Confirm to remove?',
       [Step.AddOther]: '',
       [Step.TimeZone]: '',
       [Step.UpdateIcs]: '',
@@ -433,10 +537,6 @@ export const CalendarSettingDialog = ({
       cancelText: 'No',
       hideRadio: true,
     });
-  };
-
-  const refreshCalendar = () => {
-    queryClient.invalidateQueries({ queryKey: ['myEvents'] });
   };
 
   const handleRename = async (item: any, name: string, type: 'my' | 'other') => {
@@ -455,32 +555,48 @@ export const CalendarSettingDialog = ({
           list.map(target => (target.id === item.id ? { ...target, cname: name } : target))
         );
       }
-      refreshCalendar();
       toastSuccess('update calendar info successfully!');
     } catch (error: any) {
       toastError(error?.message || 'update calendar fail, try again later!');
     }
   };
 
-  const handleRemove = async (item: any, type: 'my' | 'other') => {
-    const { ok } = await confirmRemove(type === 'my' ? Step.My : Step.Other);
+  const handleRemove = async (item: any, type: 'my' | 'other' | 'proxy') => {
+    const { ok } = await confirmRemove(
+      type === 'my' ? Step.My : type === 'other' ? Step.Other : Step.Proxy
+    );
     if (!ok) {
       return;
     }
     try {
-      await deleteUserCalendar({
-        type: type === 'my' ? 'myCalendar' : 'otherCalendar',
-        cid: uid2cid(getRealUid(item.id)),
-      });
-      if (type === 'my') {
-        setMyCalendars(list => list.filter(target => target.id !== item.id));
+      if (type === 'proxy') {
+        await deleteProxyPermission(getRealUid(item.id));
+        toastSuccess('Removed!');
       } else {
-        setOtherCalendars(list => list.filter(target => target.id !== item.id));
+        await deleteUserCalendar({
+          type: type === 'my' ? 'myCalendar' : 'otherCalendar',
+          cid: uid2cid(getRealUid(item.id)),
+        });
+        toastSuccess(type === 'my' ? 'Unlinked' : 'Unsubscribed!');
       }
-      refreshCalendar();
-      toastSuccess(type === 'my' ? 'Unlinked' : 'Unsubscribed!');
     } catch (error: any) {
       toastError(error?.message || 'remove failed!');
+    }
+  };
+
+  const getPermission = async () => {
+    if (proxyReqLoading) {
+      return;
+    }
+    setProxyReqLoading(true);
+    setStep(Step.Proxy);
+    try {
+      const data = await getProxyPermission('given');
+      setProxyList(data?.given || []);
+    } catch (error) {
+      console.log('query permission error', error);
+    } finally {
+      setProxyReqLoading(false);
     }
   };
 
@@ -495,6 +611,10 @@ export const CalendarSettingDialog = ({
           </div>
           <div className="calendar-setting-item clickable" onClick={() => setStep(Step.Other)}>
             <span>Other Calendars</span>
+            <IconChevronRight />
+          </div>
+          <div className="calendar-setting-item clickable" onClick={() => setStep(Step.Proxy)}>
+            <span>Grant Management Permissions</span>
             <IconChevronRight />
           </div>
           <div className="calendar-setting-divider" />
@@ -562,7 +682,6 @@ export const CalendarSettingDialog = ({
                 item={item}
                 type="my"
                 myId={myId}
-                onRename={(target, name) => handleRename(target, name, 'my')}
                 onRemove={target => handleRemove(target, 'my')}
               />
             ))
@@ -599,7 +718,6 @@ export const CalendarSettingDialog = ({
         <AddOtherForm
           onSuccess={() => {
             setStep(Step.Other);
-            refreshCalendar();
           }}
         />
       );
@@ -619,46 +737,85 @@ export const CalendarSettingDialog = ({
       );
     }
 
+    if (step === Step.Proxy) {
+      return (
+        <>
+          <div
+            className="dsw-shared-typography-p4"
+            style={{
+              color: 'var(--dsw-color-text-third)',
+              margin: '10px 16px 4px 16px',
+            }}
+          >
+            {proxyList.length > 0 ? i18n('calendarProxyTips') : i18n('calendarProxyEmptyTips')}
+          </div>
+          <div className="calendar-setting-users">
+            {proxyList.length > 0 &&
+              proxyList.map(item => (
+                <CalendarUserItem
+                  key={item.id}
+                  item={item}
+                  type="other"
+                  myId={myId}
+                  onRename={(target, name) => handleRename(target, name, 'other')}
+                  onRemove={target => handleRemove(target, 'proxy')}
+                />
+              ))}
+          </div>
+        </>
+      );
+    }
+
+    if (step === Step.AddProxy) {
+      return <AddProxyForm setStep={setStep} onSetList={setProxyList} onSuccess={getPermission} />;
+    }
+
     return null;
   };
 
   const header = (
     <Flex align="center" justify="space-between" className="calendar-setting-header">
       <div className="calendar-setting-header__left">
-        {step !== Step.Main && (
-          <IconBackF onClick={() => setStep(Step.Main)} className="calendar-setting-back" />
-        )}
+        {step !== Step.Main &&
+          step !== Step.AddOther &&
+          step !== Step.AddProxy &&
+          step !== Step.UpdateIcs &&
+          step !== Step.My && (
+            <IconTablerPlus
+              onClick={
+                step === Step.Proxy
+                  ? openProxyPermission
+                  : () => {
+                      if (otherCalendars.length >= 10) {
+                        toastError('You can only subscribe 10 calendars');
+                        return;
+                      }
+                      setStep(Step.AddOther);
+                    }
+              }
+            />
+          )}
       </div>
       <span>{titles[step]}</span>
       <div className="calendar-setting-header__right">
-        {step === Step.Other && (
-          <IconTablerPlus
-            className="calendar-setting-add"
-            onClick={() => {
-              if (otherCalendars.length >= 10) {
-                toastError('You can only subscribe 10 calendars');
-                return;
-              }
-              setStep(Step.AddOther);
-            }}
-          />
-        )}
         <IconCloseF onClick={onClose} className="calendar-setting-close" />
       </div>
     </Flex>
   );
 
   return (
-    <Drawer
-      open={open}
-      className="calendar-setting-drawer"
-      closeIcon={false}
-      width={360}
-      title={header}
-      onClose={onClose}
-    >
-      {renderList()}
-    </Drawer>
+    <ConfigProvider isLightlyDisableMode>
+      <Drawer
+        open={open}
+        className="calendar-setting-drawer"
+        closeIcon={false}
+        width={360}
+        title={header}
+        onClose={onClose}
+      >
+        {renderList()}
+      </Drawer>
+    </ConfigProvider>
   );
 };
 

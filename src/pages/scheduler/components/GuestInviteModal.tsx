@@ -9,9 +9,9 @@ import {
   ModalProps,
   TransferModalConsumer,
 } from '@/shared/TransferModal';
-import { ConversationItem } from '@/shared/SimpleComponent';
-import { useI18n } from '@/hooks/useI18n';
+import { ConversationItem } from '@/shared/TransferModal/ConversationItem';
 
+import { useI18n } from '@/hooks/useI18n';
 export type GuestInviteItem = {
   id: string;
   type: 'group' | 'direct';

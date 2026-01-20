@@ -488,7 +488,7 @@
   .save-btn-wrapper {
     background-color: var(--dsw-metting-background-color);
     position: fixed;
-    width: 360px;
+    width: 359.5px;
     right: 0;
     bottom: 0;
     z-index: 1;
@@ -876,4 +876,8 @@
       }
     }
   }
+}
+
+.ant-drawer-content-wrapper {
+  border-left: 0.5px solid var(--dsw-color-line);
 }

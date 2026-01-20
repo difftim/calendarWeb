@@ -4,17 +4,23 @@ import { compressToBase64 } from 'lz-string';
 
 const getSchema = () => {
   const ua = navigator.userAgent.toLowerCase();
-  if (ua.includes('cctm')) {
-    return 'cctm';
-  }
-  if (ua.includes('weatest')) {
-    return 'weatest';
-  }
-  if (ua.includes('ccm')) {
+  if (ua.includes('cc/')) {
     return 'ccm';
   }
-  if (ua.includes('wea')) {
+  if (ua.includes('wea/')) {
     return 'wea';
+  }
+  if (ua.includes('cctest/')) {
+    return 'cctm';
+  }
+  if (ua.includes('weatest/')) {
+    return 'weatest';
+  }
+  if (ua.includes('bycew/')) {
+    return 'wea';
+  }
+  if (ua.includes('bycec/')) {
+    return 'ccm';
   }
   return 'wea';
 };

@@ -214,6 +214,14 @@ $prefix-simple: dsw-simple;
     }
   }
 
+  .default-group-avatar {
+    background-color: linear-gradient(293.26deg, #1773eb 39.79%, #4da0ff 100%);
+    border-radius: 50%;
+    > svg {
+      color: #fff;
+    }
+  }
+
   .module-avatar-group-members-count {
     position: absolute;
     z-index: 2;

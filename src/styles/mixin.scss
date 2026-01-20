@@ -11,3 +11,24 @@
     overflow: hidden;
   }
 }
+
+@mixin typography-p3 {
+  font-weight: $dsw-text-font-weight-normal;
+  font-size: $dsw-text-font-size-200;
+  line-height: 20px;
+}
+
+@mixin typography-p4 {
+  font-weight: $dsw-text-font-weight-normal;
+  font-size: $dsw-text-font-size-100;
+  line-height: 16px;
+}
+
+.dsw-shared-typography {
+  &-p3 {
+    @include typography-p3;
+  }
+  &-p4 {
+    @include typography-p4;
+  }
+}

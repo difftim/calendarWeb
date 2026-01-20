@@ -11,7 +11,7 @@ import {
   ModalProps,
   TransferModalConsumer,
 } from '@/shared/TransferModal';
-import { ConversationItem } from '@/shared/SimpleComponent';
+import { ConversationItem } from '@/shared/TransferModal/ConversationItem';
 
 export type ForwardModalItem = {
   id: string;

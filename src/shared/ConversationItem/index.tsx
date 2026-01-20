@@ -2,7 +2,7 @@ import React, { ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 
 import { Avatar } from '@/shared/Avatar';
-import { cleanUserIdForDisplay, isBotId } from '@/util';
+import { cleanUserIdForDisplay, getSimpleName, isBotId } from '@/util';
 import { useAtomValue } from 'jotai';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
 
@@ -14,12 +14,16 @@ interface Props {
   extraElement?: ReactNode;
   prefixText?: JSX.Element | string;
   hideContent?: ReactNode;
+  useSimpleName?: boolean;
+  calendarName?: string;
 }
 
 export const ContactListItem: React.FC<Props> = ({
   id,
   onClick,
   style,
+  useSimpleName = false,
+  calendarName = '',
   noHover,
   extraElement,
   prefixText = '',
@@ -57,7 +61,7 @@ export const ContactListItem: React.FC<Props> = ({
   );
 
   const idForDisplay = cleanUserIdForDisplay(id || '');
-  let title = name ? name : idForDisplay;
+  let title = calendarName || (name ? (useSimpleName ? getSimpleName(name) : name) : idForDisplay);
   if (isBotId(id) && hideContent && !name?.trim()) {
     title = idForDisplay;
   }
