@@ -837,3 +837,7 @@ export const formatTZ = (tz = '') => {
     return tz;
   }
 };
+
+export const isSearchMatchId = (searchText: string) => /^(\+)?\d{11}$/.test(searchText);
+
+export const getRealId = (uid: string) => (uid.startsWith('+') ? uid : `+${uid}`);

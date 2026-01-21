@@ -33,7 +33,7 @@ import { ScheduleMeetingDialog } from '@/pages/scheduler';
 import { SelectList } from '@/pages/calendar/components/SelectList';
 import { calendarQueryAtom } from '@/atoms/query';
 import { useCreateSchedule } from '@/hooks/useCreateSchedule';
-import CalendarSettingDialog from '@/pages/calendar/components/CalendarSettingDialog';
+import CalendarSettingDialog from '@/pages/calendarSetting';
 
 const ViewChangePanel = () => {
   const navigate = useNavigate();

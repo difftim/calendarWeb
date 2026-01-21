@@ -12,6 +12,7 @@ import {
   ModalProps,
   TransferModalConsumer,
 } from '@/shared/TransferModal';
+import { getRealId, isSearchMatchId } from '@/util';
 
 export type EditAttendeeItem = {
   id: string;
@@ -40,10 +41,7 @@ const isSearchMatchEmail = (searchText: string) => {
     searchText
   );
 };
-const isSearchMatchId = (searchText: string) => /^(\+)?\d{11}$/.test(searchText);
 
-const getRealId = (searchText: string) =>
-  searchText.startsWith('+') ? searchText : `+${searchText}`;
 
 const findAppUser = (list: EditAttendeeItem[], emailOrIdLike: string) => {
   if (isSearchMatchId(emailOrIdLike)) {
