@@ -7,7 +7,7 @@ import { toastError, toastSuccess } from '@/shared/Message';
 import { addUserCalendar } from '@/api';
 import { uid2cid } from '@/util';
 
-import { getRealUid, isSearchMatchId } from '../utils';
+import { getRealId, isSearchMatchId } from '@/util';
 
 export interface AddOtherFormProps {
   onSuccess: () => void;
@@ -30,7 +30,7 @@ const AddOtherForm = ({ onSuccess }: AddOtherFormProps) => {
       }
       setLoading(true);
       await addUserCalendar({
-        cid: uid2cid(getRealUid(trimmed)),
+        cid: uid2cid(getRealId(trimmed)),
         type: 'otherCalendar',
         name: name || '',
       });
@@ -72,4 +72,3 @@ const AddOtherForm = ({ onSuccess }: AddOtherFormProps) => {
 };
 
 export default AddOtherForm;
-

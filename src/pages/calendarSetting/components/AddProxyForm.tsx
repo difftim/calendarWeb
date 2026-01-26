@@ -5,8 +5,8 @@ import Input from '@/shared/Input';
 import { toastError, toastSuccess } from '@/shared/Message';
 import { addProxyPermission } from '@/api';
 
-import { getRealUid, isSearchMatchId } from '../utils';
-import { Step } from '../types';
+import { getRealId, isSearchMatchId } from '@/util';
+import { Step } from '../utils';
 
 export interface AddProxyFormProps {
   setStep: React.Dispatch<React.SetStateAction<Step>>;
@@ -27,7 +27,7 @@ const AddProxyForm = ({ setStep, onSuccess }: AddProxyFormProps) => {
         return;
       }
 
-      await addProxyPermission(getRealUid(_uid));
+      await addProxyPermission(getRealId(_uid));
       toastSuccess('Granted!');
       setStep(Step.Proxy);
       onSuccess();
@@ -85,4 +85,3 @@ const AddProxyForm = ({ setStep, onSuccess }: AddProxyFormProps) => {
 };
 
 export default AddProxyForm;
-

@@ -238,10 +238,10 @@
   resolved "https://npm.pkg.github.com/download/@difftim/jsbridge-utils/1.6.2/691994bb7d202abc05bb8bbb040e8976369a5610#691994bb7d202abc05bb8bbb040e8976369a5610"
   integrity sha512-+AqTfRfIKhzHx+yta8ovoDdyoSJaJTqm/FYmXS4xcdnYYjgF06yGZhG5E1r9APrE6Rp9IyAIzkGOvXTODGmATg==
 
-"@difftim/scheduler-component@0.1.8-beta.1":
-  version "0.1.8-beta.1"
-  resolved "https://npm.pkg.github.com/download/@difftim/scheduler-component/0.1.8-beta.1/5599f4a5996a28518a25069fa4924bfc8d9c8337#5599f4a5996a28518a25069fa4924bfc8d9c8337"
-  integrity sha512-QnGhXRb7/8Oh4EtJ9bTE4PqSg08li54xzbrkT4KV8/CS0pODoXKb0SNRHNdNaPUlfaYoDwcRAdWythnrhdqK0Q==
+"@difftim/scheduler-component@^0.1.9":
+  version "0.1.9"
+  resolved "https://npm.pkg.github.com/download/@difftim/scheduler-component/0.1.9/097e881161d3682a620aa69f8b64ef482880b2c4#097e881161d3682a620aa69f8b64ef482880b2c4"
+  integrity sha512-UOEbZIWA2bAIDNCZPsPJ5prO0MRqtuwD3AKwBTS7ZLNTqJbLyBhFyZ7CYr6NWe4xteodmVAVySqdhSm6USwTBQ==
   dependencies:
     moment-timezone "0.5.48"
     react-big-calendar "1.8.5"
