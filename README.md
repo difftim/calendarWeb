@@ -24,8 +24,6 @@ Standalone version of calendar migrated from difft-desktop
 - `lodash`: 工具函数库
 - `lz-string`: 字符串压缩
 
-**注意**: 项目已精简依赖，仅保留核心必需的 9 个依赖包。详见 [DEPENDENCIES_CLEANUP.md](./DEPENDENCIES_CLEANUP.md)
-
 ## 开发
 
 ### 安装依赖
@@ -81,17 +79,23 @@ yarn type-check
 
 ```text
 src/
-├── api/          # 接口层：定义业务 API 与 axios 拦截器
-├── atoms/        # 状态层：基于 Jotai 的全局状态定义 (用户、时区、主题、编辑器等)
-├── bridge/       # 桥接层：负责与跨端宿主环境的 JSBridge 通信
-├── components/   # 组件层：包含通用 UI (shared) 与业务大组件
-├── hooks/        # 逻辑封装：从 UI 中抽离的业务逻辑 (数据处理、日期操作等)
-├── layout/       # 布局层：页面的整体框架结构
-├── pages/        # 页面层：具体的业务模块页面 (日历主视图、列表视图、编辑器)
-├── provider/     # 提供者：国际化 (I18n) 等全局 Context Provider
-├── shims/        # 适配层：环境差异适配与全局变量 Mock
-├── styles/       # 样式目录：SCSS 变量、Mixin 与全局样式
-└── util/         # 工具类：纯函数工具集
+├── api/              # 接口层：定义业务 API 与请求封装
+├── atoms/            # 状态层：基于 Jotai 的全局状态定义 (用户、时区、主题、编辑器等)
+├── constants/        # 常量定义
+├── hooks/            # 逻辑封装：从 UI 中抽离的业务逻辑 (数据处理、日期操作等)
+├── layout/           # 布局层：页面的整体框架结构
+├── pages/            # 页面层：具体的业务模块页面
+│   ├── calendar/     # 日历主视图 (周视图/日视图)
+│   ├── calendarSetting/ # 日历设置 (管理日历、时区、权限代理等)
+│   ├── list/         # 列表视图
+│   └── scheduler/    # 日程编辑器 (会议/事件/直播创建与编辑)
+├── schema/           # Schema 跳转：通过 URL Schema 与原生客户端交互
+├── shared/           # 通用组件：Button、Input、Select、Modal 等 UI 组件
+├── styles/           # 样式目录：SCSS 变量、Mixin 与全局样式
+├── translate/        # 国际化：多语言翻译文件
+├── types/            # TypeScript 类型定义
+├── util/             # 工具类：纯函数工具集
+└── utils/            # 工具函数：国际化、全局适配器等
 ```
 
 ## 页面与布局架构
@@ -99,10 +103,86 @@ src/
 项目采用 **侧边栏 + 主内容区** 的布局模式，利用 `react-router-dom` 的 `Outlet` 实现动态内容切换。
 
 - **Layout (`src/layout/index.tsx`)**:
-  - **左侧面板**: 常驻展示。包含新建按钮、迷你日历控件、日历分类选择列表。
+  - **左侧面板**: 常驻展示。包含新建按钮（Meeting、Event、Instant Meet、Live Stream、My Room、Web Call）、迷你日历控件、日历分类选择列表。
   - **右侧面板 (`Outlet`)**: 根据路由映射展示 `pages/calendar` 或 `pages/list`。
-  - **视图切换 (`ViewChangePanel`)**: 浮动在右下角的视图切换器（List/Week/Day）。
+  - **视图切换 (`ViewChangePanel`)**: 浮动在右下角的视图切换器（List/Week/Day）及设置按钮。
   - **编辑器弹窗**: `ScheduleMeetingDialog` 挂载在 Layout 顶层，由全局状态 `showPannelAtom` 控制。
+  - **设置弹窗**: `CalendarSettingDialog` 挂载在 Layout 顶层，由全局状态 `showSettingAtom` 控制。
+
+## 日历设置页面 (Calendar Setting)
+
+`CalendarSettingDialog` 是一个抽屉式设置面板，提供以下功能：
+
+### 功能模块
+
+| 功能 | 说明 |
+|------|------|
+| **My Calendars** | 查看和管理我的日历列表，支持取消关联 |
+| **Other Calendars** | 管理订阅的其他用户日历，支持订阅、取消订阅、重命名 |
+| **Grant Management Permissions** | 日历代理权限管理，可授权他人管理自己的日历（最多 10 人） |
+| **Time Zone** | 时区设置，支持自动跟随系统时区或手动选择 |
+| **Import ICS** | 导入 ICS 格式的日历文件 |
+
+### 组件结构
+
+```text
+pages/calendarSetting/
+├── index.tsx           # 主组件 CalendarSettingDialog
+├── utils.ts            # 工具函数与类型定义
+└── components/
+    ├── AddOtherForm.tsx     # 订阅其他日历表单
+    ├── AddProxyForm.tsx     # 添加代理权限表单
+    ├── CalendarUserItem.tsx # 日历用户列表项
+    ├── EditUserForm.tsx     # 编辑用户信息表单
+    ├── IcsUploader.tsx      # ICS 文件上传器
+    └── TimeZoneList.tsx     # 时区选择列表
+```
+
+## Schema 跳转模块
+
+`src/schema/index.ts` 提供了通过 URL Schema 与原生客户端交互的能力，用于在 WebView 中触发客户端的原生功能。
+
+### Schema 协议识别
+
+根据 User-Agent 自动识别客户端类型，返回对应的 Schema 前缀：
+
+| UA 标识 | Schema |
+|---------|--------|
+| `cc/` | `ccm://` |
+| `wea/` | `wea://` |
+| `cctest/` | `cctm://` |
+| `weatest/` | `weatest://` |
+| `bycew/` | `wea://` |
+| `bycec/` | `ccm://` |
+| 默认 | `wea://` |
+
+### 跳转方法
+
+| 方法 | 说明 | 示例 URL |
+|------|------|----------|
+| `createInstantMeeting()` | 创建即时会议 | `wea://calendar-app?action=instant-meeting` |
+| `createRoom(info)` | 进入我的个人会议室 | `wea://meeting?v=1&meetingname=...&channelname=...` |
+| `createWebCall()` | 创建 Web Call | `wea://calendar-app?action=new-web-call` |
+| `goToGoogle(members, topic?, channelName?)` | 跳转到 Google Meet | `wea://calendar-app?action=go-to-google&members=...` |
+| `joinMeeting(info)` | 加入会议/直播 | `wea://meeting?channelName=...&meetingName=...` |
+| `shareLiveStream(content, selected)` | 分享直播到指定会话 | `wea://calendar-app?action=share-live&...` |
+
+### 使用示例
+
+```typescript
+import { createInstantMeeting, joinMeeting } from '@/schema';
+
+// 创建即时会议
+createInstantMeeting();
+
+// 加入会议
+joinMeeting({
+  channelName: 'meeting-channel-123',
+  meetingName: 'Team Standup',
+  isLiveStream: false,
+  eid: 'event-id-abc',
+});
+```
 
 ## 数据结构
 
@@ -144,4 +224,4 @@ src/
 
 ### 4. 外部 Store 访问 (`atoms/store.ts`)
 
-- **跨组件/React 外部操作**: 定义了全局 `store` 实例。在 `main.tsx` 启动时或接口拦截器中，可以直接使用 `store.set(atom, value)` 操作状态，而无需处于 React 组件生命周期内。这在处理如“启动时预加载主题”等逻辑时非常有用。
+- **跨组件/React 外部操作**: 定义了全局 `store` 实例。在 `main.tsx` 启动时或接口拦截器中，可以直接使用 `store.set(atom, value)` 操作状态，而无需处于 React 组件生命周期内。这在处理如"启动时预加载主题"等逻辑时非常有用。
