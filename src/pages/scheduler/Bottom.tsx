@@ -38,7 +38,7 @@ import {
   scheduleMeetingReceiveNotify,
   updateMeetingSchedule,
 } from '@/api';
-import { shareLiveStream } from '@/schema';
+import { joinMeeting, shareLiveStream } from '@/schema';
 
 enum GOING {
   YES = 'yes',
@@ -72,6 +72,7 @@ function Bottom() {
     attachment = [],
     recurringRule,
     group,
+    appType,
     guests,
     source,
     syncToGoogle,
@@ -420,7 +421,22 @@ function Bottom() {
               type="primary"
               className="edit-btn"
               size="large"
-              // onClick={e => joinMeeting(e, detail)}
+              onClick={e => {
+                e.stopPropagation();
+                if (!channelName && googleMeetingLink) {
+                  window.open(googleMeetingLink, '_blank');
+                } else if (!channelName && outlookMeetingLink) {
+                  window.open(outlookMeetingLink, '_blank');
+                } else {
+                  joinMeeting({
+                    channelName,
+                    meetingName: topic,
+                    isLiveStream,
+                    appType,
+                    eid,
+                  });
+                }
+              }}
             >
               Join
             </Button>

@@ -41,9 +41,6 @@ const ListView = () => {
     listRef.current = d;
   }, []);
 
-  // TODO
-  // const meetingStatusMap = {};
-
   const dateStr = date.format('YYYY-MM-DD');
 
   const dataKey = useMemo(
@@ -81,11 +78,6 @@ const ListView = () => {
 
   const renderRow = ({ index, style }: any) => {
     const item = list[index];
-
-    // TODO getMeetingStatus
-    // const isGoogleMeet = !item.channelName && item.googleMeetingLink;
-    // const isOutlookMeet = !item.channelName && item.outlookMeetingLink;
-    const meetingStatus = undefined;
     const isHighLight = item.id === currentFreeTimeId;
     const redpointColor = document.body.classList.contains('dark-theme')
       ? eventColors[cid2uid(item.cid)]?.bgColor
@@ -96,7 +88,6 @@ const ListView = () => {
         active={currentEid === item.eid && currentCid === item.cid}
         item={item}
         style={style}
-        status={meetingStatus}
         key={`${item.id}_${item.cid}`}
         isHighLight={isHighLight}
         onCreateByFreeTime={doSchedule}

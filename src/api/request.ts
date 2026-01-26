@@ -51,10 +51,7 @@ export const request = ky.extend({
     afterResponse: [
       async (request, _op, response) => {
         const body = await response.clone().json();
-        const fullResponse =
-          request.headers.get('x-full-response') === '1' ||
-          request.headers.get('x-full-response') === 'true';
-
+        const fullResponse = request.headers.get('x-full-response') === '1';
         console.log('request', request, _op, response);
 
         if (body.status !== 0 && !fullResponse) {

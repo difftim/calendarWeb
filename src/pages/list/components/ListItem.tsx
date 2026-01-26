@@ -2,20 +2,17 @@ import React from 'react';
 import classNames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 // import { StartType } from './hooks/useMeetingStatusCheck';
-import { Button } from '@/shared/Button';
 import { Avatar } from '@/shared/Avatar';
 import { IconGoogle, IconLiveStream, IconOutLook, IconTablerBell } from '@/shared/IconsNew';
 import { toastError, toastSuccess } from '@/shared/Message';
 // import { onMuteMeeting } from '@/shims/globalAdapter';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
-import { StartType, cleanUserNameForDisplay } from '@/util';
+import { cleanUserNameForDisplay } from '@/util';
 import { useSetDetailData } from '@/hooks/useDetailData';
 import { useQueryDetail } from '@/hooks/useQueryDetail';
 import { unstable_batchedUpdates } from 'react-dom';
 import { showPannelAtom } from '@/atoms/detail';
 import { onMuteMeeting } from '@/api';
-// TODO
-// import { joinMeeting } from './JoinMeeting';
 
 type Props = {
   style: any;
@@ -50,9 +47,6 @@ type Props = {
     muted?: boolean;
     role?: string;
   };
-  status?: {
-    type: any;
-  };
   isHighLight?: boolean;
   onCreateByFreeTime?: (options: any) => void;
   redpointColor?: string;
@@ -60,7 +54,6 @@ type Props = {
 
 const ListItem = ({
   item,
-  status,
   style,
   active = false,
   isHighLight = false,
@@ -105,9 +98,6 @@ const ListItem = ({
   }
 
   const renderStatusBtn = () => {
-    const isGoogleMeet = !item.channelName && item.googleMeetingLink;
-    const isOutlookMeet = !item.channelName && item.outlookMeetingLink;
-
     const renderMuteBtn = () => {
       if (item.receiveNotification && Date.now() <= item.start * 1000 && !!item.channelName) {
         return (
@@ -132,24 +122,6 @@ const ListItem = ({
     };
 
     const muteBtn = renderMuteBtn();
-    const showJoinBtn = item.channelName || isGoogleMeet || isOutlookMeet;
-
-    if (showJoinBtn && (status?.type === StartType.start || status?.type === StartType.incoming)) {
-      return (
-        <div className="status-btn-wrapper">
-          {muteBtn}
-          <Button
-            type="primary"
-            onClick={e => {
-              console.log('joinMeeting', e, item);
-            }}
-            className="join-btn"
-          >
-            Join
-          </Button>
-        </div>
-      );
-    }
 
     if (!muteBtn) {
       return null;

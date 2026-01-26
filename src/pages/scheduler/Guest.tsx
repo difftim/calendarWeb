@@ -6,6 +6,7 @@ import { stopClick } from '@/util';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
 import { useLiveGuestInviteDialog } from '@/hooks/useLiveGuestInviteDialog';
+import { getSchedulerOrgInfo } from '@/api';
 
 const Guest = () => {
   const {
@@ -97,9 +98,6 @@ const Guest = () => {
     );
   }
 
-  // TODO: fetch my org info
-  const fetchMyOrgInfo = async () => {};
-
   const addGuestFromDialog = async () => {
     const newGuests = await openDialog({ disabledIds: guests.users || [] });
     if (!newGuests.length) return;
@@ -155,7 +153,14 @@ const Guest = () => {
                   },
                 };
               });
-              fetchMyOrgInfo();
+              getSchedulerOrgInfo()
+                .then((data: any) => {
+                  if (typeof data?.total === 'number') {
+                    const guests = data.guests ?? { users: [], total: 0 };
+                    setData({ guests: { ...guests, total: data.total } });
+                  }
+                })
+                .catch(() => {});
             } else {
               setData(data => {
                 const guests = data.guests ?? { users: [], total: 0 };

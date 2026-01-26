@@ -11,8 +11,6 @@ function GoogleMeetButton() {
     return null;
   }
 
-  // TODO use schema to open from main app
-
   return (
     <Button
       type="default"

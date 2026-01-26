@@ -98,3 +98,22 @@ export const goToGoogle = (members: string[], topic?: string, channelName?: stri
 
   window.location.href = url;
 };
+
+export const joinMeeting = (info: {
+  appType?: string;
+  channelName?: string;
+  meetingName?: string;
+  isLiveStream?: boolean;
+  eid?: string;
+}) => {
+  const host = info.isLiveStream ? 'livestream' : 'meeting';
+  const searchParams = new URLSearchParams({
+    channelName: info.channelName || '',
+    meetingName: info.meetingName || '',
+    eid: info.eid || '',
+    appType: info.appType || '',
+  });
+  const url = `${getSchema()}://${host}?${searchParams.toString()}`;
+  console.log('join meeting url...', url);
+  window.location.href = url;
+};
