@@ -182,8 +182,8 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
         const end = dayjs(item.end * 1000);
         // 这里通过 utcOffset 去设置，无需使用类型的 CreateTzDayjs
         const timeStr = getTimeFormatWithUtc(start, end, timeZone);
-        const myName = getSimpleName(myInfo.name);
-        let topic = `${myName}'s Meeting`;
+        const myName = getSimpleName(myInfo.name) || myInfo.id;
+        let topic = myName ? `${myName}'s Meeting` : `New Meeting`;
         let members = [
           {
             uid: myInfo.id,
@@ -266,7 +266,7 @@ const useFormatCalendarList = (allCalendars: any[], userCheckedSet: Set<string>)
 
   const getEventsToRender = useCallback(
     data => {
-      const { list, hasCrossDayEvent } = filterEvents(data);
+      const { list = [], hasCrossDayEvent } = filterEvents(data);
       if (selectItem) {
         const { timeZone, isBusy } = getTempEventInfo(data, selectItem, utcOffset);
         const selectedEvent = createTemperateOperateEvent(selectItem, timeZone, isBusy);

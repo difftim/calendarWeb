@@ -36,7 +36,7 @@ export default function Calendar() {
   const myCheckedCalendar = useAtomValue(myCalendarCheckedAtom);
   const otherCheckedCalendar = useAtomValue(otherCalendarCheckedAtom);
   const [_, setCurrentDetailInfo] = useAtom(currentScheduleDetailInfoAtom);
-  const { data: { events, myUsers = [], otherUsers = [] } = {}, isFetching } =
+  const { data: { events = [], myUsers = [], otherUsers = [] } = {}, isFetching } =
     useAtomValue(calendarQueryAtom);
   const allCalendars = useMemo(
     () => uniqBy([...myUsers, ...otherUsers], 'cid'),
