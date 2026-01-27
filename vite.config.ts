@@ -6,6 +6,11 @@ import esbuildPluginReactVirtualized from 'esbuild-plugin-react-virtualized';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(
+      new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+    ),
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

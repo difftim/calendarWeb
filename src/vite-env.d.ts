@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-
 declare global {
   interface Window {
     CALENDAR_API: {
