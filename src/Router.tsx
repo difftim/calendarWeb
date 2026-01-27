@@ -14,10 +14,10 @@ const Router = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             {/* 根路径默认重定向到 /list */}
-            <Route index element={<Navigate to="/calendar" replace />} />
+            <Route index element={<Navigate to="/calendar/dashboard" replace />} />
             {/* /list 路由显示列表页面 */}
-            <Route path="list" element={<ListPage />} />
-            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="calendar/list" element={<ListPage />} />
+            <Route path="calendar/dashboard" element={<CalendarPage />} />
             {/* 404 时也显示列表页面 */}
             <Route path="*" element={<CalendarPage />} />
           </Route>

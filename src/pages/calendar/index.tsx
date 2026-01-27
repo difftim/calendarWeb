@@ -86,9 +86,9 @@ export default function Calendar() {
         onViewChange={v => {
           const isDay = v === 'day';
           if (isDay) {
-            navigate(`/calendar?type=day`);
+            navigate(`/calendar/dashboard?type=day`);
           } else {
-            navigate(`/calendar`);
+            navigate(`/calendar/dashboard`);
           }
           setCurrentDetailInfo(v => ({
             ...v,

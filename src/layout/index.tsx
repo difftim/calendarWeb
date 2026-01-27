@@ -65,7 +65,7 @@ const ViewChangePanel = () => {
         className={isWeekActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isWeekActive) return;
-          navigate('/calendar');
+          navigate('/calendar/dashboard');
           setTimeout(() => {
             fixScrollToTimePosition();
           }, 200);
@@ -79,7 +79,7 @@ const ViewChangePanel = () => {
         className={isDayActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isDayActive) return;
-          navigate('/calendar?type=day');
+          navigate('/calendar/dashboard?type=day');
         }}
       >
         Day
