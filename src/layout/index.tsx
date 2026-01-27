@@ -42,9 +42,10 @@ const ViewChangePanel = () => {
   const setShowSetting = useSetAtom(showSettingAtom);
 
   // 判断当前激活的视图
-  const isListActive = location.pathname === '/list';
-  const isDayActive = location.pathname === '/calendar' && searchParams.get('type') === 'day';
-  const isWeekActive = location.pathname === '/calendar' && !searchParams.get('type');
+  const isListActive = location.pathname === '/calendar/list';
+  const isDayActive =
+    location.pathname === '/calendar/dashboard' && searchParams.get('type') === 'day';
+  const isWeekActive = location.pathname === '/calendar/dashboard' && !searchParams.get('type');
 
   return (
     <div className="btn-wrapper">
@@ -54,7 +55,7 @@ const ViewChangePanel = () => {
         className={isListActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isListActive) return;
-          navigate('/list');
+          navigate('/calendar/list');
         }}
       >
         List
