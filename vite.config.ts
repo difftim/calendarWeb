@@ -5,6 +5,7 @@ import esbuildPluginReactVirtualized from 'esbuild-plugin-react-virtualized';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react()],
   define: {
     'import.meta.env.VITE_BUILD_TIME': JSON.stringify(
