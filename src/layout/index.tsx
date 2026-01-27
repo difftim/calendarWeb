@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Calendar, Flex } from 'antd';
 import ConfigProvider, { useTheme } from '@/shared/ConfigProvider';
-import { Outlet, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import { createInstantMeeting, createRoom, createWebCall } from '@/schema';
 import { useAntdLocale } from '@/hooks/useAntdLocale';
@@ -42,10 +42,10 @@ const ViewChangePanel = () => {
   const setShowSetting = useSetAtom(showSettingAtom);
 
   // 判断当前激活的视图
-  const isListActive = location.pathname === '/calendar/list';
-  const isDayActive =
-    location.pathname === '/calendar/dashboard' && searchParams.get('type') === 'day';
-  const isWeekActive = location.pathname === '/calendar/dashboard' && !searchParams.get('type');
+  const isListActive = location.pathname === '/list';
+  const viewType = searchParams.get('view');
+  const isDayActive = location.pathname === '/dashboard' && viewType === 'day';
+  const isWeekActive = !isDayActive && !isListActive;
 
   return (
     <div className="btn-wrapper">
@@ -55,7 +55,7 @@ const ViewChangePanel = () => {
         className={isListActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isListActive) return;
-          navigate('/calendar/list');
+          navigate('/list');
         }}
       >
         List
@@ -66,7 +66,7 @@ const ViewChangePanel = () => {
         className={isWeekActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isWeekActive) return;
-          navigate('/calendar/dashboard');
+          navigate('/dashboard');
           setTimeout(() => {
             fixScrollToTimePosition();
           }, 200);
@@ -80,7 +80,7 @@ const ViewChangePanel = () => {
         className={isDayActive ? 'rbc-active' : ''}
         onClick={() => {
           if (isDayActive) return;
-          navigate('/calendar/dashboard?type=day');
+          navigate('/dashboard?view=day');
         }}
       >
         Day
@@ -246,7 +246,7 @@ const Layout = () => {
                   location.pathname === '/list' &&
                   curDate.unix() < dayjs().startOf('day').unix()
                 ) {
-                  navigate('/calendar?type=day');
+                  navigate('/dashboard?view=day');
                 }
               });
             }}

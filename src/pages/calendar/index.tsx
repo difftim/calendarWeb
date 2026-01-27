@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { MyCalendar } from '@difftim/scheduler-component';
@@ -27,10 +27,10 @@ import { useGetEventColors } from '@/shared/ConfigProvider/useTheme';
 
 export default function Calendar() {
   const [date, setDate] = useAtom(dateAtom);
-  const [searchParams] = useSearchParams();
   const userId = useAtomValue(userIdAtom);
   const { createTzDayjs } = useTimeZoneDayjs();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const timeZone = useAtomValue(timeZoneAtom);
   const { getEventColor } = useGetEventColors();
   const myCheckedCalendar = useAtomValue(myCalendarCheckedAtom);
@@ -59,10 +59,9 @@ export default function Calendar() {
   const setShowPannel = useSetAtom(showPannelAtom);
   const setDetailData = useSetDetailData();
 
-  // 直接从 URL 参数读取 view，默认为 'week'
+  // 从 URL query 参数读取 view，默认为 'week'
   const view = useMemo(() => {
-    const urlType = searchParams.get('type');
-    return urlType === 'day' ? 'day' : 'week';
+    return searchParams.get('view') === 'day' ? 'day' : 'week';
   }, [searchParams]);
 
   return (
@@ -86,12 +85,12 @@ export default function Calendar() {
         onViewChange={v => {
           const isDay = v === 'day';
           if (isDay) {
-            navigate(`/calendar/dashboard?type=day`);
+            navigate('/dashboard?view=day');
           } else {
-            navigate(`/calendar/dashboard`);
+            navigate('/dashboard');
           }
-          setCurrentDetailInfo(v => ({
-            ...v,
+          setCurrentDetailInfo(prev => ({
+            ...prev,
             selectItem: null,
           }));
         }}
