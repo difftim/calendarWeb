@@ -8,7 +8,7 @@ import { getUserBaseInfoSync } from '@/atoms/userInfo';
 import { getSimpleName } from '@/util';
 
 import EditUserForm from './EditUserForm';
-import type { CalendarUserItemData, CalendarUserType } from '../types';
+import type { CalendarUserItemData, CalendarUserType } from '../utils';
 
 export interface CalendarUserItemProps {
   item: CalendarUserItemData;
@@ -40,7 +40,9 @@ const CalendarUserItem = ({ item, type, myId, onRename, onRemove }: CalendarUser
                 arrow={false}
                 content={
                   <EditUserForm
-                    name={item.cname || item.name || getSimpleName(getUserBaseInfoSync(item.id).name)}
+                    name={
+                      item.cname || item.name || getSimpleName(getUserBaseInfoSync(item.id).name)
+                    }
                     onConfirm={async nextName => {
                       await onRename?.(item, nextName);
                       setEditOpen(false);
@@ -73,4 +75,3 @@ const CalendarUserItem = ({ item, type, myId, onRename, onRemove }: CalendarUser
 };
 
 export default CalendarUserItem;
-

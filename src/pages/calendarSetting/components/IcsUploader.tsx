@@ -15,7 +15,7 @@ const IcsUploader = ({ onSuccess }: IcsUploaderProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const readIcsFile = async (file: File) => {
+  const readIcsFile = async (file: UploadFile) => {
     const ICS_PREFIX = 'data:text/calendar;base64,';
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -29,7 +29,7 @@ const IcsUploader = ({ onSuccess }: IcsUploaderProps) => {
       };
       reader.onerror = reject;
       reader.onabort = reject;
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file as any);
     });
   };
 
@@ -39,7 +39,7 @@ const IcsUploader = ({ onSuccess }: IcsUploaderProps) => {
         return;
       }
       setLoading(true);
-      const ics = await readIcsFile(fileList[0] as File);
+      const ics = await readIcsFile(fileList[0]);
       await uploadIcsData({ ics });
       setFileList([]);
       toastSuccess('import ics success!');
@@ -97,4 +97,3 @@ const IcsUploader = ({ onSuccess }: IcsUploaderProps) => {
 };
 
 export default IcsUploader;
-
