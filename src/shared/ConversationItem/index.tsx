@@ -38,8 +38,7 @@ export const ContactListItem: React.FC<Props> = ({
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       if (event?.target) {
         const target = event.target as HTMLElement;
-        const isIgnored =
-          target.className === 'add-dot-comment' || target.className.includes('module-avatar');
+        const isIgnored = target.className.includes('module-avatar');
         if (isIgnored) {
           return;
         }

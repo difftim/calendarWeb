@@ -90,7 +90,7 @@ const ScheduleUserList = ({
         return MAP[conversation.going] || <></>;
       }
 
-      if (!conversation.isRemovable || conversation.id === host) {
+      if (!conversation.isRemovable || conversation.uid === host) {
         return <></>;
       }
 
@@ -98,7 +98,11 @@ const ScheduleUserList = ({
         <IconTablerCircleMinus
           style={{ cursor: 'pointer', marginLeft: 'auto' }}
           className="item-hover-close"
-          onClick={() => onDelete?.(conversation.id)}
+          onClick={e => {
+            debugger;
+            e.stopPropagation();
+            onDelete?.(conversation.uid);
+          }}
         />
       );
     };

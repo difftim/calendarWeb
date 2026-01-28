@@ -445,16 +445,16 @@ export const IconTablerGroupIcon = (props: SVGProps<SVGSVGElement>) => (
       ></path>
       <rect id="path-3" x="0" y="0" width="28" height="28"></rect>
     </defs>
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
       <mask id="mask-2" fill="white">
         <use xlinkHref="#path-1"></use>
       </mask>
-      <use id="Shape" fill="currentColor" fill-rule="nonzero" xlinkHref="#path-1"></use>
+      <use id="Shape" fill="currentColor" fillRule="nonzero" xlinkHref="#path-1"></use>
       <g id="Color/UI/Black" mask="url(#mask-2)">
         <mask id="mask-4" fill="white">
           <use xlinkHref="#path-3"></use>
         </mask>
-        <use id="fill" fill="currentColor" fill-rule="evenodd" xlinkHref="#path-3"></use>
+        <use id="fill" fill="currentColor" fillRule="evenodd" xlinkHref="#path-3"></use>
       </g>
     </g>
   </svg>

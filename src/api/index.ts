@@ -161,3 +161,10 @@ export const getMeetingScheduleDetail = (options: any) => {
     )
     .json();
 };
+
+export const getUserEmail = (
+  uids: string[]
+): Promise<{ uid: string; email?: string; validUser: boolean; name: string }[]> => {
+  const suffix = uids.filter(Boolean).join(',');
+  return request.get(`v1/user/info?key=${encodeURIComponent(suffix)}`).json();
+};

@@ -1,13 +1,14 @@
 import { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { uniqBy } from 'lodash';
 
 import {
   useShowEditAttendeeDialog,
   EditAttendeeItem,
 } from '@/pages/scheduler/components/EditAttendeeDialog';
 import { groupListAtom } from '@/atoms';
-import { getUserBaseInfoSync } from '@/atoms/userInfo';
 import { toastWarning } from '@/shared/Message';
+import { getUserEmail } from '@/api';
 
 export type Member = {
   going: 'maybe' | 'yes' | 'no';
@@ -24,57 +25,56 @@ type OpenOptions = {
   disabledIds?: string[];
 };
 
-const mapSelectedToMembers = (items: EditAttendeeItem[], disabledIds: string[]) => {
-  const disabledSet = new Set(disabledIds.filter(Boolean));
-  const result: Member[] = [];
-  let skippedGroups = 0;
-
-  items.forEach(item => {
-    if (item.type === 'group') {
-      if (!item.members || item.members.length === 0) {
-        skippedGroups += 1;
-        return;
-      }
-      item.members.forEach(uid => {
-        if (disabledSet.has(uid)) return;
-        const info = getUserBaseInfoSync(uid);
-        result.push({
-          uid,
-          name: info.name || uid,
-          email: info.email,
-          role: 'attendee',
-          isGroupUser: true,
-          isRemovable: true,
-          going: 'maybe',
-        });
-      });
-      return;
-    }
-
-    if (disabledSet.has(item.id)) return;
-    result.push({
-      uid: item.id,
-      name: item.name || item.email || item.id,
-      email: item.email,
-      role: 'attendee',
-      isGroupUser: false,
-      isRemovable: true,
-      going: 'maybe',
-      validUser: item.validUser,
-    });
-  });
-
-  if (skippedGroups > 0) {
-    toastWarning('部分群组无法获取成员，已跳过');
+const mapSelectedToMembers = async (
+  items: EditAttendeeItem[],
+  disabledList: EditAttendeeItem[]
+): Promise<Member[]> => {
+  if (items.some(item => item.type === 'group')) {
+    toastWarning('暂不支持添加群组');
+    return [];
   }
 
-  const uniqMap = new Map<string, Member>();
-  result.forEach(item => {
-    if (item.uid) {
-      uniqMap.set(item.uid, item);
+  let result: Member[] = [];
+
+  let appUsers = items.filter(user => Boolean(!user.extUser && user.id));
+  let externalUsers = items.filter(user => Boolean(user.extUser && user.id));
+
+  result.push(
+    ...appUsers.map(item => ({
+      ...item,
+      uid: item.id,
+      role: 'attendee' as const,
+      going: 'maybe' as const,
+      name: item.name || item.id,
+      isRemovable: true,
+      isGroupUser: false,
+    }))
+  );
+
+  if (externalUsers.length > 0) {
+    try {
+      const data = await getUserEmail(externalUsers.map(item => item.id));
+      result.push(
+        ...data.map((info: any) => ({
+          ...info,
+          role: 'attendee' as const,
+          going: 'maybe' as const,
+          name: info.name || info.id,
+          validUser: info.validUser,
+          extUser: true,
+          isRemovable: true,
+          isGroupUser: false,
+        }))
+      );
+    } catch (error) {
+      externalUsers = [];
     }
-  });
-  return Array.from(uniqMap.values());
+  }
+
+  return uniqBy(
+    result.filter(item => !disabledList.some(disabled => disabled.id === item.uid)),
+    item => item.uid
+  ) as any;
 };
 
 export const useEditAttendeeDialog = () => {
@@ -118,7 +118,7 @@ export const useEditAttendeeDialog = () => {
           list,
           disabledList,
           onConfirm: async ({ selected }, close) => {
-            const members = mapSelectedToMembers(selected, disabledIds);
+            const members = await mapSelectedToMembers(selected, disabledList);
             resolved = true;
             resolve(members);
             close();

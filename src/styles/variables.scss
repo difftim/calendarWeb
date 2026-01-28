@@ -228,8 +228,6 @@ $color-black-02: rgba($color-black, 0.2);
 $color-black-04: rgba($color-black, 0.4);
 $color-black-06: rgba($color-black, 0.6);
 
-$color-signal-blue-mix: mix($color-signal-blue-025, $color-white-04);
-
 $color-conversation-red: $color-crimson;
 $color-conversation-deep_orange: $color-vermilion;
 $color-conversation-brown: $color-burlap;
@@ -268,19 +266,6 @@ $color-conversation-green-shade: $color-forest-shade;
 $color-conversation-light_green-shade: $color-wintergreen-shade;
 $color-conversation-blue_grey-shade: $color-taupe-shade;
 $color-conversation-grey-shade: $color-steel-shade;
-
-// Old colors
-
-$blue_l: #a2d2f4;
-$blue: #2090ea;
-$grey_l: #f3f3f3;
-$grey_l1: #bdbdbd;
-$grey_l1_5: #e6e6e6;
-$grey_l2: #d9d9d9; // ~ Equivalent to darken($grey_l, 10%), unreliably compiles
-$grey_l3: darken($grey_l, 20%);
-$grey_l4: darken($grey_l, 40%);
-$grey: #616161;
-$grey_d: #454545;
 
 // A few layout variables used cross-file
 

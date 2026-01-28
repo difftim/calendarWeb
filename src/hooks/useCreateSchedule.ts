@@ -67,11 +67,11 @@ export const useCreateSchedule = (timeZone: string) => {
       const start = _start < now.unix() ? estimateTime(now, { type: 'next' }).unix() : _start;
       const end = options.end ? options.end : start + 30 * 60;
 
-      baseCreateInfo.duration = 30;
       baseCreateInfo.start = start;
       baseCreateInfo.end = end;
       baseCreateInfo.date = dayjs(start * 1000).tz(timeZone);
       baseCreateInfo.time = dayjs(start * 1000).tz(timeZone);
+      baseCreateInfo.duration = end > start ? Math.round((end - start) / 60) : 30;
     } else {
       const now = dayjs().tz(timeZone);
       const date = estimateTime(now.add(5, 'minute'), { type: 'next' });

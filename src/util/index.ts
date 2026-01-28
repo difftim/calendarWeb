@@ -31,9 +31,10 @@ export const cleanUserIdForDisplay = (id: string) => {
   return id.startsWith('+') ? id.substring(1) : id;
 };
 
-export const cleanUserNameForDisplay = (item: { id: string; name?: string }) => {
-  if (!item.name || item.name === item.id) {
-    return cleanUserIdForDisplay(item.id);
+export const cleanUserNameForDisplay = (item: { id: string; name?: string; uid?: string }) => {
+  const uid = item.uid || item.id;
+  if (!item.name || item.name === uid) {
+    return cleanUserIdForDisplay(uid);
   }
 
   return item.name;
