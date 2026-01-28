@@ -255,7 +255,7 @@ function Bottom() {
         title: radioModalTitle,
         okText: 'Yes',
         cancelText: 'No',
-        hideRadio: isRecurring,
+        hideRadio: !isRecurring,
         isEvent,
       });
 

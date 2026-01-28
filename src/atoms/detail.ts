@@ -118,6 +118,8 @@ export const INITIAL_DETAIL_DATA: DetailData = {
   isGroup: false,
   date: dayjs(),
   time: dayjs(),
+  everyoneCanInviteOthers: true,
+  everyoneCanModify: false,
 };
 
 export const schedulerDataAtom = atom<DetailData | Promise<DetailData>>(INITIAL_DETAIL_DATA);

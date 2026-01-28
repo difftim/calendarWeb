@@ -52,7 +52,6 @@ export const request = ky.extend({
       async (request, _op, response) => {
         const body = await response.clone().json();
         const fullResponse = request.headers.get('x-full-response') === '1';
-        console.log('request', request, _op, response);
 
         if (body.status !== 0 && !fullResponse) {
           const error = new HTTPError(response, request, _op);
@@ -60,7 +59,11 @@ export const request = ky.extend({
           throw error;
         }
 
-        return new Response(JSON.stringify(fullResponse ? body : body.data));
+        return new Response(JSON.stringify(fullResponse ? body : body.data), {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
       },
     ],
   },
