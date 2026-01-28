@@ -112,6 +112,7 @@ export const joinMeeting = (info: {
     meetingName: info.meetingName || '',
     eid: info.eid || '',
     appType: info.appType || '',
+    v: '1',
   });
   const url = `${getSchema()}://${host}?${searchParams.toString()}`;
   console.log('join meeting url...', url);
