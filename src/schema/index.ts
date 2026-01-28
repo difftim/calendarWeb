@@ -108,8 +108,8 @@ export const joinMeeting = (info: {
 }) => {
   const host = info.isLiveStream ? 'livestream' : 'meeting';
   const searchParams = new URLSearchParams({
-    channelName: info.channelName || '',
-    meetingName: info.meetingName || '',
+    channelname: info.channelName || '',
+    meetingname: info.meetingName || '',
     eid: info.eid || '',
     appType: info.appType || '',
     v: '1',
