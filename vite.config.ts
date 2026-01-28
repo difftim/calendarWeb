@@ -29,8 +29,8 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
-      '/api': {
-        target: 'https://calendar.test.difft.org/',
+      '/scheduler': {
+        target: 'https://srv.bdb.im/',
         changeOrigin: true,
       },
     },

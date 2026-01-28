@@ -4,7 +4,7 @@ import { getMiniProgramToken } from '@difftim/jsbridge-utils';
 const TokenError = () => new Error('Failed to get token');
 
 export const request = ky.extend({
-  prefixUrl: '/',
+  prefixUrl: '/scheduler',
   hooks: {
     beforeRequest: [
       async request => {
