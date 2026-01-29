@@ -12,7 +12,7 @@ import {
   cid2uid,
   getSimpleName,
 } from '@/util';
-import { getUserBaseInfoSync } from '@/atoms/userInfo';
+import { getUserBaseInfoSync, userInfoByIdAtom } from '@/atoms/userInfo';
 import { DetailData } from '@/atoms/detail';
 
 const Creator = ({ creator }: { creator: { uid: string; name?: string } }) => {
@@ -25,7 +25,6 @@ const Creator = ({ creator }: { creator: { uid: string; name?: string } }) => {
 
 const Host = () => {
   const { mode, host, hostInfo, members, creator, calendarId, isLiveStream } = useDetailDataValue();
-  console.log('creator', creator);
   const setData = useSetDetailData();
   const myInfo = useAtomValue(userInfoAtom);
   const timeZone = useAtomValue(timeZoneAtom);
@@ -34,9 +33,9 @@ const Host = () => {
     { ...myInfo, cid: uid2cid(myInfo.id), timeZone },
     ...(isLiveStream ? [] : bossCalendar),
   ];
+  const hostUserInfo = useAtomValue(userInfoByIdAtom(host ?? ''));
   // view / update
   if (mode !== 'create' && host) {
-    const hostUserInfo = getUserBaseInfoSync(host);
     const getHostName = () => {
       if (hostInfo?.uid && !isMatchUserId(hostInfo.uid) && hostInfo.name) {
         return hostInfo.name;
@@ -87,7 +86,6 @@ const Host = () => {
     const getNewMembers = (cid: string, members: DetailData['members']): DetailData['members'] => {
       const curUid = cid2uid(cid);
       const isInMembers = members.some(item => item.uid === curUid);
-      debugger;
       if (isInMembers) {
         return members.map(item => ({
           ...item,
