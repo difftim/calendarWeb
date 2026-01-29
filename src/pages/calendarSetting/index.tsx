@@ -152,7 +152,12 @@ export const CalendarSettingDialog = ({
     setStep(Step.Proxy);
     try {
       const data = await getProxyPermission('given');
-      setProxyList(data?.given || []);
+      setProxyList(
+        (data?.given || []).map(item => ({
+          ...item,
+          id: item.uid,
+        }))
+      );
     } catch (error) {
       console.log('query permission error', error);
     } finally {

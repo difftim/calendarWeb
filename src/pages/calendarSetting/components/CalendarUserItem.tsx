@@ -27,6 +27,7 @@ const CalendarUserItem = ({ item, type, myId, onRename, onRemove }: CalendarUser
       <ContactListItem
         useSimpleName
         id={item.id}
+        name={item.name}
         calendarName={item.cname}
         noHover
         extraElement={
@@ -52,12 +53,15 @@ const CalendarUserItem = ({ item, type, myId, onRename, onRemove }: CalendarUser
                 placement="left"
                 overlayInnerStyle={{ padding: '12px', width: '250px' }}
               >
-                <Button size="small">Edit</Button>
+                <Button size="small" style={{ fontSize: 12 }}>
+                  Edit
+                </Button>
               </Popover>
             )}
             <Button
               size="small"
               disabled={!canRemove}
+              style={{ fontSize: 12 }}
               onClick={() => {
                 if (!canRemove) {
                   return;

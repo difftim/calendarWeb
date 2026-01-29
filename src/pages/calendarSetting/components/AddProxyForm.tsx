@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { useAtomValue } from 'jotai';
 
 import { Button } from '@/shared/Button';
 import Input from '@/shared/Input';
 import { toastError, toastSuccess } from '@/shared/Message';
 import { addProxyPermission } from '@/api';
-
 import { getRealId, isSearchMatchId } from '@/util';
 import { Step } from '../utils';
+import { userInfoAtom } from '@/atoms';
 
 export interface AddProxyFormProps {
   setStep: React.Dispatch<React.SetStateAction<Step>>;
@@ -15,9 +16,15 @@ export interface AddProxyFormProps {
 
 const AddProxyForm = ({ setStep, onSuccess }: AddProxyFormProps) => {
   const [uid, setUid] = useState('');
+  const myInfo = useAtomValue(userInfoAtom);
+  const myId = myInfo.id;
   const onConfirm = async () => {
     try {
       const _uid = uid.trim();
+      if (getRealId(_uid) === myId) {
+        toastError(`Can't grant permission to yourself`);
+        return;
+      }
       if (!_uid) {
         return;
       }

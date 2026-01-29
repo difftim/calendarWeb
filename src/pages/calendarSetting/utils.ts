@@ -23,6 +23,7 @@ export type CalendarUserType = 'my' | 'other' | 'proxy';
 
 export interface CalendarUserItemData {
   id: string;
+  uid: string;
   cname?: string;
   name?: string;
   role?: string;

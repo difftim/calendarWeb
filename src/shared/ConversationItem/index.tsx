@@ -16,10 +16,12 @@ interface Props {
   hideContent?: ReactNode;
   useSimpleName?: boolean;
   calendarName?: string;
+  name?: string;
 }
 
 export const ContactListItem: React.FC<Props> = ({
   id,
+  name: serverName,
   onClick,
   style,
   useSimpleName = false,
@@ -30,7 +32,7 @@ export const ContactListItem: React.FC<Props> = ({
   hideContent = false,
 }) => {
   const userInfo = useAtomValue(userInfoByIdAtom(id));
-  const name = userInfo.name;
+  const name = serverName || userInfo.name;
   const email = userInfo.email;
   const avatarPath = userInfo.avatarPath;
 

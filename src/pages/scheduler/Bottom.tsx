@@ -39,6 +39,7 @@ import {
   updateMeetingSchedule,
 } from '@/api';
 import { joinMeeting, shareLiveStream } from '@/schema';
+import { uniqBy } from 'lodash';
 
 enum GOING {
   YES = 'yes',
@@ -299,6 +300,26 @@ function Bottom() {
           (isAllDay && isEvent) || start * 1000 > now
             ? start
             : dayjs(Math.ceil(now / 600000) * 600000).unix();
+        const myInfo = members.find(item => item.uid === myId);
+        const newMembers = uniqBy(
+          [
+            {
+              uid: myId,
+              name: myId,
+              email: myId,
+              role: 'host' as const,
+              isRemovable: false,
+              isGroupUser: myInfo?.isGroupUser || false,
+              going: 'maybe' as const,
+            },
+            ...members.map(item => ({
+              ...item,
+              role: 'attendee' as const,
+              isRemovable: !item.isGroupUser,
+            })),
+          ],
+          'uid'
+        );
 
         const newEnd = start + duration * 60;
         setData({
@@ -309,6 +330,8 @@ function Bottom() {
           time: dayjs(newStart * 1000),
           host: myId,
           hostInfo: { uid: myId, name: myId },
+          calendarId: uid2cid(myId),
+          members: newMembers,
         });
       };
 

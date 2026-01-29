@@ -10,13 +10,22 @@ import {
   isMatchUserId,
   uid2cid,
   cid2uid,
+  getSimpleName,
 } from '@/util';
 import { getUserBaseInfoSync } from '@/atoms/userInfo';
 import { DetailData } from '@/atoms/detail';
-// import { uniqBy } from 'lodash';
+
+const Creator = ({ creator }: { creator: { uid: string; name?: string } }) => {
+  if (creator.name) {
+    return <>Created by {getSimpleName(creator.name)}</>;
+  }
+  const userInfo = getUserBaseInfoSync(creator.uid);
+  return <>Created by {getSimpleName(userInfo.name) || creator.uid}</>;
+};
 
 const Host = () => {
   const { mode, host, hostInfo, members, creator, calendarId, isLiveStream } = useDetailDataValue();
+  console.log('creator', creator);
   const setData = useSetDetailData();
   const myInfo = useAtomValue(userInfoAtom);
   const timeZone = useAtomValue(timeZoneAtom);
@@ -36,12 +45,6 @@ const Host = () => {
         return cleanUserNameForDisplay(hostUserInfo);
       }
       return cleanUserIdForDisplay(host || '');
-    };
-    const renderCreator = (creator: { uid: string; name?: string }) => {
-      if (creator.name) {
-        return `Created by ${creator.name}`;
-      }
-      return `Created by ${creator.name || creator.uid}`;
     };
 
     return (
@@ -63,7 +66,7 @@ const Host = () => {
               margin: '4px 0 4px 80px',
             }}
           >
-            {renderCreator(creator)}
+            <Creator creator={creator} />
           </div>
         ) : null}
       </>
@@ -84,17 +87,22 @@ const Host = () => {
     const getNewMembers = (cid: string, members: DetailData['members']): DetailData['members'] => {
       const curUid = cid2uid(cid);
       const isInMembers = members.some(item => item.uid === curUid);
+      debugger;
       if (isInMembers) {
-        return members;
+        return members.map(item => ({
+          ...item,
+          role: item.uid === curUid ? 'host' : 'attendee',
+          isRemovable: item.uid === curUid ? false : !item.isGroupUser,
+        }));
       }
       const { name, email } = getUserBaseInfoSync(curUid);
       return [
-        ...members.map(item => ({ ...item, role: 'attendee' })),
+        ...members.map(item => ({ ...item, role: 'attendee', isRemovable: !item.isGroupUser })),
         {
           uid: curUid,
           name,
           email,
-          isRemovable: true,
+          isRemovable: false,
           isGroupUser: false,
           role: 'host',
           going: 'maybe',
