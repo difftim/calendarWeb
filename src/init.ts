@@ -1,6 +1,6 @@
-import { getGroups, getTheme } from '@difftim/jsbridge-utils';
+import { getGroups, getTheme, callBridgeMethod } from '@difftim/jsbridge-utils';
 
-import { groupListAtom, themeAtom } from '@/atoms';
+import { appNameAtom, groupListAtom, themeAtom } from '@/atoms';
 import { store } from '@/atoms/store';
 
 const applyThemeMode = (mode: 'light' | 'dark') => {
@@ -28,7 +28,18 @@ const initGroups = async () => {
   }
 };
 
+const initAppName = async () => {
+  try {
+    const appInfo = await callBridgeMethod<{}, { client: string }>('getClientName', {});
+    if (appInfo.client) {
+      store.set(appNameAtom, appInfo.client);
+    }
+  } catch (e) {
+    console.log('initAppName error', e);
+  }
+};
+
 export const initApp = async () => {
   await initTheme();
-  await Promise.allSettled([initGroups()]);
+  await Promise.allSettled([initGroups(), initAppName()]);
 };

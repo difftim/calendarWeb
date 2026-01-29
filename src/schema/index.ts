@@ -1,8 +1,14 @@
+import { appNameAtom } from '@/atoms';
+import { store } from '@/atoms/store';
 import { toastError } from '@/shared/Message';
 import { getSimpleName } from '@/util';
 import { compressToBase64 } from 'lz-string';
 
 const getSchema = () => {
+  const appName = store.get(appNameAtom);
+  if (appName) {
+    return appName.toLowerCase();
+  }
   const ua = navigator.userAgent.toLowerCase();
   if (ua.includes('cc/')) {
     return 'ccm';

@@ -179,3 +179,5 @@ export const groupListAtom = atom<GroupListItem[]>([]);
 
 // 主题 atom - 由 main.tsx 在启动时通过 store.set 初始化
 export const themeAtom = atom<'light' | 'dark'>('light');
+
+export const appNameAtom = atom<string>('');
