@@ -1,4 +1,5 @@
 import { getGroups, getTheme, callBridgeMethod } from '@difftim/jsbridge-utils';
+import pQueue from 'p-queue';
 
 import { appNameAtom, groupListAtom, themeAtom } from '@/atoms';
 import { store } from '@/atoms/store';
@@ -42,4 +43,11 @@ const initAppName = async () => {
 export const initApp = async () => {
   await initTheme();
   await Promise.allSettled([initGroups(), initAppName()]);
+};
+
+export const initListener = (fn: any) => {
+  const notifyQueue = new pQueue({ concurrency: 1 });
+  window.WKWebViewJavascriptBridge?.register('workspaceNotifyHandler', appData => {
+    notifyQueue.add(async () => await fn(appData));
+  });
 };

@@ -25,6 +25,7 @@
         "linkifyjs": "4.3.2",
         "lodash": "4.17.21",
         "lz-string": "1.5.0",
+        "p-queue": "6.6.2",
         "react": "17.0.2",
         "react-dom": "17.0.2",
         "react-router-dom": "6.11.1",

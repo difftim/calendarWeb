@@ -1,7 +1,9 @@
 // for jotai-tanstack-query
 
 import { store } from './store';
-import { atomWithQuery } from 'jotai-tanstack-query';
+import { QueryClient } from '@tanstack/react-query';
+import { atomWithQuery, queryClientAtom } from 'jotai-tanstack-query';
+
 import { cid2uid, formatDashboardResponse } from '@/util';
 import {
   dateAtom,
@@ -14,6 +16,19 @@ import {
 } from './index';
 import { DetailData, schedulerDataAtom } from './detail';
 import { getSchedulerCreateConfig, getSchedulerDashboard } from '@/api';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// use the same queryClient
+store.set(queryClientAtom, queryClient);
 
 // calendar 列表
 export const calendarQueryAtom = atomWithQuery(get => {

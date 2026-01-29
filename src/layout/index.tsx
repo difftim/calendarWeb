@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
+  calendarVersionAtom,
   currentScheduleDetailInfoAtom,
   myCalendarCheckedAtom,
   otherCalendarCheckedAtom,
@@ -34,6 +35,9 @@ import { SelectList } from '@/pages/calendar/components/SelectList';
 import { calendarQueryAtom } from '@/atoms/query';
 import { useCreateSchedule } from '@/hooks/useCreateSchedule';
 import CalendarSettingDialog from '@/pages/calendarSetting';
+import { useQueryClient } from '@tanstack/react-query';
+import { initListener } from '@/init';
+import { useGetAtom } from '@/hooks/useGetAtom';
 
 const ViewChangePanel = () => {
   const navigate = useNavigate();
@@ -110,12 +114,14 @@ const Layout = () => {
   const [showSetting, setShowSetting] = useAtom(showSettingAtom);
   const setDetailInfo = useSetAtom(currentScheduleDetailInfoAtom);
   const myInfo = useAtomValue(userInfoAtom);
+  const getCalendarVersion = useGetAtom(calendarVersionAtom);
   const mode = useTheme();
   const isListActive = location.pathname === '/list';
   const [myChecked, setMyChecked] = useAtom(myCalendarCheckedAtom);
   const [otherChecked, setOtherChecked] = useAtom(otherCalendarCheckedAtom);
   const { data: { myUsers = [], otherUsers = [] } = {} } = useAtomValue(calendarQueryAtom);
   const { createSchedule } = useCreateSchedule(timeZone);
+  const queryClient = useQueryClient();
   const headerRender = ({ value /*onChange*/ }: any) => {
     return (
       <Flex className="calendar-header" align="center" justify="center" gap={8}>
@@ -177,6 +183,18 @@ const Layout = () => {
       });
     }
   }, [showPannel]);
+
+  useEffect(() => {
+    initListener(async (appData: any) => {
+      if (
+        typeof appData.calendarVersion !== 'number' ||
+        appData.calendarVersion <= getCalendarVersion()
+      ) {
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ['myEvents'] });
+    });
+  }, []);
 
   return (
     <div className="meeting-schedule-pane-wrapper">

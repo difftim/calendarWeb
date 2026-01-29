@@ -173,7 +173,7 @@ export const CalendarSettingDialog = ({
             <span>Other Calendars</span>
             <IconChevronRight />
           </div>
-          <div className="calendar-setting-item clickable" onClick={() => setStep(Step.Proxy)}>
+          <div className="calendar-setting-item clickable" onClick={getPermission}>
             <span>Grant Management Permissions</span>
             <IconChevronRight />
           </div>
