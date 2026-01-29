@@ -59,10 +59,10 @@ export const deleteMeetingSchedule = (data: any) => {
 };
 
 export const goingScheduleMeeting = (data: any) => {
-  const { eventId, calendarId, going, isRecurring, isAllEvent } = data;
+  const { eventId, calendarId = 'default', going, isRecurring, isAllEvent } = data;
 
   return request
-    .put(`v1/calendar/${calendarId}/events/${eventId}/going`, {
+    .put(`v1/calendar/${encodeURIComponent(calendarId)}/events/${eventId}/going`, {
       json: { going, isRecurring, isAllEvent },
     })
     .json();

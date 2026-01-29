@@ -768,6 +768,7 @@ export const formarDetailResponse = (data: any, myTimeZone: string) => {
     date,
     time,
     showMore: true,
+    calendarId: extraInfo.cid,
   } as DetailData;
 };
 
