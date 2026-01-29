@@ -17,14 +17,15 @@ const Repeat = () => {
   const {
     mode,
     isLiveStream,
-    recurringRule = {
-      repeatOptions: REPEAT_OPTIONS,
-      rrule: 'Never',
-    },
+    recurringRule,
     isRecurring = false,
     canNotEdit,
     date,
   } = useDetailData();
+  const rule = recurringRule || {
+    repeatOptions: REPEAT_OPTIONS,
+    rrule: 'Never',
+  };
   const setData = useSetDetailData();
   const [customRepeat, setCustomRepeat] = useState<CustomRepeat>({
     options: [{ label: 'Custom...', value: 'custom' }],
@@ -35,7 +36,7 @@ const Repeat = () => {
     return null;
   }
 
-  const repeatOptions = recurringRule?.repeatOptions || REPEAT_OPTIONS;
+  const repeatOptions = rule?.repeatOptions || REPEAT_OPTIONS;
 
   // view
   if (mode === 'view') {
@@ -43,14 +44,12 @@ const Repeat = () => {
       if (!isRecurring) {
         return NEVER_REPEAT;
       }
-      if (recurringRule?.repeat) {
-        return recurringRule.repeat;
+      if (rule?.repeat) {
+        return rule.repeat;
       }
 
       return (
-        repeatOptions.find(item => item.value === recurringRule.rrule)?.label ||
-        recurringRule.rrule ||
-        NEVER_REPEAT
+        repeatOptions.find(item => item.value === rule.rrule)?.label || rule.rrule || NEVER_REPEAT
       );
     };
 
@@ -80,7 +79,7 @@ const Repeat = () => {
             disabled={canNotEdit}
             variant="outlined"
             size="large"
-            value={recurringRule.rrule}
+            value={rule.rrule}
             listHeight={300}
             onChange={v => {
               if (v === 'custom') {
@@ -97,7 +96,7 @@ const Repeat = () => {
       </div>
       <ScheduleMeetingCustomRepeatModal
         date={date!}
-        repeat={recurringRule.rrule!}
+        repeat={rule.rrule!}
         customRepeat={customRepeat}
         setCustomRepeat={setCustomRepeat}
         setRepeat={setRepeat as any}
