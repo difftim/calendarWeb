@@ -33,8 +33,7 @@ interface Props {
     end: number;
     topic: string;
   };
-  onConfirmAddMember: (props: { newMembers: any[] }) => void;
-  onConfirm: (props: { newWantDate: { start: number; end: number } }) => void;
+  onConfirm: (props: { newWantDate: { start: number; end: number }; newMembers?: any[] }) => void;
   onAddMember: () => Promise<any[]>;
 }
 
@@ -91,7 +90,6 @@ const ViewSchedule = ({
   queryDate,
   wantDate: propWantDate,
   onConfirm,
-  onConfirmAddMember,
   onAddMember,
 }: Props) => {
   const [events, setEvents] = useState<any[]>([]);
@@ -119,6 +117,8 @@ const ViewSchedule = ({
     sortMembers(normalizedMembers, ourNumber)
   );
   const membersRef = useRef(viewScheduleMembers);
+  // 记录待确认的新增成员，只有点击 Confirm 时才真正提交到父组件
+  const pendingNewMembersRef = useRef<any[]>([]);
 
   useEffect(() => {
     setWantDate(propWantDate);
@@ -214,20 +214,37 @@ const ViewSchedule = ({
 
   const handleAdd = useCallback(async () => {
     const membersToAdd = await onAddMember();
-    if (membersToAdd.length) {
-      onConfirmAddMember({ newMembers: membersToAdd });
+    if (!membersToAdd.length) {
+      return;
     }
 
-    const showMembers = membersToAdd.map((member: any) => ({
-      ...member,
-      id: member.id || member.uid,
-    }));
+    // 使用 getUserBaseInfoSync 获取用户信息，保持与 normalizedMembers 一致的处理方式
+    const showMembers = membersToAdd
+      .map((member: any) => {
+        const id = member.id || member.uid;
+        const info = getUserBaseInfoSync(id);
+        return {
+          ...member,
+          id,
+          name: member.name || info.name || id,
+          cname: info.name,
+          avatarPath: info.avatarPath,
+          timeZone: info.timeZone,
+        };
+      })
+      .filter(member => member.id);
+
     if (showMembers.length) {
+      // 记录待确认的新增成员，不立即调用 onConfirmAddMember
+      pendingNewMembersRef.current = uniqBy(
+        [...pendingNewMembersRef.current, ...membersToAdd],
+        (item: any) => item.id || item.uid
+      );
+
       setViewScheduleMembers(members => {
-        const newAddIdMap = membersToAdd.reduce((sum: Record<string, number>, item: any) => {
-          const id = item.id || item.uid;
-          if (id) {
-            sum[id] = 1;
+        const newAddIdMap = showMembers.reduce((sum: Record<string, number>, item: any) => {
+          if (item.id) {
+            sum[item.id] = 1;
           }
           return sum;
         }, {});
@@ -239,7 +256,7 @@ const ViewSchedule = ({
       });
       fetchData(start, showMembers);
     }
-  }, [fetchData, onAddMember, onConfirmAddMember, ourNumber, start]);
+  }, [fetchData, onAddMember, ourNumber, start]);
 
   useEffect(() => {
     fetchData(start);
@@ -333,8 +350,14 @@ const ViewSchedule = ({
           type="primary"
           onClick={e => {
             e.stopPropagation();
+            // 点击 Confirm 时把待确认的新增成员一起传递给父组件，确保状态更新原子性
+            const newMembers = pendingNewMembersRef.current.length
+              ? pendingNewMembersRef.current
+              : undefined;
+            pendingNewMembersRef.current = [];
             onConfirm({
               newWantDate: wantDate,
+              newMembers,
             });
           }}
         >

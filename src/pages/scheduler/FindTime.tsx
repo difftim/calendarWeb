@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Drawer } from 'antd';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import { uniqBy } from 'lodash';
 
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useCurrentTimeZone } from '@/hooks/useCurrentTimeZone';
@@ -175,33 +176,23 @@ const FindTime = () => {
           timeZone={timeZone}
           members={members.map(m => ({ ...m, id: m.uid }))}
           onAddMember={handleAddMember}
-          onConfirmAddMember={({ newMembers }) => {
-            if (!newMembers?.length) {
-              return;
-            }
+          onConfirm={({ newWantDate, newMembers }) => {
+            const newDate = dayjs(newWantDate.start * 1000).tz(timeZone);
             setData(prev => {
-              const incoming = newMembers.map((item: any) => ({
+              // 合并新成员到 members 列表
+              const incoming = (newMembers || []).map((item: any) => ({
                 ...item,
                 uid: item.uid || item.id,
               }));
-              const merged = [...prev.members, ...incoming];
-              const uniqMap = new Map<string, any>();
-              merged.forEach(item => {
-                if (item.uid) {
-                  uniqMap.set(item.uid, item);
-                }
-              });
-              return { members: Array.from(uniqMap.values()) };
-            });
-          }}
-          onConfirm={({ newWantDate }) => {
-            const newDate = dayjs(newWantDate.start * 1000).tz(timeZone);
-            setData({
-              date: newDate,
-              time: newDate,
-              start: newWantDate.start,
-              end: newWantDate.end,
-              childModalType: '',
+
+              return {
+                date: newDate,
+                time: newDate,
+                start: newWantDate.start,
+                end: newWantDate.end,
+                childModalType: '',
+                members: uniqBy([...prev.members, ...incoming], 'uid'),
+              };
             });
           }}
         />
