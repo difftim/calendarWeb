@@ -155,6 +155,7 @@ const FindTime = () => {
 
   return (
     <Drawer
+      destroyOnClose
       open={isOpen}
       className="find-time-drawer"
       closeIcon={false}
@@ -176,23 +177,26 @@ const FindTime = () => {
           timeZone={timeZone}
           members={members.map(m => ({ ...m, id: m.uid }))}
           onAddMember={handleAddMember}
-          onConfirm={({ newWantDate, newMembers }) => {
-            const newDate = dayjs(newWantDate.start * 1000).tz(timeZone);
+          onConfirmAddMember={({ newMembers }) => {
+            if (!newMembers?.length) {
+              return;
+            }
             setData(prev => {
-              // 合并新成员到 members 列表
-              const incoming = (newMembers || []).map((item: any) => ({
+              const incoming = newMembers.map((item: any) => ({
                 ...item,
                 uid: item.uid || item.id,
               }));
-
-              return {
-                date: newDate,
-                time: newDate,
-                start: newWantDate.start,
-                end: newWantDate.end,
-                childModalType: '',
-                members: uniqBy([...prev.members, ...incoming], 'uid'),
-              };
+              return { members: uniqBy([...prev.members, ...incoming], 'uid') };
+            });
+          }}
+          onConfirm={({ newWantDate }) => {
+            const newDate = dayjs(newWantDate.start * 1000).tz(timeZone);
+            setData({
+              date: newDate,
+              time: newDate,
+              start: newWantDate.start,
+              end: newWantDate.end,
+              childModalType: '',
             });
           }}
         />

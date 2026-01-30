@@ -7,6 +7,10 @@
   gap: 8px;
   margin: 0 40px;
 
+  > button {
+    -webkit-app-region: no-drag;
+  }
+
   [role='img'] {
     width: 12px;
     height: 12px;

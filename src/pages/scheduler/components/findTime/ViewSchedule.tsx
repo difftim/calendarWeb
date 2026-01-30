@@ -10,8 +10,10 @@ import {
   getUtcOffset,
   cleanUserNameForDisplay,
 } from '@/util';
+import { useAtomValue } from 'jotai';
 import { Avatar } from '@/shared/Avatar';
 import { getUserBaseInfoSync } from '@/atoms/userInfo';
+import { userCacheAtom } from '@/atoms';
 import { getMeetingViewScheduleList } from '@/api';
 import FreeTimeSelector from './FreeTimeSelector';
 import {
@@ -33,7 +35,8 @@ interface Props {
     end: number;
     topic: string;
   };
-  onConfirm: (props: { newWantDate: { start: number; end: number }; newMembers?: any[] }) => void;
+  onConfirmAddMember: (props: { newMembers: any[] }) => void;
+  onConfirm: (props: { newWantDate: { start: number; end: number } }) => void;
   onAddMember: () => Promise<any[]>;
 }
 
@@ -89,6 +92,7 @@ const ViewSchedule = ({
   timeZone,
   queryDate,
   wantDate: propWantDate,
+  onConfirmAddMember,
   onConfirm,
   onAddMember,
 }: Props) => {
@@ -96,39 +100,54 @@ const ViewSchedule = ({
   const [loading, setLoading] = useState(false);
   const [wantDate, setWantDate] = useState(() => propWantDate);
   const userCalendarsMap = useRef(new Map<string, string>());
+  // 订阅用户缓存，当缓存更新时触发重新渲染
+  const userCache = useAtomValue(userCacheAtom);
+
+  // 用于获取成员的用户信息（优先从缓存读取）
+  const getMemberInfo = useCallback(
+    (member: any) => {
+      const id = member.uid || member.id;
+      const cached = userCache.get(id);
+      const info = cached || getUserBaseInfoSync(id);
+      return {
+        ...member,
+        id,
+        name: member.name || info.name || id,
+        cname: info.name,
+        avatarPath: info.avatarPath,
+        timeZone: info.timeZone,
+      };
+    },
+    [userCache]
+  );
 
   const normalizedMembers = useMemo(() => {
-    return members
-      .map(member => {
-        const info = getUserBaseInfoSync(member.uid || member.id);
-        return {
-          ...member,
-          id: member.uid || member.id,
-          name: member.name || info.name || member.uid || member.id,
-          cname: info.name,
-          avatarPath: info.avatarPath,
-          timeZone: info.timeZone,
-        };
-      })
-      .filter(member => member.id);
-  }, [members]);
+    return members.map(getMemberInfo).filter(member => member.id);
+  }, [members, getMemberInfo]);
 
   const [viewScheduleMembers, setViewScheduleMembers] = useState(() =>
     sortMembers(normalizedMembers, ourNumber)
   );
   const membersRef = useRef(viewScheduleMembers);
-  // 记录待确认的新增成员，只有点击 Confirm 时才真正提交到父组件
-  const pendingNewMembersRef = useRef<any[]>([]);
+  // 记录新增成员的 ID，用于持久化排序（即使 members prop 更新后仍能记住哪些是新增的）
+  const newAddedIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     setWantDate(propWantDate);
   }, [propWantDate]);
 
+  // 当 members prop 或 userCache 变化时，更新 viewScheduleMembers
+  // 使用 newAddedIdsRef 让新增成员排在前面
   useEffect(() => {
-    const nextMembers = sortMembers(normalizedMembers, ourNumber);
-    setViewScheduleMembers(nextMembers);
-    membersRef.current = nextMembers;
-  }, [normalizedMembers, ourNumber]);
+    // 构建新增成员的 id map，用于排序
+    const newAddIdMap: Record<string, number> = {};
+    newAddedIdsRef.current.forEach(id => {
+      newAddIdMap[id] = 1;
+    });
+    // 排序：当前用户 > 新增成员 > 其他成员
+    membersRef.current = sortNewAddedMember([...normalizedMembers], ourNumber, newAddIdMap);
+    setViewScheduleMembers(membersRef.current);
+  }, [normalizedMembers, ourNumber, userCache]);
 
   const currentUtcOffset = dayjs().tz(timeZone).utcOffset() / 60;
   const start = dayjs(
@@ -212,42 +231,31 @@ const ViewSchedule = ({
     [ourNumber, timeZone]
   );
 
-  const handleAdd = useCallback(async () => {
+  const handleAdd = async () => {
     const membersToAdd = await onAddMember();
     if (!membersToAdd.length) {
       return;
     }
 
-    // 使用 getUserBaseInfoSync 获取用户信息，保持与 normalizedMembers 一致的处理方式
-    const showMembers = membersToAdd
-      .map((member: any) => {
-        const id = member.id || member.uid;
-        const info = getUserBaseInfoSync(id);
-        return {
-          ...member,
-          id,
-          name: member.name || info.name || id,
-          cname: info.name,
-          avatarPath: info.avatarPath,
-          timeZone: info.timeZone,
-        };
-      })
-      .filter(member => member.id);
+    // 直接把新成员添加到父组件的 members 列表
+    onConfirmAddMember({ newMembers: membersToAdd });
+
+    // 使用 getMemberInfo 获取用户信息，保持与 normalizedMembers 一致的处理方式
+    const showMembers = membersToAdd.map(getMemberInfo).filter(member => member.id);
 
     if (showMembers.length) {
-      // 记录待确认的新增成员，不立即调用 onConfirmAddMember
-      pendingNewMembersRef.current = uniqBy(
-        [...pendingNewMembersRef.current, ...membersToAdd],
-        (item: any) => item.id || item.uid
-      );
+      // 记录新增成员的 ID，用于持久化排序
+      showMembers.forEach(m => {
+        if (m.id) {
+          newAddedIdsRef.current.add(m.id);
+        }
+      });
 
       setViewScheduleMembers(members => {
-        const newAddIdMap = showMembers.reduce((sum: Record<string, number>, item: any) => {
-          if (item.id) {
-            sum[item.id] = 1;
-          }
-          return sum;
-        }, {});
+        const newAddIdMap: Record<string, number> = {};
+        newAddedIdsRef.current.forEach(id => {
+          newAddIdMap[id] = 1;
+        });
         return sortNewAddedMember(
           uniqBy([...members, ...showMembers], 'id'),
           ourNumber,
@@ -256,7 +264,7 @@ const ViewSchedule = ({
       });
       fetchData(start, showMembers);
     }
-  }, [fetchData, onAddMember, ourNumber, start]);
+  };
 
   useEffect(() => {
     fetchData(start);
@@ -350,14 +358,8 @@ const ViewSchedule = ({
           type="primary"
           onClick={e => {
             e.stopPropagation();
-            // 点击 Confirm 时把待确认的新增成员一起传递给父组件，确保状态更新原子性
-            const newMembers = pendingNewMembersRef.current.length
-              ? pendingNewMembersRef.current
-              : undefined;
-            pendingNewMembersRef.current = [];
             onConfirm({
               newWantDate: wantDate,
-              newMembers,
             });
           }}
         >
