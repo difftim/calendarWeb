@@ -7,8 +7,21 @@ import { compressToBase64 } from 'lz-string';
 const getSchema = () => {
   const appName = store.get(appNameAtom);
   if (appName) {
-    return appName.toLowerCase();
+    const _appName = appName.toLowerCase();
+    if (_appName === 'cctest') {
+      return 'cctm';
+    }
+    if (_appName === 'cc') {
+      return 'ccm';
+    }
+    if (_appName === 'weatest') {
+      return 'weatest';
+    }
+    if (_appName === 'wea') {
+      return 'wea';
+    }
   }
+
   const ua = navigator.userAgent.toLowerCase();
   if (ua.includes('cc/')) {
     return 'ccm';
