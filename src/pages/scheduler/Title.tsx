@@ -1,9 +1,10 @@
+import React, { useState, useEffect } from 'react';
+import { Flex, Tooltip } from 'antd';
+
 import { IconTablerInfoCircle } from '@/shared/IconsNew';
 import Input from '@/shared/Input';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useI18n } from '@/hooks/useI18n';
-import { Flex, Tooltip } from 'antd';
-import React from 'react';
 
 const Title = () => {
   const { topic, mode, canModify, source, syncToGoogle } = useDetailDataValue();
@@ -12,6 +13,14 @@ const Title = () => {
   const isCreateMode = mode === 'create';
   const canNotEdit = !isCreateMode && !canModify;
   const showGoogleSync = isCreateMode ? syncToGoogle : source === 'google';
+
+  // 使用本地 state 管理输入值，避免 async atom 更新导致的中文输入问题
+  const [_topic, setTopic] = useState(topic || '');
+
+  // 当外部 topic 变化时，同步到本地 state
+  useEffect(() => {
+    setTopic(_topic || '');
+  }, [topic]);
 
   return (
     <>
@@ -56,11 +65,12 @@ const Title = () => {
             max={2000}
             size="large"
             placeholder={i18n('schedule.addTopic')}
-            value={topic}
+            value={_topic}
             allowClear
             disabled={canNotEdit}
             onChange={e => {
               const meetingName = e.target.value?.slice(0, 80);
+              setTopic(meetingName);
               setData({ topic: meetingName });
             }}
           />

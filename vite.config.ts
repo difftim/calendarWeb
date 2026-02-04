@@ -33,6 +33,10 @@ export default defineConfig({
         target: 'https://srv.bdb.im/',
         changeOrigin: true,
       },
+      '/voice': {
+        target: 'https://srv.bdb.im/',
+        changeOrigin: true,
+      },
     },
   },
   build: {

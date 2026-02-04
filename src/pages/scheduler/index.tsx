@@ -12,7 +12,7 @@ import FindTimeButton from './FindTimeButton';
 import FindTime from './FindTime';
 import UserListButton from './UserListButton';
 import More from './More';
-// import GoogleMeetButton from './GoogleMeetButton';
+import GoogleMeetButton from './GoogleMeetButton';
 import Permit from './Permit';
 import Bottom from './Bottom';
 import UserList from './UserList';
@@ -32,7 +32,7 @@ export const ScheduleMeetingDialog = () => {
       <Desc />
       <Permit />
       <More />
-      {/* <GoogleMeetButton /> */}
+      <GoogleMeetButton />
       <Bottom />
       <UserList />
       <FindTime />

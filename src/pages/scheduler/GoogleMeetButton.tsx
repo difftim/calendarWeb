@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from 'antd';
 import { useDetailDataValue } from '@/hooks/useDetailData';
-import { goToGoogle } from '@/schema';
+import { goToGoogleMeet } from '@/util/goToGoogleMeet';
+import { useAtomValue } from 'jotai';
+import { appNameAtom, userInfoAtom } from '@/atoms';
+import { getSimpleName } from '@/util';
 
 function GoogleMeetButton() {
-  const { mode, isLiveStream, category, showMore, topic, members, channelName } =
-    useDetailDataValue();
+  const { mode, isLiveStream, category, showMore, topic, members } = useDetailDataValue();
   const isEvent = category === 'event';
+  const clientName = useAtomValue(appNameAtom) || 'Wea';
+  const myInfo = useAtomValue(userInfoAtom);
+  const lock = useRef(false);
+
   if (mode !== 'create' || !showMore || isEvent || isLiveStream) {
     return null;
   }
@@ -14,12 +20,18 @@ function GoogleMeetButton() {
   return (
     <Button
       type="default"
-      onClick={() => {
-        goToGoogle(
+      onClick={async () => {
+        if (lock.current) return;
+        lock.current = true;
+        const url = await goToGoogleMeet(
           members.map(m => m.uid),
-          topic,
-          channelName
+          topic || `${getSimpleName(myInfo.name || myInfo.id)}'s Meeting`,
+          clientName
         );
+        lock.current = false;
+        if (url) {
+          window.open(url, '_blank');
+        }
       }}
       style={{ marginTop: '12px' }}
     >

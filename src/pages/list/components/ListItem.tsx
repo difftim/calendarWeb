@@ -1,11 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
-// import { StartType } from './hooks/useMeetingStatusCheck';
 import { Avatar } from '@/shared/Avatar';
 import { IconGoogle, IconLiveStream, IconOutLook, IconTablerBell } from '@/shared/IconsNew';
 import { toastError, toastSuccess } from '@/shared/Message';
-// import { onMuteMeeting } from '@/shims/globalAdapter';
 import { userInfoByIdAtom } from '@/atoms/userInfo';
 import { cleanUserNameForDisplay } from '@/util';
 import { useSetDetailData } from '@/hooks/useDetailData';
@@ -105,11 +103,15 @@ const ListItem = ({
             className="mute-btn hover-show"
             onClick={async e => {
               e.stopPropagation();
-              const { success, reason } = await onMuteMeeting(item);
-              if (success) {
+              try {
+                await onMuteMeeting({
+                  calendarId: item.cid,
+                  eventId: item.eid,
+                  muted: !item.muted,
+                });
                 toastSuccess('success!');
-              } else {
-                toastError(reason || 'Opreation failed');
+              } catch (error) {
+                console.error('mute meeting error', error);
               }
             }}
           >

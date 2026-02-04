@@ -101,23 +101,6 @@ export const createWebCall = () => {
   window.location.href = url;
 };
 
-export const goToGoogle = (members: string[], topic?: string, channelName?: string) => {
-  const membersStr = compressToBase64(members?.filter(Boolean).join(','));
-  const searchParams = new URLSearchParams({
-    action: 'go-to-google',
-    members: membersStr,
-  });
-  if (topic) {
-    searchParams.append('meetingname', topic);
-  }
-  if (channelName) {
-    searchParams.append('channelname', channelName);
-  }
-  const url = `${getSchema()}://calendar-app?${searchParams.toString()}`;
-
-  window.location.href = url;
-};
-
 export const joinMeeting = (info: {
   appType?: string;
   channelName?: string;

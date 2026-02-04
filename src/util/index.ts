@@ -843,3 +843,56 @@ export const formatTZ = (tz = '') => {
 export const isSearchMatchId = (searchText: string) => /^(\+)?\d{11}$/.test(searchText);
 
 export const getRealId = (uid: string) => (uid.startsWith('+') ? uid : `+${uid}`);
+
+export function buildUrlPath(segments: string[], withTrailingSlash: boolean = false) {
+  if (!Array.isArray(segments)) {
+    throw new Error('input segments must be an array');
+  }
+
+  const joinedPath = segments
+    .map(seg => seg.replace(/^[\s\/]+|[\s\/]+$/g, ''))
+    .filter(Boolean)
+    .map(encodeURIComponent)
+    .join('/');
+
+  let finalPath = '';
+
+  if (joinedPath) {
+    finalPath = '/' + joinedPath;
+  }
+
+  if (withTrailingSlash) {
+    finalPath += '/';
+  }
+
+  return finalPath;
+}
+
+export function buildParamString(
+  params: string[][] | Record<string, string>,
+  withPercentEncodedSpace: boolean = false
+) {
+  const searchParams = new URLSearchParams(params);
+
+  let paramString = searchParams.toString();
+  if (withPercentEncodedSpace) {
+    paramString = paramString.replace(/\+/g, '%20');
+  }
+
+  return paramString;
+}
+
+export function buildUrlPathWithParams(
+  pathSegments: string[],
+  params: string[][] | Record<string, string>,
+  withParamPercentEncodedSpace: boolean = false,
+  withPathTrailingSlash: boolean = false
+) {
+  const path = buildUrlPath(pathSegments, withPathTrailingSlash);
+  const queryString = buildParamString(params, withParamPercentEncodedSpace);
+  if (queryString) {
+    return path + '?' + queryString;
+  } else {
+    return path;
+  }
+}

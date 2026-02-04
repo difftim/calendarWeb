@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import Linkify from 'linkify-react';
@@ -15,6 +15,14 @@ const Desc = () => {
   const { mode, description = '', showMore, canModify } = useDetailDataValue();
   const canNotEdit = mode !== 'create' && !canModify;
   const setData = useSetDetailData();
+
+  // 使用本地 state 管理输入值，避免 async atom 更新导致的中文输入问题
+  const [desc, setDesc] = useState(description);
+
+  // 当外部 description 变化时，同步到本地 state
+  useEffect(() => {
+    setDesc(description);
+  }, [description]);
 
   if (mode === 'view') {
     if (!description) {
@@ -56,9 +64,12 @@ const Desc = () => {
           disabled={canNotEdit}
           placeholder="Write some notes"
           maxLength={2000}
-          value={description}
+          value={desc}
           autoSize={{ minRows: 4 }}
-          onChange={e => setData({ description: e.target.value })}
+          onChange={e => {
+            setDesc(e.target.value);
+            setData({ description: e.target.value });
+          }}
         />
       </div>
     </div>

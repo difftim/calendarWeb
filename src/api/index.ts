@@ -148,8 +148,18 @@ export const updateMeetingSchedule = (
     .json();
 };
 
-export const onMuteMeeting = async (item: any) => {
-  return { data: item, success: true, reason: null };
+export const onMuteMeeting = async (data: {
+  calendarId: string;
+  eventId: string;
+  muted: boolean;
+}) => {
+  const { calendarId = 'default', eventId, muted } = data;
+
+  return request
+    .put(`v1/calendar/${encodeURIComponent(calendarId)}/events/${eventId}/mute`, {
+      json: { muted },
+    })
+    .json();
 };
 
 export const getMeetingScheduleDetail = (options: any) => {
@@ -167,4 +177,8 @@ export const getUserEmail = (
 ): Promise<{ uid: string; email?: string; validUser: boolean; name: string }[]> => {
   const suffix = uids.filter(Boolean).join(',');
   return request.get(`v1/user/info?key=${encodeURIComponent(suffix)}`).json();
+};
+
+export const createGoogleMeeting = (): Promise<{ channelName: string; password: string }> => {
+  return request.post(`v1/create-external-meeting`, { prefixUrl: '/voice', json: {} }).json();
 };
