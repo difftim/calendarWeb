@@ -13,7 +13,7 @@ import {
   IconHelperF,
   IconTablerCopy,
   IconTablerDots,
-  IconTablerForward,
+  // IconTablerForward,
   IconTablerTransfer,
 } from '@/shared/IconsNew';
 import { toastError, toastSuccess, toastWarning } from '@/shared/Message';
@@ -124,7 +124,7 @@ function Bottom() {
     const buttonCopy = viewMode.buttonCopy;
     const buttonCopyEvent = viewMode.buttonDuplicate;
     const buttonTransfer = viewMode.buttonTransferHost;
-    const buttonCopyLiveStream = viewMode.buttonCopyLiveStream;
+    // const buttonCopyLiveStream = viewMode.buttonCopyLiveStream;
     const buttonDelete = viewMode.buttonDelete;
     const buttonJoin = viewMode.buttonJoin;
 
@@ -360,12 +360,12 @@ function Bottom() {
               </Flex>
             </div>
           ) : null}
-          {buttonCopyLiveStream === Permission.ReadWrite ? (
+          {/* {buttonCopyLiveStream === Permission.ReadWrite ? (
             <div className="item" onClick={() => copyItem('share')}>
               <IconTablerForward width={16} height={16} />
               <span>{i18n('schedule.shareLiveTo')}</span>
             </div>
-          ) : null}
+          ) : null} */}
 
           {buttonCopyEvent === Permission.ReadWrite ? (
             <div className="item" onClick={copyEvent}>

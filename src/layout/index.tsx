@@ -4,17 +4,13 @@ import { Calendar, Flex } from 'antd';
 import ConfigProvider, { useTheme } from '@/shared/ConfigProvider';
 import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
-import { createInstantMeeting, createRoom, createWebCall } from '@/schema';
 import { useAntdLocale } from '@/hooks/useAntdLocale';
 import { useSetDate } from '@/hooks/useSetDate';
 import {
   IconCalendarEvent,
   IconChevronRight,
-  IconFlashLineF,
   IconFluentLive24Filled,
-  IconTablerLink,
   IconTablerSetting,
-  IconTablerUser,
   IconTablerVideo,
 } from '@/shared/IconsNew';
 import classNames from 'classnames';
@@ -206,7 +202,6 @@ const Layout = () => {
           <div
             onClick={() => {
               createSchedule('meeting');
-              console.log('ua', navigator.userAgent);
             }}
             className="meeting-block book"
           >
@@ -222,10 +217,6 @@ const Layout = () => {
             <IconCalendarEvent />
             <div>Event</div>
           </div>
-          <div onClick={createInstantMeeting} className="meeting-block instant">
-            <IconFlashLineF />
-            <div>Instant Meet</div>
-          </div>
           <div
             onClick={() => {
               createSchedule('livestream');
@@ -234,14 +225,6 @@ const Layout = () => {
           >
             <IconFluentLive24Filled />
             <div>Live Stream</div>
-          </div>
-          <div onClick={() => createRoom(myInfo)} className="meeting-block instant">
-            <IconTablerUser />
-            <div>My Room</div>
-          </div>
-          <div onClick={() => createWebCall()} className="meeting-block instant webCall">
-            <IconTablerLink style={{ flexShrink: 0 }} />
-            <div>New Web Call</div>
           </div>
         </div>
         <ConfigProvider locale={antdLocale}>
