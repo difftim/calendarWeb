@@ -1,4 +1,4 @@
-import { createGoogleMeeting } from '@/api';
+import { createGoogleMeeting, createGroupGoogleMeeting } from '@/api';
 import { buildParamString, buildUrlPathWithParams } from '.';
 import { fetchUserInfo, getUserBaseInfoSync } from '@/atoms/userInfo';
 import { pick } from 'lodash';
@@ -26,7 +26,7 @@ const buildDetailParams = (
   memberCount: number,
   clientName: string
 ) => {
-  const productName = clientName.toLowerCase() || 'wea';
+  const productName = clientName.toLowerCase() || 'Wea';
   const from = `${productName}-mac`;
   const jumpUrlParams = buildParamString(
     {
@@ -54,27 +54,32 @@ const buildDetailParams = (
 export const goToGoogleMeet = async (
   userIds: Array<string>,
   meetingName: string,
-  clientName: string
+  clientName: string,
+  channelName?: string
 ) => {
   try {
     // 最多50个用户
-    userIds = userIds.filter(Boolean).slice(0, 50);
-    const [_meetingData] = await Promise.all([createGoogleMeeting(), fetchUserInfo(userIds)]);
+    const memberCount = userIds.length;
+    const isGroup = !!channelName;
+    const [serverData] = await Promise.all([
+      isGroup ? createGroupGoogleMeeting(channelName, userIds, meetingName) : createGoogleMeeting(),
+      fetchUserInfo(userIds.slice(0, 50)),
+    ]);
     const members = userIds.map(uid => pick(getUserBaseInfoSync(uid), ['id', 'email']));
-    if (!_meetingData?.channelName || !_meetingData?.password) {
-      throw _meetingData;
+    if (!serverData?.channelName || !serverData?.password) {
+      throw serverData;
     }
-    const meetingData = {
-      ..._meetingData,
-      meetingName,
-    };
+    let emailParams: string[][] = [];
+    if (memberCount <= 100 || !isGroup) {
+      emailParams = buildEmailParams(members);
+    }
     const urlParams: string[][] = [
-      ...buildEmailParams(members),
+      ...emailParams,
       ['text', meetingName],
       ['trp', 'true'],
       ['sf', 'true'],
       ['output', 'xml'],
-      ...buildDetailParams(meetingData, members.length, clientName),
+      ...buildDetailParams({ ...serverData, meetingName }, memberCount, clientName),
     ];
 
     const googleHost = `https://calendar.google.com`;

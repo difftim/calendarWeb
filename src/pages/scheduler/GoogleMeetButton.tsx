@@ -4,10 +4,11 @@ import { useDetailDataValue } from '@/hooks/useDetailData';
 import { goToGoogleMeet } from '@/util/goToGoogleMeet';
 import { useAtomValue } from 'jotai';
 import { appNameAtom, userInfoAtom } from '@/atoms';
-import { getSimpleName } from '@/util';
+import { getSimpleName, isBotId } from '@/util';
 
 function GoogleMeetButton() {
-  const { mode, isLiveStream, category, showMore, topic, members } = useDetailDataValue();
+  const { mode, isLiveStream, category, showMore, topic, members, channelName } =
+    useDetailDataValue();
   const isEvent = category === 'event';
   const clientName = useAtomValue(appNameAtom) || 'Wea';
   const myInfo = useAtomValue(userInfoAtom);
@@ -24,9 +25,10 @@ function GoogleMeetButton() {
         if (lock.current) return;
         lock.current = true;
         const url = await goToGoogleMeet(
-          members.map(m => m.uid),
+          members.map(m => m.uid).filter(uid => Boolean(uid && !isBotId(uid))),
           topic || `${getSimpleName(myInfo.name || myInfo.id)}'s Meeting`,
-          clientName
+          clientName,
+          channelName
         );
         lock.current = false;
         if (url) {

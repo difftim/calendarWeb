@@ -9,6 +9,7 @@ import {
 import { groupListAtom } from '@/atoms';
 import { toastWarning } from '@/shared/Message';
 import { getUserEmail } from '@/api';
+import { isBotId } from '@/util';
 
 export type Member = {
   going: 'maybe' | 'yes' | 'no';
@@ -36,8 +37,8 @@ const mapSelectedToMembers = async (
 
   let result: Member[] = [];
 
-  let appUsers = items.filter(user => Boolean(!user.extUser && user.id));
-  let externalUsers = items.filter(user => Boolean(user.extUser && user.id));
+  let appUsers = items.filter(user => Boolean(!user.extUser && user.id && !isBotId(user.id)));
+  let externalUsers = items.filter(user => Boolean(user.extUser && user.id && !isBotId(user.id)));
 
   result.push(
     ...appUsers.map(item => ({

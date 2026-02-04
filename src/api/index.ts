@@ -182,3 +182,17 @@ export const getUserEmail = (
 export const createGoogleMeeting = (): Promise<{ channelName: string; password: string }> => {
   return request.post(`v1/create-external-meeting`, { prefixUrl: '/voice', json: {} }).json();
 };
+
+export const createGroupGoogleMeeting = (
+  channelName: string,
+  userIds: string[],
+  meetingName: string
+): Promise<{ channelName: string; password: string }> => {
+  const invite = userIds.filter(Boolean).map(uid => uid.replace('+', ''));
+  return request
+    .put(`v1/get-external-group-rtc-token`, {
+      prefixUrl: '/voice',
+      json: { channelName, meetingName, invite },
+    })
+    .json();
+};

@@ -5,8 +5,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "VITE_WEB_MEETING_URL=https://webmeeting.i365724.com tsc && VITE_WEB_MEETING_URL=https://webmeeting.i365724.com vite build",
-        "build:test": "VITE_WEB_MEETING_URL=https://webmeeting.bdb.im tsc && VITE_WEB_MEETING_URL=https://webmeeting.bdb.im vite build",
+        "build": "tsc && VITE_WEB_MEETING_URL=https://webmeeting.i365724.com vite build",
+        "build:test": "tsc && VITE_WEB_MEETING_URL=https://webmeeting.bdb.im vite build",
         "preview": "vite preview",
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\""
