@@ -1,17 +1,16 @@
 import React, { useEffect, useMemo } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { Calendar, Flex } from 'antd';
+import { Calendar, Dropdown, Flex } from 'antd';
 import ConfigProvider, { useTheme } from '@/shared/ConfigProvider';
 import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import { useAntdLocale } from '@/hooks/useAntdLocale';
 import { useSetDate } from '@/hooks/useSetDate';
 import {
-  IconCalendarEvent,
+  IconChevronDown,
   IconChevronRight,
-  IconFluentLive24Filled,
+  IconTablerPlus,
   IconTablerSetting,
-  IconTablerVideo,
 } from '@/shared/IconsNew';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
@@ -199,33 +198,37 @@ const Layout = () => {
           <span>Calendar</span>
         </div>
         <div className="main-block">
-          <div
+          <Dropdown.Button
+            className="create-meeting-dropdown"
+            placement="bottomRight"
+            menu={{
+              items: [
+                {
+                  key: 'event',
+                  label: 'Event',
+                },
+                {
+                  key: 'livestream',
+                  label: 'Live Stream',
+                },
+              ],
+              onClick: ({ key }) => {
+                createSchedule(key as 'event' | 'livestream');
+              },
+              className: 'create-meeting-dropdown-menu',
+              style: { width: 180 },
+            }}
             onClick={() => {
               createSchedule('meeting');
             }}
-            className="meeting-block book"
+            trigger={['click']}
+            icon={<IconChevronDown />}
           >
-            <IconTablerVideo />
-            <div>Meeting</div>
-          </div>
-          <div
-            className="meeting-block instant"
-            onClick={() => {
-              createSchedule('event');
-            }}
-          >
-            <IconCalendarEvent />
-            <div>Event</div>
-          </div>
-          <div
-            onClick={() => {
-              createSchedule('livestream');
-            }}
-            className="meeting-block instant"
-          >
-            <IconFluentLive24Filled />
-            <div>Live Stream</div>
-          </div>
+            <span className="create-meeting-btn-content">
+              <IconTablerPlus width={16} height={16} />
+              Meeting
+            </span>
+          </Dropdown.Button>
         </div>
         <ConfigProvider locale={antdLocale}>
           <Calendar

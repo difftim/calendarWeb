@@ -383,38 +383,101 @@
       -webkit-app-region: no-drag;
       flex-shrink: 0;
       padding: 24px 0 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
       border-bottom: 1px solid var(--dsw-color-line-1);
       color: var(--dsw-color-text-primary);
-      .meeting-block {
-        font-size: 12px;
-        padding: 12px;
-        border-radius: 4px;
-        height: 44px;
+
+      .create-meeting-dropdown {
+        // Figma 设计宽度 180px
         display: flex;
-        align-items: center;
-        gap: 7px;
-        cursor: pointer;
-        svg {
-          width: 16px;
-          height: 16px;
-        }
-        &.book {
-          background-color: var(--dsw-color-schedule-book-bg);
+        width: 180px;
+        // Figma Elevation-1 阴影
+        border-radius: 8px;
+        box-shadow:
+          0 0 1px 0 rgba(24, 26, 32, 0.1),
+          0 3px 6px 0 rgba(71, 77, 87, 0.04),
+          0 1px 2px 0 rgba(24, 26, 32, 0.04);
+
+        // 彻底覆盖 antd 按钮所有状态样式
+        .ant-btn {
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
+          background: var(--dsw-color-bg-1) !important;
+          color: var(--dsw-color-text-primary) !important;
+
+          // 禁用所有伪元素动效
+          &::after,
+          &::before {
+            display: none !important;
+          }
+
+          // 禁用 antd wave 点击动效
+          .ant-wave {
+            display: none !important;
+          }
+
           &:hover {
-            background-color: var(--dsw-color-schedule-book-bg-hover);
+            background: var(--dsw-color-bg-2) !important;
+          }
+
+          &:focus,
+          &:active,
+          &:focus-visible {
+            background: var(--dsw-color-bg-1) !important;
+          }
+
+          // antd 5 button group compact 边框
+          &.ant-btn-compact-item,
+          &.ant-btn-compact-first-item,
+          &.ant-btn-compact-last-item {
+            border: none !important;
+
+            &::before {
+              display: none !important;
+            }
           }
         }
-        &.instant {
-          background-color: var(--dsw-color-schedule-instant-bg);
-          &:hover {
-            background-color: var(--dsw-color-schedule-instant-bg-hover);
+
+        // 主按钮（+ Meeting）
+        .ant-btn:first-child {
+          flex: 1;
+          height: 40px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 400;
+          border-radius: 8px 0 0 8px !important;
+          padding: 10px 12px;
+        }
+
+        // 下拉箭头按钮
+        .ant-btn.ant-dropdown-trigger {
+          width: 40px !important;
+          flex: none;
+          height: 40px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0 8px 8px 0 !important;
+          padding: 12px;
+
+          svg {
+            width: 12px;
+            height: 12px;
           }
         }
-        &.webCall {
-          padding-right: 0px;
+
+        .create-meeting-btn-content {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
         }
       }
     }
@@ -1258,5 +1321,19 @@
     &:hover {
       background-color: var(--dsw-color-background-group-item-hover);
     }
+  }
+}
+
+// 下拉菜单弹出层样式（portal 渲染到 body，需全局选择器）
+.create-meeting-dropdown-menu {
+  padding: 4px 0 !important;
+  border-radius: 8px;
+
+  .ant-dropdown-menu-item {
+    height: 40px;
+    padding: 10px 16px !important;
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 0 !important;
   }
 }
