@@ -387,22 +387,16 @@
       color: var(--dsw-color-text-primary);
 
       .create-meeting-dropdown {
-        // Figma 设计宽度 180px
         display: flex;
         width: 180px;
-        // Figma Elevation-1 阴影
         border-radius: 8px;
-        box-shadow:
-          0 0 1px 0 rgba(24, 26, 32, 0.1),
-          0 3px 6px 0 rgba(71, 77, 87, 0.04),
-          0 1px 2px 0 rgba(24, 26, 32, 0.04);
-
+        box-shadow: var(--dsw-elevation-01);
         // 彻底覆盖 antd 按钮所有状态样式
         .ant-btn {
           border: none !important;
           box-shadow: none !important;
           outline: none !important;
-          background: var(--dsw-color-bg-1) !important;
+          background: var(--dsw-color-bg-popup) !important;
           color: var(--dsw-color-text-primary) !important;
 
           // 禁用所有伪元素动效
@@ -417,14 +411,16 @@
           }
 
           &:hover {
-            background: var(--dsw-color-bg-2) !important;
+            background: var(--dsw-color-bg-3) !important;
           }
 
           &:focus,
           &:active,
           &:focus-visible {
-            background: var(--dsw-color-bg-1) !important;
+            background: var(--dsw-color-bg-popup) !important;
           }
+
+          transition: background 0.2s;
 
           // antd 5 button group compact 边框
           &.ant-btn-compact-item,
@@ -1326,14 +1322,26 @@
 
 // 下拉菜单弹出层样式（portal 渲染到 body，需全局选择器）
 .create-meeting-dropdown-menu {
+  background: var(--dsw-color-bg-popup) !important;
   padding: 4px 0 !important;
   border-radius: 8px;
+
+  .ant-dropdown-menu {
+    background: var(--dsw-color-bg-popup) !important;
+    box-shadow: none;
+  }
 
   .ant-dropdown-menu-item {
     height: 40px;
     padding: 10px 16px !important;
     font-size: 14px;
     line-height: 20px;
+    color: var(--dsw-color-text-primary) !important;
     border-radius: 0 !important;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--dsw-color-bg-3) !important;
+    }
   }
 }

@@ -8,50 +8,71 @@ alwaysApply: true
 ## 1. 拿到 Figma 链接后，先完整分析再动手
 
 - 调用 `get_design_context` 和 `get_screenshot` 获取完整设计信息
+- 调用 `get_variable_defs` 获取节点绑定的 Figma 变量（如 `bg1`、`tprimary`、`icon`），根据变量名映射到项目已有的 CSS 变量
 - 提取所有关键数值：width、height、padding、margin、gap、border-radius、font-size、line-height、font-weight、color、box-shadow
 - 如有展开/交互态，主动询问用户要对应的 Figma 节点
 
-## 2. antd 组件覆盖清单
+## 2. 优先使用项目已有的 CSS 变量
+
+颜色、阴影等样式必须使用 `src/styles/colors.scss` 和 `src/styles/variables.scss` 中定义的 CSS 变量，禁止硬编码色值。Figma 变量名与项目变量的映射关系：
+
+| Figma 变量 | CSS 变量 | 说明 |
+|-----------|---------|------|
+| `bg1` | `--dsw-color-bg-1` | 基础背景 |
+| `bg2` | `--dsw-color-bg-2` | 二级背景 |
+| `bg3` | `--dsw-color-bg-3` | 三级背景（常用于 hover） |
+| `tprimary` | `--dsw-color-text-primary` | 主要文字 |
+| `icon` | `--dsw-color-text-primary` | 图标颜色 |
+| `popupBg` | `--dsw-color-bg-popup` | 弹出层/浮层背景 |
+| `Elevation-1` | `--dsw-elevation-01` | 一级阴影 |
+| `Elevation-2` | `--dsw-elevation-02` | 二级阴影 |
+| `Line` | `--dsw-color-line-1` | 分割线 |
+
+发现 Figma 中使用的颜色不在上表时，先到 `src/styles/variables.scss` 和 `src/styles/colors.scss` 中搜索匹配的变量，找不到再问用户。
+
+## 3. 暗色主题适配
+
+- 项目通过 CSS 变量自动切换亮/暗色，所以使用变量就能自动适配
+- 带阴影/浮起效果的元素（卡片、按钮、弹出层），背景用 `--dsw-color-bg-popup` 而非 `--dsw-color-bg-1`，确保暗色下与页面背景有区分
+- 覆盖 antd 样式时颜色属性必须加 `!important`，否则 antd 默认色值会覆盖 CSS 变量导致暗色失效
+
+## 4. antd 组件覆盖清单
 
 使用 antd 组件做 UI 还原时，必须一次性处理以下默认样式，不要等用户反馈再逐个修：
 
 ```scss
-// 必须覆盖项
 .ant-btn {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
-  // 禁用 wave 点击动效
   .ant-wave { display: none !important; }
-  // 禁用所有伪元素（::after 波纹、::before 分隔线）
   &::after, &::before { display: none !important; }
-  // 覆盖所有交互状态
   &:hover, &:focus, &:active, &:focus-visible { /* 按设计稿设置 */ }
-  // antd5 compact 模式边框
   &.ant-btn-compact-item::before { display: none !important; }
 }
 ```
 
-## 3. 下拉菜单（Dropdown）注意事项
+## 5. 下拉菜单（Dropdown）注意事项
 
 - antd dropdown popup 通过 portal 渲染到 body，样式需写在全局作用域
 - 通过 `menu.className` 传入自定义类名来控制弹出层样式
+- 弹出层背景、文字颜色、hover 都要用 CSS 变量 + `!important`
 - 必须同时处理：菜单容器 padding、菜单项 height/padding、border-radius、菜单宽度
-- `placement` 属性控制弹出位置对齐方式
 
-## 4. 尺寸必须精确
+## 6. 尺寸必须精确
 
 - 不要用 `width: 100%` 猜测，从 Figma 取精确值（如 `width: 180px`）
 - padding/margin 直接从 Figma 节点坐标计算，不要凑整
 - 文本对齐方式（左对齐/居中）从设计稿确认，不要默认居中
 
-## 5. 一次到位，不要迭代修复
+## 7. 一次到位检查清单
 
-实现 UI 前在脑中过一遍完整的检查清单：
+实现 UI 前在脑中过一遍：
 - [ ] 尺寸（宽高、padding、margin、gap）
-- [ ] 颜色（背景、文字、边框/阴影）
+- [ ] 颜色全部使用 CSS 变量（背景、文字、边框/阴影）
+- [ ] 暗色主题下表现正确
 - [ ] 圆角
 - [ ] 字体（大小、粗细、行高）
-- [ ] 交互态（hover、active、focus 全部覆盖）
+- [ ] 交互态（hover、active、focus 全部覆盖，加 transition）
 - [ ] 动效（是否需要禁用默认动效）
-- [ ] 弹出层（宽度、位置、内边距）
+- [ ] 弹出层（宽度、位置、内边距、背景色适配暗色）
