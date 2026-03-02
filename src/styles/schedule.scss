@@ -362,7 +362,7 @@
     user-select: none;
     display: flex;
     flex-direction: column;
-    background-color: var(--dsw-color-bg-1);
+    background-color: var(--dsw-color-bg-2);
     border-right: 1px solid var(--dsw-color-line-1);
     padding: 16px;
     .title {
@@ -378,6 +378,13 @@
       > span {
         -webkit-app-region: no-drag;
       }
+    }
+    .calendar-divider {
+      width: 100%;
+      height: 1px;
+      background-color: var(--dsw-color-line-1);
+      flex-shrink: 0;
+      margin: 24px 0;
     }
     .main-block {
       -webkit-app-region: no-drag;
@@ -396,7 +403,7 @@
           border: none !important;
           box-shadow: none !important;
           outline: none !important;
-          background: var(--dsw-color-bg-popup) !important;
+          background: var(--dsw-color-bg-1) !important;
           color: var(--dsw-color-text-primary) !important;
 
           // 禁用所有伪元素动效
@@ -417,7 +424,7 @@
           &:focus,
           &:active,
           &:focus-visible {
-            background: var(--dsw-color-bg-popup) !important;
+            background: var(--dsw-color-bg-1) !important;
           }
 
           transition: background 0.2s;
@@ -908,27 +915,38 @@
 
 .left-pane-calendar.ant-picker-calendar {
   flex-shrink: 0;
+  background: transparent !important;
+  .ant-picker-panel {
+    background: transparent !important;
+    border-top: 0px;
+  }
+  .ant-picker-date-panel {
+    background: transparent !important;
+  }
+  .ant-picker-body {
+    background: transparent !important;
+  }
+  .ant-picker-content {
+    background: transparent !important;
+  }
   .calendar-header {
     padding: 16px 0 8px;
     font-size: 14px;
-    color: var(--dsw-color-text-primay);
-    > span {
-      width: 24px;
-      height: 24px;
-      padding: 2px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--dsw-color-icon);
-      &:hover {
-        background-color: var(--dsw-color-bg-3);
-      }
-      &.disabled {
-        color: var(--dsw-color-text-disabled);
-      }
-    }
+    color: var(--dsw-color-text-primary);
   }
-  .ant-picker-panel {
-    border-top: 0px;
+  .calendar-header-arrow {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dsw-color-icon);
+    &:hover {
+      background-color: var(--dsw-color-bg-3);
+    }
   }
   .ant-picker-cell {
     padding: 4px 0 !important;
@@ -1322,12 +1340,12 @@
 
 // 下拉菜单弹出层样式（portal 渲染到 body，需全局选择器）
 .create-meeting-dropdown-menu {
-  background: var(--dsw-color-bg-popup) !important;
+  background: var(--dsw-color-bg-1) !important;
   padding: 4px 0 !important;
   border-radius: 8px;
 
   .ant-dropdown-menu {
-    background: var(--dsw-color-bg-popup) !important;
+    background: var(--dsw-color-bg-1) !important;
     box-shadow: none;
   }
 

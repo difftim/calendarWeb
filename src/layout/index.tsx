@@ -8,7 +8,7 @@ import { useAntdLocale } from '@/hooks/useAntdLocale';
 import { useSetDate } from '@/hooks/useSetDate';
 import {
   IconChevronDown,
-  IconChevronRight,
+  IconChevronRight1,
   IconTablerPlus,
   IconTablerSetting,
 } from '@/shared/IconsNew';
@@ -119,36 +119,30 @@ const Layout = () => {
   const queryClient = useQueryClient();
   const headerRender = ({ value /*onChange*/ }: any) => {
     return (
-      <Flex className="calendar-header" align="center" justify="center" gap={8}>
-        <span>
-          <IconChevronRight
-            width={20}
-            height={20}
+      <Flex className="calendar-header" align="center" justify="space-between">
+        <span className="calendar-header-date">
+          {value.locale('en').format('MMM YYYY')}
+        </span>
+        <Flex align="center" gap={8}>
+          <span
+            className="calendar-header-arrow"
             onClick={() => {
-              // if (isDisabled) {
-              //   return;
-              // }
               const previous = value.clone().add(-1, 'month');
-              // 不同步
               setShowDate(previous);
             }}
-            style={{ transform: 'rotate(180deg)' }}
-          />
-        </span>
-        <div style={{ flexGrow: 1, textAlign: 'center' }}>
-          {value.locale('en').format(`MMM YYYY`)}
-        </div>
-        <span>
-          <IconChevronRight
-            width={20}
-            height={20}
+          >
+            <IconChevronRight1 width={16} height={16} style={{ transform: 'rotate(180deg)' }} />
+          </span>
+          <span
+            className="calendar-header-arrow"
             onClick={() => {
               const next = value.clone().add(1, 'month');
-              // 不同步
               setShowDate(next);
             }}
-          />
-        </span>
+          >
+            <IconChevronRight1 width={16} height={16} />
+          </span>
+        </Flex>
       </Flex>
     );
   };
@@ -260,6 +254,8 @@ const Layout = () => {
           />
         </ConfigProvider>
 
+        <div className="calendar-divider" />
+
         {myInfo.id && (
           <div className="select-list-wrapper">
             <SelectList
@@ -269,6 +265,7 @@ const Layout = () => {
               title="My Calendars"
               checked={myChecked}
               onChange={setMyChecked}
+              collapsible={false}
             />
             {!isListActive && (
               <SelectList

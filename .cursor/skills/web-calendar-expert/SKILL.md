@@ -363,6 +363,15 @@ main.tsx
 
 - **Find a Time 日期选择**（2026-03-02）：左右箭头 → Popover + antd Calendar，与 difft-desktop commit `769604a60` 对齐
 
-### 待同步项
+### calendarWeb 差异化改造（2026-03-02）
 
-- **侧边栏月份切换**：layout/index.tsx 的 `headerRender` 仍使用旧布局（箭头在两侧、gap 8px、icon 20x20），需参考 Figma 同步更新为箭头在右侧、gap 16px、icon 16x16
+以下改动是 calendarWeb 独有的，**不同步回 difft-desktop**：
+
+1. **左侧面板背景色**：`var(--dsw-color-bg-1)` → `var(--dsw-color-bg-2)`
+2. **日历头部布局**：日期文字左对齐，两个箭头右对齐（gap 8px）；图标从 `IconChevronRight`（填充版 20x20）换为 `IconChevronRight1`（描边版 16x16），hover 容器 24x24
+3. **FindTime Popover Calendar 箭头 hover**：同步侧边栏的背景 hover 效果（`background-color: var(--dsw-color-bg-3)`，24x24 容器 + padding 4px + border-radius 4px）
+4. **日历与 MyCalendars 之间的 divider**：新增 `.calendar-divider`（1px solid `var(--dsw-color-line-1)`）
+5. **MyCalendars 固定展开**：`SelectList` 新增 `collapsible` prop（默认 `true`），MyCalendars 传 `collapsible={false}` 隐藏折叠按钮
+6. **OtherCalendars 空列表**：`list.length === 0` 时隐藏 chevron 图标，标题仍显示
+7. **Meeting 按钮背景色**：`var(--dsw-color-bg-1)`（非 `bg-popup`），下拉菜单同理
+8. **antd Calendar 背景透明**：`.ant-picker-panel`/`.ant-picker-date-panel`/`.ant-picker-body`/`.ant-picker-content` 全部 `background: transparent !important`，确保继承面板 bg2

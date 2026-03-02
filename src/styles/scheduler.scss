@@ -98,13 +98,15 @@
   }
 
   .view-schedule-calendar-arrow {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    border-radius: 4px;
     cursor: pointer;
     color: var(--dsw-color-icon);
 
     &:hover {
-      color: var(--dsw-color-text-primary);
+      background-color: var(--dsw-color-bg-3);
     }
   }
 }

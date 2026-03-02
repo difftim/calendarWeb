@@ -38,14 +38,19 @@ export const SelectList: React.FC<{
   style?: any;
   listStyle?: any;
   bgColors: string[];
+  collapsible?: boolean;
   onChange?: (items: any[]) => void;
-}> = ({ title, list, checked, onChange, style = {}, listStyle = {}, bgColors }) => {
+}> = ({ title, list, checked, onChange, style = {}, listStyle = {}, bgColors, collapsible = true }) => {
   const [show, setShow] = useState(true);
   const colors = useMemo(() => bgColors.map(bgColor => bgColor.replace('#', '')), [bgColors]);
   const { getColor } = useGetColor();
   const myId = useAtomValue(userIdAtom);
 
-  const toggle = () => setShow(s => !s);
+  const toggle = () => {
+    if (collapsible) setShow(s => !s);
+  };
+
+  const showChevron = collapsible && list.length > 0;
 
   return (
     <ConfigProvider
@@ -66,9 +71,11 @@ export const SelectList: React.FC<{
         <div className="select-title" onClick={toggle}>
           {title}
         </div>
-        <div className="select-icons">
-          <ChevronRight onClick={toggle} className={classNames('arrow', { show })} />
-        </div>
+        {showChevron && (
+          <div className="select-icons">
+            <ChevronRight onClick={toggle} className={classNames('arrow', { show })} />
+          </div>
+        )}
       </div>
       {show ? (
         <Checkbox.Group
