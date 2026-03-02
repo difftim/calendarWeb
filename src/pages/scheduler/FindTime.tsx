@@ -1,19 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Drawer } from 'antd';
-import dayjs from 'dayjs';
-import classNames from 'classnames';
+import { Button, Calendar, Drawer, Popover } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import { uniqBy } from 'lodash';
 
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useCurrentTimeZone } from '@/hooks/useCurrentTimeZone';
 import { showPannelAtom } from '@/atoms/detail';
 import { useSetAtom } from 'jotai';
-import { IconBackF, IconCloseF, IconChevronRight1 } from '@/shared/IconsNew';
+import { IconBackF, IconCloseF, IconChevronDown, IconChevronRight1 } from '@/shared/IconsNew';
 import { getOffsetStringFromOffsetNumber } from '@/util';
 import ViewSchedule from './components/findTime/ViewSchedule';
 import { useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
 import { userIdAtom } from '@/atoms';
 import { useAtomValue } from 'jotai';
+import ConfigProvider from '@/shared/ConfigProvider';
+import { useAntdLocale } from '@/hooks/useAntdLocale';
 
 const FindTimeHeader = ({
   timeZone,
@@ -28,17 +29,54 @@ const FindTimeHeader = ({
   onBack: () => void;
   onClose: () => void;
 }) => {
-  const today = dayjs().tz(timeZone).startOf('day');
-  const utcOffset = today.utcOffset() / 60;
-  const currentDay = dayjs(
-    `${queryDate} ${getOffsetStringFromOffsetNumber(utcOffset)}`,
-    'YYYY-MM-DD Z'
-  )
-    .tz(timeZone)
-    .startOf('day');
+  const antdLocale = useAntdLocale();
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [panelValue, setPanelValue] = useState(() => dayjs(queryDate));
 
-  const isPastDate = today.diff(currentDay, 'days') >= 0;
-  const isMoreThanFourteenDays = currentDay.diff(today, 'days') >= 14 - 1;
+  useEffect(() => {
+    setPanelValue(dayjs(queryDate));
+  }, [queryDate]);
+
+  const todayStr = dayjs().tz(timeZone).format('YYYY-MM-DD');
+
+  const disabledDate = (current: Dayjs) => {
+    if (!current) return false;
+    return current.format('YYYY-MM-DD') < todayStr;
+  };
+
+  const calendarContent = (
+    <ConfigProvider locale={antdLocale}>
+      <Calendar
+        fullscreen={false}
+        value={panelValue}
+        disabledDate={disabledDate}
+        onSelect={(date: Dayjs) => {
+          if (disabledDate(date)) return;
+          setQueryDate(date.format('YYYY-MM-DD'));
+          setCalendarOpen(false);
+        }}
+        headerRender={({ value }) => {
+          const monthLabel = value.locale('en').format('MMM YYYY');
+          return (
+            <div className="view-schedule-calendar-header">
+              <span className="view-schedule-calendar-title">{monthLabel}</span>
+              <div className="view-schedule-calendar-arrows">
+                <IconChevronRight1
+                  className="view-schedule-calendar-arrow"
+                  style={{ transform: 'rotate(180deg)' }}
+                  onClick={() => setPanelValue(value.subtract(1, 'month'))}
+                />
+                <IconChevronRight1
+                  className="view-schedule-calendar-arrow"
+                  onClick={() => setPanelValue(value.add(1, 'month'))}
+                />
+              </div>
+            </div>
+          );
+        }}
+      />
+    </ConfigProvider>
+  );
 
   return (
     <div className={'schedule-meeting-header'}>
@@ -64,30 +102,30 @@ const FindTimeHeader = ({
         >
           Today
         </Button>
-        <div className="date">{dayjs(queryDate).locale('en').format('ddd, MMM D')}</div>
-        <IconChevronRight1
-          className={classNames('view-schedule-header-left', {
-            'view-schedule-header-left-disable': isPastDate,
-          })}
-          style={{ transform: 'rotate(180deg)' }}
-          onClick={() => {
-            if (isPastDate) {
-              return;
-            }
-            setQueryDate(dayjs(queryDate).subtract(1, 'days').format('YYYY-MM-DD'));
-          }}
-        />
-        <IconChevronRight1
-          className={classNames('view-schedule-header-right', {
-            'view-schedule-header-right-disable': isMoreThanFourteenDays,
-          })}
-          onClick={() => {
-            if (isMoreThanFourteenDays) {
-              return;
-            }
-            setQueryDate(dayjs(queryDate).add(1, 'days').format('YYYY-MM-DD'));
-          }}
-        />
+        <Popover
+          content={calendarContent}
+          trigger="click"
+          open={calendarOpen}
+          onOpenChange={setCalendarOpen}
+          overlayClassName="view-schedule-calendar-popover"
+          arrow={false}
+          align={{ offset: [0, 16] }}
+          placement="bottom"
+          getPopupContainer={node =>
+            (node.closest('.find-time-drawer') as HTMLElement) || document.body
+          }
+        >
+          <div className="date-trigger">
+            <span className="date">{dayjs(queryDate).locale('en').format('ddd, MMM D')}</span>
+            <IconChevronDown
+              className="date-trigger-icon"
+              style={{
+                transform: calendarOpen ? 'rotate(180deg)' : undefined,
+                transition: 'transform 0.2s',
+              }}
+            />
+          </div>
+        </Popover>
       </div>
       <IconCloseF
         style={{

@@ -3,54 +3,109 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  height: 58px;
-  gap: 8px;
+  height: 32px;
+  gap: 12px;
   margin: 0 40px;
-
-  > button {
-    -webkit-app-region: no-drag;
-  }
-
-  [role='img'] {
-    width: 12px;
-    height: 12px;
-  }
-
-  .date {
-    width: 100px;
-  }
-
-  &-left {
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-    color: var(--dsw-color-text-secondary);
-  }
-
-  &-left-disable {
-    height: 20px;
-    width: 20px;
-    pointer-events: none;
-    color: var(--dsw-color-text-disabled);
-  }
-
-  &-right {
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-    color: var(--dsw-color-text-secondary);
-  }
-
-  &-right-disable {
-    height: 20px;
-    width: 20px;
-    pointer-events: none;
-    color: var(--dsw-color-text-disabled);
-  }
 
   > button {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .date-trigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--dsw-color-text-primary);
+    font-size: 16px;
+    font-weight: 510;
+    line-height: 24px;
+
+    .date-trigger-icon {
+      color: var(--dsw-color-icon);
+    }
+  }
+}
+
+.view-schedule-calendar-popover {
+  width: 100%;
+  left: 0 !important;
+  right: 0 !important;
+
+  .ant-popover-inner {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: var(--dsw-elevation-02);
+    background-color: var(--dsw-metting-background-color);
+  }
+
+  .ant-picker-calendar {
+    padding: 16px;
+    width: 100%;
+    background: transparent;
+  }
+
+  .ant-picker-panel {
+    border-top: none;
+  }
+
+  .ant-picker-content {
+    th {
+      font-size: 12px;
+      font-weight: 500;
+      padding-bottom: 8px !important;
+      color: var(--dsw-color-text-secondary);
+    }
+
+    td {
+      padding: 0;
+    }
+  }
+
+  .ant-picker-cell {
+    .ant-picker-cell-inner {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      font-size: 12px;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+  }
+
+  .view-schedule-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 20px;
+    margin-bottom: 10px;
+  }
+
+  .view-schedule-calendar-arrows {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .view-schedule-calendar-title {
+    font-size: 14px;
+    font-weight: 510;
+    line-height: 20px;
+    color: var(--dsw-color-text-primary);
+    user-select: none;
+  }
+
+  .view-schedule-calendar-arrow {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    color: var(--dsw-color-icon);
+
+    &:hover {
+      color: var(--dsw-color-text-primary);
+    }
   }
 }
 
@@ -574,6 +629,16 @@
 
   .ant-drawer-header-title {
     width: 100%;
+    height: 100%;
+  }
+
+  .schedule-meeting-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 58px;
   }
 
   .ant-drawer-body {
