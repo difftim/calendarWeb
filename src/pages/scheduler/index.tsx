@@ -8,8 +8,6 @@ import Host from './Host';
 import Repeat from './Repeat';
 import FileManager from './FileManager';
 import Desc from './Desc';
-import FindTimeButton from './FindTimeButton';
-import FindTime from './FindTime';
 import UserListButton from './UserListButton';
 import More from './More';
 import GoogleMeetButton from './GoogleMeetButton';
@@ -24,7 +22,6 @@ export const ScheduleMeetingDialog = () => {
       <TimePicker />
       <Duration />
       <UserListButton />
-      <FindTimeButton />
       <Guest />
       <Host />
       <Repeat />
@@ -35,7 +32,6 @@ export const ScheduleMeetingDialog = () => {
       <GoogleMeetButton />
       <Bottom />
       <UserList />
-      <FindTime />
     </Provider>
   );
 };

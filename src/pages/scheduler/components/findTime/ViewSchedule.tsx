@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Flex, Spin, Tooltip } from 'antd';
+import { Flex, Spin, Tooltip } from 'antd';
 import { MyCalendar } from '@difftim/scheduler-component';
 import dayjs from 'dayjs';
 import { uniqBy } from 'lodash';
@@ -19,6 +19,7 @@ import FreeTimeSelector from './FreeTimeSelector';
 import {
   clearUidTimezoneMap,
   formateResponse,
+  getUidTimezone,
   noop,
   sortMembers,
   sortNewAddedMember,
@@ -315,14 +316,16 @@ const ViewSchedule = ({
         members={viewScheduleMembers}
         events={events}
         onSelectSlot={(info: any) => {
-          setWantDate(want => ({
-            ...want,
+          const newWant = {
+            ...wantDate,
             start: info.start,
-            end: info.start + (want.end - want.start),
-          }));
+            end: info.start + (wantDate.end - wantDate.start),
+          };
+          setWantDate(newWant);
+          onConfirm({ newWantDate: newWant });
         }}
         onRenderHeader={item => {
-          const timeZoneNum = getOffset(item);
+          const timeZoneNum = getUidTimezone(item.id) ?? getOffset(item);
           const utcOffset =
             item.id === ourNumber
               ? getUtcOffset(timeZone)
@@ -353,19 +356,6 @@ const ViewSchedule = ({
         ourNumber={ourNumber}
         timeZone={timeZone}
       />
-      <Flex className="bottom-btn" align="center" justify="center">
-        <Button
-          type="primary"
-          onClick={e => {
-            e.stopPropagation();
-            onConfirm({
-              newWantDate: wantDate,
-            });
-          }}
-        >
-          Confirm
-        </Button>
-      </Flex>
     </Flex>
   );
 };

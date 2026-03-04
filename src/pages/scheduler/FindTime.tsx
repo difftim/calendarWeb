@@ -1,18 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Calendar, Drawer, Popover } from 'antd';
+import { Button, Calendar, Popover } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import { uniqBy } from 'lodash';
 
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { useCurrentTimeZone } from '@/hooks/useCurrentTimeZone';
-import { showPannelAtom } from '@/atoms/detail';
-import { useSetAtom } from 'jotai';
-import { IconBackF, IconCloseF, IconChevronDown, IconChevronRight1 } from '@/shared/IconsNew';
+import { useAtomValue } from 'jotai';
+import { IconChevronDown, IconChevronRight1 } from '@/shared/IconsNew';
 import { getOffsetStringFromOffsetNumber } from '@/util';
 import ViewSchedule from './components/findTime/ViewSchedule';
 import { useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
 import { userIdAtom } from '@/atoms';
-import { useAtomValue } from 'jotai';
 import ConfigProvider from '@/shared/ConfigProvider';
 import { useAntdLocale } from '@/hooks/useAntdLocale';
 
@@ -20,14 +18,10 @@ const FindTimeHeader = ({
   timeZone,
   queryDate,
   setQueryDate,
-  onBack,
-  onClose,
 }: {
   timeZone: string;
   queryDate: string;
   setQueryDate: React.Dispatch<React.SetStateAction<string>>;
-  onBack: () => void;
-  onClose: () => void;
 }) => {
   const antdLocale = useAntdLocale();
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -79,21 +73,7 @@ const FindTimeHeader = ({
   );
 
   return (
-    <div className={'schedule-meeting-header'}>
-      <IconBackF
-        style={{
-          position: 'absolute',
-          left: '16px',
-          top: '20px',
-          cursor: 'pointer',
-        }}
-        width={20}
-        height={20}
-        onClick={e => {
-          e.stopPropagation();
-          onBack();
-        }}
-      />
+    <div className="find-time-header">
       <div className="view-schedule-header">
         <Button
           onClick={() => {
@@ -109,10 +89,10 @@ const FindTimeHeader = ({
           onOpenChange={setCalendarOpen}
           overlayClassName="view-schedule-calendar-popover"
           arrow={false}
-          align={{ offset: [0, 16] }}
+          align={{ offset: [0, 8] }}
           placement="bottom"
           getPopupContainer={node =>
-            (node.closest('.find-time-drawer') as HTMLElement) || document.body
+            (node.closest('.find-time-panel') as HTMLElement) || document.body
           }
         >
           <div className="date-trigger">
@@ -127,41 +107,23 @@ const FindTimeHeader = ({
           </div>
         </Popover>
       </div>
-      <IconCloseF
-        style={{
-          position: 'absolute',
-          right: '15px',
-          top: '20px',
-          cursor: 'pointer',
-        }}
-        width={20}
-        height={20}
-        onClick={e => {
-          e.stopPropagation();
-          onClose();
-        }}
-      />
     </div>
   );
 };
 
 const FindTime = () => {
-  const { childModalType, members, date, time, duration = 30, topic } = useDetailDataValue();
+  const { members, date, time, duration = 30, topic } = useDetailDataValue();
   const { timeZone: rawTimeZone } = useCurrentTimeZone();
   const timeZone = rawTimeZone || dayjs.tz.guess();
   const setData = useSetDetailData();
-  const setShow = useSetAtom(showPannelAtom);
   const myId = useAtomValue(userIdAtom);
-  const isOpen = childModalType === 'findTime';
   const { openForMembers } = useAddMembersDialog();
 
   const [queryDate, setQueryDate] = useState((date || dayjs().tz(timeZone)).format('YYYY-MM-DD'));
 
   useEffect(() => {
-    if (isOpen) {
-      setQueryDate((date || dayjs().tz(timeZone)).format('YYYY-MM-DD'));
-    }
-  }, [date, isOpen, timeZone]);
+    setQueryDate((date || dayjs().tz(timeZone)).format('YYYY-MM-DD'));
+  }, [date, timeZone]);
 
   const wantDate = useMemo(() => {
     if (!date || !time) {
@@ -192,21 +154,12 @@ const FindTime = () => {
   const handleAddMember = async () => openForMembers(members);
 
   return (
-    <Drawer
-      destroyOnClose
-      open={isOpen}
-      className="find-time-drawer"
-      closeIcon={false}
-      title={
-        <FindTimeHeader
-          timeZone={timeZone}
-          queryDate={queryDate}
-          setQueryDate={setQueryDate}
-          onBack={() => setData({ childModalType: '' })}
-          onClose={() => setShow(false)}
-        />
-      }
-    >
+    <div className="find-time-panel">
+      <FindTimeHeader
+        timeZone={timeZone}
+        queryDate={queryDate}
+        setQueryDate={setQueryDate}
+      />
       <div className="find-a-time-container">
         <ViewSchedule
           queryDate={queryDate}
@@ -234,12 +187,11 @@ const FindTime = () => {
               time: newDate,
               start: newWantDate.start,
               end: newWantDate.end,
-              childModalType: '',
             });
           }}
         />
       </div>
-    </Drawer>
+    </div>
   );
 };
 

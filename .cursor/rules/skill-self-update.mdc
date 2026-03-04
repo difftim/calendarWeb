@@ -1,0 +1,15 @@
+---
+description: Reminder to update SKILL.md after code changes in calendarWeb
+globs: src/**/*.{ts,tsx,scss}
+alwaysApply: false
+---
+
+# SKILL.md 自迭代提醒
+
+每次修改 calendarWeb 源码后，**必须**更新 `.cursor/skills/web-calendar-expert/SKILL.md`：
+
+1. **架构与流程**（最高优先级）：组件层级、数据流、状态管理模式变化必须同步
+2. **文件索引**：新增/删除/改变职责的文件必须更新索引表
+3. **变更记录**：在 Section 11 "注意事项" 末尾追加带日期的变更条目
+
+完成代码修改后，在结束前主动读取 SKILL.md 并更新相关内容，不要等用户提醒。

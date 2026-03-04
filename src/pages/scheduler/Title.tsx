@@ -54,7 +54,7 @@ const Title = () => {
           <div>{i18n('schedule.syncToGoogle')}</div>
         </Flex>
       )}
-      <div className="item">
+      <div className="item item-topic">
         <div className="item-title">{i18n('schedule.topic')}</div>
         {mode === 'view' ? (
           <div className="preview-item" style={{ height: 'auto' }}>
