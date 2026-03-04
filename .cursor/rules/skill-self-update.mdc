@@ -1,7 +1,6 @@
 ---
 description: Reminder to update SKILL.md after code changes in calendarWeb
-globs: src/**/*.{ts,tsx,scss}
-alwaysApply: false
+alwaysApply: true
 ---
 
 # SKILL.md 自迭代提醒

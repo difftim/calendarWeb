@@ -719,9 +719,9 @@
     flex-shrink: 0;
     background-color: var(--dsw-metting-background-color);
     border-bottom: 1px solid var(--dsw-color-line-1);
+    -webkit-app-region: no-drag;
 
     svg {
-      -webkit-app-region: no-drag;
       cursor: pointer;
     }
   }
