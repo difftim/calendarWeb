@@ -8,8 +8,9 @@ import CommonUserList from './components/SchedulerUserList';
 import { useI18n } from '@/hooks/useI18n';
 import { cid2uid, sortUserList, stopClick } from '@/util';
 import { IconBackF, IconCloseF, IconHelperF, IconTablerUserPlus } from '@/shared/IconsNew';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { showPannelAtom } from '@/atoms/detail';
+import { queryScheduleConfigAtom } from '@/atoms/query';
 
 const GuestUserList = () => {
   const { guests, host, calendarId, mode } = useDetailDataValue();
@@ -185,10 +186,13 @@ const UserListTitle = ({
 };
 
 const UserList = () => {
-  const { isLiveStream, childModalType, guests, members, mode } = useDetailDataValue();
+  const { isLiveStream, childModalType, guests, members, mode, category } = useDetailDataValue();
   const setData = useSetDetailData();
   const { openForMembers } = useAddMembersDialog();
   const { openDialog: openGuestDialog } = useLiveGuestInviteDialog();
+  const [precreateConfigResult] = useAtom(queryScheduleConfigAtom);
+  const availableBots =
+    category !== 'event' ? (precreateConfigResult?.data?.availableBots ?? []) : undefined;
   const showGuestList = Boolean(childModalType === 'guest' && isLiveStream && guests?.users.length);
   const showAttendeeList = Boolean(childModalType === 'attendee' && members?.length);
   const totalCount = (showGuestList ? guests?.users.length : members?.length) || 0;
@@ -196,7 +200,7 @@ const UserList = () => {
 
   const addAttendeeFromDialog = async () => {
     if (childModalType !== 'attendee') return;
-    const newMembers = await openForMembers(members);
+    const newMembers = await openForMembers(members, availableBots);
     if (!newMembers.length) return;
     setData(prev => ({ members: mergeMembersUniq(prev.members, newMembers) }));
   };

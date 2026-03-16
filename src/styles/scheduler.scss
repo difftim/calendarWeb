@@ -1034,3 +1034,9 @@
 .ant-drawer-content-wrapper {
   border-left: 0.5px solid var(--dsw-color-line);
 }
+
+.bot-autojoin-tip .ant-tooltip-inner {
+  text-align: left !important;
+  word-break: normal;
+  max-width: 220px;
+}

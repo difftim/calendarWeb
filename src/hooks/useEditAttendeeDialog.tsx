@@ -10,6 +10,7 @@ import { groupListAtom } from '@/atoms';
 import { toastWarning } from '@/shared/Message';
 import { getUserEmail } from '@/api';
 import { isBotId } from '@/util';
+import { getUserBaseInfoSync } from '@/atoms/userInfo';
 
 export type Member = {
   going: 'maybe' | 'yes' | 'no';
@@ -24,21 +25,35 @@ export type Member = {
 
 type OpenOptions = {
   disabledIds?: string[];
+  availableBots?: string[];
+};
+
+const buildBotAllowedChecker = (availableBots?: string[]) => {
+  if (!availableBots?.length) {
+    return (id: string) => !isBotId(id);
+  }
+  const allowedSet = new Set(availableBots.map(uid => (uid.startsWith('+') ? uid : `+${uid}`)));
+  return (id: string) => !isBotId(id) || allowedSet.has(id);
 };
 
 const mapSelectedToMembers = async (
   items: EditAttendeeItem[],
-  disabledList: EditAttendeeItem[]
+  disabledList: EditAttendeeItem[],
+  availableBots?: string[]
 ): Promise<Member[]> => {
   if (items.some(item => item.type === 'group')) {
     toastWarning('暂不支持添加群组');
     return [];
   }
 
+  const isBotAllowed = buildBotAllowedChecker(availableBots);
+
   let result: Member[] = [];
 
-  let appUsers = items.filter(user => Boolean(!user.extUser && user.id && !isBotId(user.id)));
-  let externalUsers = items.filter(user => Boolean(user.extUser && user.id && !isBotId(user.id)));
+  let appUsers = items.filter(user => Boolean(!user.extUser && user.id && isBotAllowed(user.id)));
+  let externalUsers = items.filter(user =>
+    Boolean(user.extUser && user.id && isBotAllowed(user.id))
+  );
 
   result.push(
     ...appUsers.map(item => ({
@@ -108,18 +123,36 @@ export const useEditAttendeeDialog = () => {
       .filter((item): item is EditAttendeeItem => Boolean(item));
   }, []);
 
+  const buildBotItems = useCallback((availableBots?: string[]): EditAttendeeItem[] => {
+    if (!availableBots?.length) return [];
+    return availableBots.map(uid => {
+      const normalizedId = uid.startsWith('+') ? uid : `+${uid}`;
+      const info = getUserBaseInfoSync(normalizedId);
+      return {
+        id: normalizedId,
+        name: info.name || normalizedId,
+        type: 'direct' as const,
+        avatarPath: info.avatarPath,
+        email: info.email,
+      };
+    });
+  }, []);
+
   const openDialog = useCallback(
     (options: OpenOptions = {}) => {
       const disabledIds = options.disabledIds || [];
+      const availableBots = options.availableBots;
       const disabledList = buildDisabledList(disabledIds);
+      const botItems = buildBotItems(availableBots);
+      const mergedList = botItems.length ? [...list, ...botItems] : list;
 
       return new Promise<Member[]>(resolve => {
         let resolved = false;
         showEditAttendeeDialog({
-          list,
+          list: mergedList,
           disabledList,
           onConfirm: async ({ selected }, close) => {
-            const members = await mapSelectedToMembers(selected, disabledList);
+            const members = await mapSelectedToMembers(selected, disabledList, availableBots);
             resolved = true;
             resolve(members);
             close();
@@ -132,7 +165,7 @@ export const useEditAttendeeDialog = () => {
         });
       });
     },
-    [buildDisabledList, list, showEditAttendeeDialog]
+    [buildDisabledList, buildBotItems, list, showEditAttendeeDialog]
   );
 
   return { openDialog };
@@ -155,9 +188,12 @@ export const mergeMembersUniq = (members: Member[], newMembers: Member[]) => {
 export const useAddMembersDialog = () => {
   const { openDialog } = useEditAttendeeDialog();
 
-  const openForMembers = async (members: Array<{ uid?: string; email?: string }>) => {
+  const openForMembers = async (
+    members: Array<{ uid?: string; email?: string }>,
+    availableBots?: string[]
+  ) => {
     const disabledIds = getDisabledIds(members);
-    return openDialog({ disabledIds });
+    return openDialog({ disabledIds, availableBots });
   };
 
   return { openForMembers, mergeMembersUniq };

@@ -9,6 +9,7 @@ import { useI18n } from '@/hooks/useI18n';
 import {
   createTranferModal,
   defalutSortFn,
+  defaultIsSearchMatch,
   ModalProps,
   TransferModalConsumer,
 } from '@/shared/TransferModal';
@@ -41,7 +42,6 @@ const isSearchMatchEmail = (searchText: string) => {
     searchText
   );
 };
-
 
 const findAppUser = (list: EditAttendeeItem[], emailOrIdLike: string) => {
   if (isSearchMatchId(emailOrIdLike)) {
@@ -147,14 +147,15 @@ const EditAttendeeContent = ({
     (
       params: {
         keyword: string;
-        localItems: EditAttendeeItem[];
         remoteItems: EditAttendeeItem[];
         dataSource: EditAttendeeItem[];
       } | null
     ) => {
       if (!params) return [];
-      const { keyword, dataSource } = params;
-      return getExternalUser(dataSource, keyword);
+      const { keyword, remoteItems, dataSource } = params;
+      const localMatches = dataSource.filter(item => defaultIsSearchMatch(item, keyword));
+      const externalUsers = getExternalUser(dataSource, keyword);
+      return uniqBy([...localMatches, ...remoteItems, ...externalUsers], 'id');
     },
     []
   );

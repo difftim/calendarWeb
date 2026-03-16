@@ -26,7 +26,9 @@ import {
 import { useI18n } from '@/hooks/useI18n';
 import { useForwardModal } from '@/hooks/useForwardModal';
 import { useRadioModal } from '@/hooks/useRadioModal';
-import { cid2uid, copyText, formatTZ, stopClick, uid2cid } from '@/util';
+import { cid2uid, copyText, formatTZ, hasMatchedBot, stopClick, uid2cid } from '@/util';
+import { useAtom } from 'jotai';
+import { queryScheduleConfigAtom } from '@/atoms/query';
 import {
   addLiveStreamToCalendar,
   copyScheduleMeetingInfo,
@@ -81,10 +83,13 @@ function Bottom() {
     everyoneCanInviteOthers,
     speechTimerEnabled,
     speechTimerDuration,
+    botAutoJoinEnabled = true,
   } = useDetailData();
   const { timeZone } = useCurrentTimeZone();
   const { i18n } = useI18n();
   const myId = useAtomValue(userIdAtom);
+  const [precreateConfigResult] = useAtom(queryScheduleConfigAtom);
+  const availableBots = precreateConfigResult?.data?.availableBots ?? [];
   const goingBtnLoading = useRef(false);
   const receiveLoading = useRef(false);
   const isEvent = category === 'event';
@@ -756,6 +761,8 @@ function Bottom() {
         isGroup: !isPrivate && !isLiveStream,
         group: !isPrivate && !isLiveStream ? group : null,
         attachment,
+        botAutoJoinEnabled:
+          !isEvent && hasMatchedBot(members, availableBots) ? Boolean(botAutoJoinEnabled) : false,
         category: isEvent ? 'event' : 'meeting',
         isLiveStream,
         receiveNotification,

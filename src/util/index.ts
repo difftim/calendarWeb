@@ -545,6 +545,17 @@ export const isBotId = (id: string) => {
   return false;
 };
 
+export const hasMatchedBot = (
+  members: Array<{ uid?: string; id?: string }>,
+  availableBots: string[]
+) => {
+  if (!availableBots.length) return false;
+  const botUids = new Set(
+    availableBots.map(uid => (uid.startsWith('+') ? uid : `+${uid}`))
+  );
+  return members.some(m => botUids.has(m.uid || m.id || ''));
+};
+
 export function getInitials(name?: string): string | undefined {
   if (!name) {
     return;

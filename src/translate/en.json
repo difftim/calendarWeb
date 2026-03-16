@@ -41,6 +41,21 @@
     "schedule.attendee": {
         "message": "Attendee"
     },
+    "schedule.bot": {
+        "message": "Bot"
+    },
+    "schedule.autoJoin": {
+        "message": "Auto-join"
+    },
+    "schedule.autoJoinEnabled": {
+        "message": "Auto-join enabled"
+    },
+    "schedule.autoJoinDisabled": {
+        "message": "Auto-join disabled"
+    },
+    "schedule.autoJoinTip": {
+        "message": "When enabled, the bot joins all scheduled meetings and receives generated captions afterward for processing."
+    },
     "schedule.cancelRecurringEvent": {
         "message": "Cancel the recurring events for all attendees"
     },

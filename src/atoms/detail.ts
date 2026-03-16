@@ -103,6 +103,8 @@ export type DetailData = {
   syncToGoogle?: boolean;
   speechTimerEnabled?: boolean;
   speechTimerDuration?: number | null;
+  botAutoJoinEnabled?: boolean;
+  botIncluded?: boolean;
   childModalType?: 'attendee' | 'guest' | '';
   showMore?: boolean;
 };

@@ -89,24 +89,37 @@ export const calendarQueryAtom = atomWithQuery(get => {
   };
 });
 
+export type PrecreateConfig = {
+  canSyncGoogle: boolean;
+  availableBots: string[];
+};
+
 export const queryScheduleConfigAtom = atomWithQuery(get => {
-  const { mode, calendarId } = get(schedulerDataAtom) as DetailData;
+  const { mode, calendarId, isEvent } = get(schedulerDataAtom) as DetailData;
   const myUid = get(userIdAtom);
+  const isCreateMode = mode === 'create';
+  const isUpdateMode = mode === 'update';
 
   return {
-    queryKey: ['googleSyncConfig'],
+    queryKey: ['precreateConfig', calendarId, mode],
     staleTime: 0,
-    enabled: Boolean(myUid) && mode === 'create',
-    queryFn: async () => {
+    enabled: Boolean(myUid) && (isCreateMode || isUpdateMode),
+    queryFn: async (): Promise<PrecreateConfig> => {
       try {
-        console.log('do query ----->', mode, calendarId);
-        if (mode !== 'create' || !calendarId) {
-          return false;
+        if (!calendarId) {
+          return { canSyncGoogle: false, availableBots: [] };
         }
-        const res = await getSchedulerCreateConfig(calendarId);
-        return res.data?.canSyncGoogle || false;
+        const features = isUpdateMode
+          ? ['availableBots']
+          : ['canSyncGoogle', 'availableBots'];
+        const res: any = await getSchedulerCreateConfig(calendarId, features);
+        const config = res.data ?? res;
+        return {
+          canSyncGoogle: isCreateMode ? (config.canSyncGoogle || false) : false,
+          availableBots: isEvent ? [] : (config.availableBots || []),
+        };
       } catch {
-        return false;
+        return { canSyncGoogle: false, availableBots: [] };
       }
     },
   };

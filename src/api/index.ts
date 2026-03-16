@@ -93,14 +93,17 @@ export const copyScheduleMeetingInfo = (data: any): Promise<{ content: string }>
     .json();
 };
 
-export const getSchedulerCreateConfig = (calendarId: string) => {
+export const getSchedulerCreateConfig = (
+  calendarId: string,
+  features = ['canSyncGoogle', 'availableBots']
+) => {
   return request
-    .post<{ data: { canSyncGoogle: boolean } }>(
+    .post<{ data: { canSyncGoogle: boolean; availableBots?: string[] } }>(
       `v1/calendar/${encodeURIComponent(calendarId)}/events/precreate`,
       {
         json: {
           calendarId,
-          features: ['canSyncGoogle'],
+          features,
         },
       }
     )

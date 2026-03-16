@@ -11,6 +11,7 @@ import Desc from './Desc';
 import UserListButton from './UserListButton';
 import More from './More';
 import GoogleMeetButton from './GoogleMeetButton';
+import BotOption from './BotOption';
 import Permit from './Permit';
 import Bottom from './Bottom';
 import UserList from './UserList';
@@ -22,6 +23,7 @@ export const ScheduleMeetingDialog = () => {
       <TimePicker />
       <Duration />
       <UserListButton />
+      <BotOption />
       <Guest />
       <Host />
       <Repeat />

@@ -2,9 +2,10 @@ import { IconChevronRight, IconHelperF, IconTablerPlus } from '@/shared/IconsNew
 import { useDetailDataValue, useSetDetailData } from '@/hooks/useDetailData';
 import { mergeMembersUniq, useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
 import { useI18n } from '@/hooks/useI18n';
-import { isBotId } from '@/util';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
+import { useAtom } from 'jotai';
+import { queryScheduleConfigAtom } from '@/atoms/query';
 
 const UserListButton = () => {
   const {
@@ -15,11 +16,15 @@ const UserListButton = () => {
     source = 'difft',
     syncToGoogle,
     members,
+    category,
   } = useDetailDataValue();
+  const [precreateConfigResult] = useAtom(queryScheduleConfigAtom);
+  const availableBots =
+    category !== 'event' ? (precreateConfigResult?.data?.availableBots ?? []) : undefined;
   const setData = useSetDetailData();
   const isViewMode = mode === 'view';
   const showGoogleSync = mode !== 'create' ? source === 'google' : syncToGoogle;
-  const memberCount = members.filter(m => !isBotId(m.uid)).length;
+  const memberCount = members.length;
 
   const isPrivate = !group?.gid;
   const { i18n } = useI18n();
@@ -89,7 +94,7 @@ const UserListButton = () => {
   }
 
   const addAttendeeFromDialog = async () => {
-    const newMembers = await openForMembers(members);
+    const newMembers = await openForMembers(members, availableBots);
     if (!newMembers.length) return;
     setData(prev => ({ members: mergeMembersUniq(prev.members, newMembers) }));
   };

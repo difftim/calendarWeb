@@ -9,6 +9,7 @@ import {
   getOffsetStringFromOffsetNumber,
   getUtcOffset,
   cleanUserNameForDisplay,
+  isBotId,
 } from '@/util';
 import { useAtomValue } from 'jotai';
 import { Avatar } from '@/shared/Avatar';
@@ -123,7 +124,7 @@ const ViewSchedule = ({
   );
 
   const normalizedMembers = useMemo(() => {
-    return members.map(getMemberInfo).filter(member => member.id);
+    return members.map(getMemberInfo).filter(member => member.id && !isBotId(member.id));
   }, [members, getMemberInfo]);
 
   const [viewScheduleMembers, setViewScheduleMembers] = useState(() =>

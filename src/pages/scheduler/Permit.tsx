@@ -38,7 +38,8 @@ function Permit() {
   const isCreateMode = mode === 'create';
   const isViewMode = mode === 'view';
   const hostByOwner = isCreateMode || host === cid2uid(calendarId);
-  const [showGoogleSyncOption] = useAtom(queryScheduleConfigAtom);
+  const [precreateConfigResult] = useAtom(queryScheduleConfigAtom);
+  const showGoogleSyncOption = precreateConfigResult?.data?.canSyncGoogle ?? false;
 
   if (isViewMode || (isCreateMode && !showMore)) {
     return null;

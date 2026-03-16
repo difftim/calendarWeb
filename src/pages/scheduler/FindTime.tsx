@@ -13,6 +13,8 @@ import { useAddMembersDialog } from '@/hooks/useEditAttendeeDialog';
 import { userIdAtom } from '@/atoms';
 import ConfigProvider from '@/shared/ConfigProvider';
 import { useAntdLocale } from '@/hooks/useAntdLocale';
+import { useAtom } from 'jotai';
+import { queryScheduleConfigAtom } from '@/atoms/query';
 
 const FindTimeHeader = ({
   timeZone,
@@ -112,12 +114,14 @@ const FindTimeHeader = ({
 };
 
 const FindTime = () => {
-  const { members, date, time, duration = 30, topic } = useDetailDataValue();
+  const { members, date, time, duration = 30, topic, category } = useDetailDataValue();
   const { timeZone: rawTimeZone } = useCurrentTimeZone();
   const timeZone = rawTimeZone || dayjs.tz.guess();
   const setData = useSetDetailData();
   const myId = useAtomValue(userIdAtom);
   const { openForMembers } = useAddMembersDialog();
+  const [precreateConfigResult] = useAtom(queryScheduleConfigAtom);
+  const availableBots = category !== 'event' ? (precreateConfigResult?.data?.availableBots ?? []) : undefined;
 
   const [queryDate, setQueryDate] = useState((date || dayjs().tz(timeZone)).format('YYYY-MM-DD'));
 
@@ -151,7 +155,7 @@ const FindTime = () => {
     };
   }, [date, time, duration, timeZone, topic]);
 
-  const handleAddMember = async () => openForMembers(members);
+  const handleAddMember = async () => openForMembers(members, availableBots);
 
   return (
     <div className="find-time-panel">
