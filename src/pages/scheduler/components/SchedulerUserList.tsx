@@ -99,7 +99,6 @@ const ScheduleUserList = ({
           style={{ cursor: 'pointer', marginLeft: 'auto' }}
           className="item-hover-close"
           onClick={e => {
-            debugger;
             e.stopPropagation();
             onDelete?.(conversation.uid);
           }}
